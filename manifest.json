@@ -4,8 +4,11 @@
   "description": "Sistema corporativo de control financiero y gestión de flota de vehículos pesados.",
   "start_url": "/",
   "display": "standalone",
+  "orientation": "portrait",
   "background_color": "#0f172a",
   "theme_color": "#059669",
+  "lang": "es",
+  "categories": ["business", "finance", "productivity"],
   "icons": [
     {
       "src": "icono-512.png",
@@ -18,6 +21,22 @@
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Registrar Viaje",
+      "short_name": "Nuevo Viaje",
+      "description": "Liquidar flete y gastos rápidamente",
+      "url": "/?action=trip",
+      "icons": [{ "src": "icono-512.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Gasto de Taller",
+      "short_name": "Taller",
+      "description": "Registrar mantenimiento o repuestos",
+      "url": "/?action=maintenance",
+      "icons": [{ "src": "icono-512.png", "sizes": "192x192" }]
     }
   ]
 }
