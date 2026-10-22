@@ -1,5 +1,13 @@
 {
-  "appId": "com.example.app",
-  "appName": "miflotard-main",
-  "webDir": "www"
+  "appId": "com.miflotard.app",
+  "appName": "MiFlotaRD",
+  "webDir": "www",
+  "plugins": {
+    "PushNotifications": {
+      "presentationOptions": ["badge", "sound", "alert"]
+    },
+    "SplashScreen": {
+      "launchShowDuration": 0
+    }
+  }
 }

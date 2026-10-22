@@ -2680,11 +2680,84 @@ const SUPABASE_URL = 'https://pofpqcvejdrlxindicpc.supabase.co';
     window.addEventListener('DOMContentLoaded', () => App.init());
   </script>
 <script>
+  // ==========================================
+  // INICIALIZACIÓN DE SERVICE WORKER Y SINCRONIZACIÓN
+  // ==========================================
   if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('/sw.js')
-      .then(() => console.log('Service Worker registrado con éxito.'))
+      .then(async (registration) => {
+        console.log('Service Worker registrado con éxito.');
+
+        // Registrar Periodic Sync si el navegador lo soporta
+        if ('periodicSync' in registration) {
+          try {
+            const status = await navigator.permissions.query({ name: 'periodic-background-sync' });
+            if (status.state === 'granted') {
+              await registration.periodicSync.register('actualizar-estado-flota', {
+                minInterval: 24 * 60 * 60 * 1000 // 1 día (el navegador decide el tiempo exacto)
+              });
+              console.log('Periodic Sync registrado.');
+            }
+          } catch (e) {
+            console.log('Periodic Sync no pudo registrarse', e);
+          }
+        }
+      })
       .catch((err) => console.log('Error al registrar el Service Worker', err));
   }
+
+  // ==========================================
+  // INICIALIZACIÓN DE PLUGINS CAPACITOR (UX NATIVA)
+  // ==========================================
+  document.addEventListener('DOMContentLoaded', async () => {
+    // Verificamos si estamos corriendo dentro de Capacitor (App Nativa)
+    if (window.Capacitor && window.Capacitor.isNativePlatform()) {
+      const { StatusBar, SplashScreen, PushNotifications, Haptics } = window.Capacitor.Plugins;
+
+      try {
+        // 1. Ocultar Splash Screen de forma fluida
+        if (SplashScreen) await SplashScreen.hide();
+
+        // 2. Configurar barra de estado superior (Status Bar) para integrarla al diseño
+        if (StatusBar) {
+          await StatusBar.setBackgroundColor({ color: '#0f172a' }); // Mismo color de tu PWA theme-color
+        }
+
+        // 3. Registrar Push Notifications
+        if (PushNotifications) {
+          let permStatus = await PushNotifications.checkPermissions();
+          if (permStatus.receive === 'prompt') {
+            permStatus = await PushNotifications.requestPermissions();
+          }
+          if (permStatus.receive === 'granted') {
+            await PushNotifications.register();
+
+            // Listeners para notificaciones Push
+            PushNotifications.addListener('registration', (token) => {
+              console.log('Push registration success, token: ' + token.value);
+              // Aquí enviarías el token a tu base de datos (Supabase)
+            });
+            PushNotifications.addListener('pushNotificationReceived', (notification) => {
+              console.log('Push recibida en primer plano: ', notification);
+            });
+            PushNotifications.addListener('pushNotificationActionPerformed', (notification) => {
+              console.log('Usuario interactuó con la Push: ', notification);
+            });
+          }
+        }
+      } catch (err) {
+        console.log('Error inicializando plugins de Capacitor:', err);
+      }
+    }
+  });
+
+  // Funciones de Haptics (Vibración) globales para ser usadas en tus botones
+  window.triggerHaptic = async (style = 'LIGHT') => {
+    if (window.Capacitor && window.Capacitor.isNativePlatform() && window.Capacitor.Plugins.Haptics) {
+      const { Haptics, ImpactStyle } = window.Capacitor.Plugins;
+      await Haptics.impact({ style: ImpactStyle[style] || ImpactStyle.Light });
+    }
+  };
 </script>
 </body>
 </html>
