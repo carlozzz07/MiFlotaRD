@@ -11,7 +11,7 @@
   "categories": ["business", "finance", "productivity"],
   "icons": [
     {
-      "src": "icono-512.png",
+      "src": "icono-192.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any maskable"
@@ -29,14 +29,14 @@
       "short_name": "Nuevo Viaje",
       "description": "Liquidar flete y gastos rápidamente",
       "url": "/?action=trip",
-      "icons": [{ "src": "icono-512.png", "sizes": "192x192" }]
+      "icons": [{ "src": "icono-192.png", "sizes": "192x192", "type": "image/png" }]
     },
     {
       "name": "Gasto de Taller",
       "short_name": "Taller",
       "description": "Registrar mantenimiento o repuestos",
       "url": "/?action=maintenance",
-      "icons": [{ "src": "icono-512.png", "sizes": "192x192" }]
+      "icons": [{ "src": "icono-192.png", "sizes": "192x192", "type": "image/png" }]
     }
   ]
 }
