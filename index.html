@@ -43,6 +43,10 @@
   <!-- ================================================================= -->
   <!-- PEGA AQUÍ LAS CONFIGURACIONES PWA DE IOS Y ANDROID                -->
   <!-- ================================================================= -->
+
+<link rel="manifest" href="manifest.json" />
+<link rel="shortcut icon" href="icono-192.png" type="image/png" />
+<link rel="icon" type="image/png" href="icono-192.png" />
   
 <!-- Configuración PWA General (Android y Manifest) -->
   <link rel="manifest" href="manifest.json" />
@@ -2688,6 +2692,7 @@ const SUPABASE_URL = 'https://pofpqcvejdrlxindicpc.supabase.co';
       .then(() => console.log('Service Worker registrado con éxito.'))
       .catch((err) => console.log('Error al registrar el Service Worker', err));
   }
+}
 </script>
 </body>
 </html>
