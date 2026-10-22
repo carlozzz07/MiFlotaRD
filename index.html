@@ -37,6 +37,39 @@
   <script src="https://cdn.sheetjs.com/xlsx-latest/package/dist/xlsx.full.min.js"></script>
   <!-- Google Fonts: Inter & JetBrains Mono -->
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600;700&display=swap" rel="stylesheet" />
+<!-- Google Fonts: Inter & JetBrains Mono -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600;700&display=swap" rel="stylesheet" />
+
+  <!-- ================================================================= -->
+  <!-- PEGA AQUÍ LAS CONFIGURACIONES PWA DE IOS Y ANDROID                -->
+  <!-- ================================================================= -->
+  
+  <!-- Configuración PWA General (Android y Manifest) -->
+  <link rel="manifest" href="manifest.json" />
+  <link rel="icon" type="image/png" href="icono-512.png" />
+  <meta name="theme-color" content="#0f172a" />
+
+  <!-- Configuración específica para PWA en iOS (iPhone / iPad) -->
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="MiFlota RD" />
+  <link rel="apple-touch-icon" href="icono-512.png" />
+
+  <!-- Fin de PWA -->
+
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+            mono: ['"JetBrains Mono"', 'monospace']
+          }
+        }
+      }
+    };
+  </script>
 
   <script>
     tailwind.config = {
@@ -679,7 +712,7 @@
   <!-- LÓGICA JAVASCRIPT DE PRODUCCIÓN                                       -->
   <!-- ===================================================================== -->
   <script>
-const SUPABASE_URL = 'https://pofpqcvejdrlxindicpc.supabase.co';
+const SUPABASE_URL = 'https://pofpqcvejdrlxindicpc.supabase.codZSAXFFFFFFCFACC';
     const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBvZnBxY3ZlamRybHhpbmRpY3BjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI2MTc0NzUsImV4cCI6MjEwODE5MzQ3NX0.flLYbLEnM3gro3JpG4ANvrCiks7nXauGPxDN4uVIqIE';
     const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
