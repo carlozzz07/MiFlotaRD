@@ -143,7 +143,7 @@ switchTab(tab) {
           if (btn) btn.className = t === tab ? 'tab-btn tab-btn-active' : 'tab-btn';
           if (bnav) {
             bnav.className = t === tab
-              ? 'flex flex-col items-center text-emerald-400 font-bold text-[10px] gap-0.5'
+                ? 'flex flex-col items-center text-blue-300 font-semibold text-[10px] gap-0.5'
               : 'flex flex-col items-center text-slate-400 font-medium text-[10px] gap-0.5';
           }
         });
@@ -228,7 +228,7 @@ renderAll() {
 
         const netEl = document.getElementById('kpiOwnerNet');
         netEl.textContent = this.formatRD(s.finalOwnerNet);
-        netEl.className = `text-2xl font-mono font-bold ${s.finalOwnerNet >= 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400'}`;
+        netEl.className = 'kpi-value text-2xl';
 
         document.getElementById('kpiMarginPercent').textContent = `Margen: ${s.marginPct}% · Fletes − (Viajes + Taller + Incidencias)`;
         document.getElementById('kpiGrossFreight').textContent = this.formatRD(s.gross);
@@ -322,13 +322,13 @@ renderTripsTab() {
                 <div class="text-[11px] text-slate-400">Ayud: ${this.getHelpersNames(t.helperIds)}</div>
               </td>
               <td class="td text-right font-mono font-semibold whitespace-nowrap">${this.formatRD(m.gross)}</td>
-              <td class="td text-right font-mono text-amber-700 dark:text-amber-400 whitespace-nowrap">${this.formatRD(m.fuel)}</td>
-              <td class="td text-right font-mono text-amber-700 dark:text-amber-400 whitespace-nowrap">${this.formatRD(m.tolls)}</td>
+              <td class="td text-right font-mono text-slate-700 dark:text-slate-200 whitespace-nowrap">${this.formatRD(m.fuel)}</td>
+              <td class="td text-right font-mono text-slate-700 dark:text-slate-200 whitespace-nowrap">${this.formatRD(m.tolls)}</td>
               <td class="td text-right font-mono whitespace-nowrap">${this.formatRD(m.drvPay)}</td>
               <td class="td text-right font-mono whitespace-nowrap">${this.formatRD(m.hlpPay)}</td>
               <td class="td text-right font-mono whitespace-nowrap">${this.formatRD(m.other)}</td>
-              <td class="td text-right font-mono font-semibold text-rose-600 dark:text-rose-400 whitespace-nowrap">${this.formatRD(m.totalExpense)}</td>
-              <td class="td text-right font-mono font-bold bg-emerald-50/60 dark:bg-emerald-950/30 ${m.netOwner >= 0 ? 'text-emerald-700 dark:text-emerald-400' : 'text-rose-600'} whitespace-nowrap">
+              <td class="td text-right font-mono font-semibold text-slate-700 dark:text-slate-200 whitespace-nowrap">${this.formatRD(m.totalExpense)}</td>
+              <td class="td text-right font-mono font-bold bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-white whitespace-nowrap">
                 ${this.formatRD(m.netOwner)}
               </td>
               <td class="td text-center whitespace-nowrap">
@@ -350,8 +350,8 @@ renderTripsTab() {
             <td class="py-3 px-3 text-right whitespace-nowrap">${this.formatRD(sDrv)}</td>
             <td class="py-3 px-3 text-right whitespace-nowrap">${this.formatRD(sHlp)}</td>
             <td class="py-3 px-3 text-right whitespace-nowrap">${this.formatRD(sOth)}</td>
-            <td class="py-3 px-3 text-right text-rose-600 whitespace-nowrap">${this.formatRD(sExp)}</td>
-            <td class="py-3 px-3 text-right text-emerald-700 dark:text-emerald-400 whitespace-nowrap">${this.formatRD(sNet)}</td>
+            <td class="py-3 px-3 text-right text-slate-700 dark:text-slate-200 whitespace-nowrap">${this.formatRD(sExp)}</td>
+            <td class="py-3 px-3 text-right text-slate-900 dark:text-white whitespace-nowrap">${this.formatRD(sNet)}</td>
             <td></td>
           </tr>
         `;
@@ -412,7 +412,7 @@ renderScheduledTab() {
 
                 <div class="mt-3 p-2.5 rounded-md bg-slate-50 dark:bg-slate-900 text-xs">
                   ${m.hasAnyFinancial
-                    ? `<div class="flex justify-between"><span>Flete: <b>${this.formatRD(m.gross)}</b></span><span class="text-emerald-600 font-bold">Ganancia Neta: ${this.formatRD(m.netOwner)}</span></div>`
+                    ? `                    <div class="flex justify-between"><span>Flete: <b>${this.formatRD(m.gross)}</b></span><span class="text-slate-900 dark:text-white font-bold">Ganancia Neta: ${this.formatRD(m.netOwner)}</span></div>`
                     : `<span class="text-slate-400 italic">Cobro y pagos opcionales (definir al liquidar)</span>`}
                 </div>
 
@@ -481,21 +481,21 @@ renderTrucksTab() {
                     </div>
                     <div class="p-2.5 rounded-md bg-slate-50 dark:bg-slate-900">
                       <span class="text-slate-400 block">Gastos Viajes</span>
-                      <span class="font-mono font-bold text-amber-600">-${this.formatRD(tripExp)}</span>
+                      <span class="font-mono font-bold text-slate-700 dark:text-slate-200">-${this.formatRD(tripExp)}</span>
                     </div>
                     <div class="p-2.5 rounded-md bg-slate-50 dark:bg-slate-900">
                       <span class="text-slate-400 block">Taller (${tMaints.length})</span>
-                      <span class="font-mono font-bold text-rose-600">-${this.formatRD(maintCost)}</span>
+                      <span class="font-mono font-bold text-slate-700 dark:text-slate-200">-${this.formatRD(maintCost)}</span>
                     </div>
                     <div class="p-2.5 rounded-md bg-slate-50 dark:bg-slate-900">
                       <span class="text-slate-400 block">Incidencias (${tIncs.length})</span>
-                      <span class="font-mono font-bold text-rose-600">-${this.formatRD(incCost)}</span>
+                      <span class="font-mono font-bold text-slate-700 dark:text-slate-200">-${this.formatRD(incCost)}</span>
                     </div>
                   </div>
 
-                  <div class="p-3 rounded-md bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800/60 flex items-center justify-between">
-                    <span class="text-xs font-bold text-emerald-800 dark:text-emerald-300">Ganancia Neta</span>
-                    <span class="font-mono font-bold text-sm ${realNet >= 0 ? 'text-emerald-700 dark:text-emerald-400' : 'text-rose-600'}">${this.formatRD(realNet)}</span>
+                  <div class="p-3 rounded-md bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 flex items-center justify-between">
+                  <span class="text-xs font-bold text-slate-700 dark:text-slate-200">Ganancia Neta</span>
+                  <span class="font-mono font-bold text-sm text-slate-900 dark:text-white">${this.formatRD(realNet)}</span>
                   </div>
                 </div>
 
@@ -517,7 +517,7 @@ renderTrucksTab() {
               <td class="td font-mono font-semibold whitespace-nowrap">${m.date}</td>
               <td class="td font-semibold">${this.getTruckName(m.truckId)}</td>
               <td class="td">${m.description}</td>
-              <td class="td text-right font-mono font-bold text-rose-600 whitespace-nowrap">${this.formatRD(m.cost)}</td>
+              <td class="td text-right font-mono font-bold text-slate-700 dark:text-slate-200 whitespace-nowrap">${this.formatRD(m.cost)}</td>
               <td class="td text-center">
                 <button type="button" onclick="App.deleteMaintenance('${m.id}')" class="btn-outline !py-1 !px-2 text-xs hover:text-rose-600"><i class="fa-solid fa-trash"></i></button>
               </td>
@@ -545,7 +545,7 @@ renderIncidentsTab() {
               <td class="td">${this.getDriverName(inc.driverId)}</td>
               <td class="td"><span class="px-2 py-0.5 rounded text-xs font-bold ${badge}">${inc.severity}</span></td>
               <td class="td">${inc.description}</td>
-              <td class="td text-right font-mono font-bold text-rose-600 whitespace-nowrap">-${this.formatRD(inc.cost)}</td>
+              <td class="td text-right font-mono font-bold text-slate-700 dark:text-slate-200 whitespace-nowrap">-${this.formatRD(inc.cost)}</td>
               <td class="td text-center">
                 <button type="button" onclick="App.deleteIncident('${inc.id}')" class="btn-outline !py-1 !px-2 text-xs hover:text-rose-600"><i class="fa-solid fa-trash"></i></button>
               </td>
@@ -602,9 +602,9 @@ renderDriversTab() {
                     <span class="text-slate-500 block">Total Cobrado por Chofer</span>
                     <span class="font-mono font-bold">${this.formatRD(drvPaid)}</span>
                   </div>
-                  <div class="p-2.5 rounded-md bg-emerald-50 dark:bg-emerald-950/40">
-                    <span class="text-emerald-700 dark:text-emerald-300 block font-semibold">Restante Generado</span>
-                    <span class="font-mono font-bold text-emerald-700 dark:text-emerald-400">${this.formatRD(net)}</span>
+                  <div class="p-2.5 rounded-md bg-slate-100 dark:bg-slate-800">
+                    <span class="text-slate-600 dark:text-slate-300 block font-semibold">Restante Generado</span>
+                    <span class="font-mono font-bold text-slate-900 dark:text-white">${this.formatRD(net)}</span>
                   </div>
                 </div>
               </div>

@@ -3,13 +3,13 @@
 
 @layer base {
   body {
-    @apply min-h-screen bg-[#f8fafc] font-sans text-slate-900 antialiased transition-colors duration-150 dark:bg-slate-950 dark:text-slate-100;
+    @apply min-h-screen bg-[#f1f5f9] font-sans text-slate-900 antialiased transition-colors duration-150 dark:bg-[#090d16] dark:text-slate-100;
   }
 }
 
 @layer components {
   .card {
-    @apply min-w-0 max-w-full rounded-md border border-slate-200 bg-white shadow-xs dark:border-slate-700 dark:bg-slate-900 dark:shadow-none;
+    @apply min-w-0 max-w-full rounded-md border border-slate-300 bg-white shadow-xs dark:border-slate-800 dark:bg-[#111827] dark:shadow-none;
   }
 
   .inp {
@@ -21,23 +21,23 @@
   }
 
   .btn-primary {
-    @apply inline-flex min-h-11 cursor-pointer items-center justify-center gap-2 rounded bg-blue-900 px-3.5 py-2.5 text-xs font-semibold text-white shadow-none transition hover:bg-blue-800 disabled:cursor-not-allowed disabled:opacity-60 dark:bg-blue-600 dark:hover:bg-blue-500 sm:text-sm;
+    @apply inline-flex min-h-11 cursor-pointer items-center justify-center gap-2 rounded bg-blue-900 px-3 py-2 text-xs font-medium text-white shadow-none transition hover:bg-blue-800 disabled:cursor-not-allowed disabled:opacity-60 dark:bg-blue-800 dark:hover:bg-blue-700 sm:text-sm;
   }
 
   .btn-outline {
-    @apply inline-flex min-h-11 cursor-pointer items-center justify-center gap-1.5 rounded border border-slate-300 bg-white px-3 py-2.5 text-xs font-medium text-slate-700 shadow-none transition hover:bg-slate-100 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200 dark:hover:bg-slate-800;
+    @apply inline-flex min-h-11 cursor-pointer items-center justify-center gap-1.5 rounded border border-slate-300 bg-white px-3 py-2 text-xs font-medium text-slate-700 shadow-none transition hover:bg-slate-100 dark:border-slate-700 dark:bg-[#111827] dark:text-slate-200 dark:hover:bg-slate-800;
   }
 
   .btn-whatsapp {
-    @apply inline-flex min-h-11 cursor-pointer items-center justify-center gap-1.5 rounded border border-slate-300 bg-white px-3 py-2.5 text-xs font-semibold text-slate-700 shadow-none transition hover:bg-slate-100 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200 dark:hover:bg-slate-800;
+    @apply inline-flex min-h-11 cursor-pointer items-center justify-center gap-1.5 rounded border border-slate-300 bg-white px-3 py-2 text-xs font-medium text-slate-700 shadow-none transition hover:bg-slate-100 dark:border-slate-700 dark:bg-[#111827] dark:text-slate-200 dark:hover:bg-slate-800;
   }
 
   .btn-emerald {
-    @apply inline-flex min-h-11 cursor-pointer items-center justify-center gap-2 rounded bg-blue-900 px-3.5 py-2.5 text-xs font-semibold text-white shadow-none transition hover:bg-blue-800 disabled:cursor-not-allowed disabled:opacity-60 dark:bg-blue-600 dark:hover:bg-blue-500 sm:text-sm;
+    @apply inline-flex min-h-11 cursor-pointer items-center justify-center gap-2 rounded bg-blue-900 px-3 py-2 text-xs font-medium text-white shadow-none transition hover:bg-blue-800 disabled:cursor-not-allowed disabled:opacity-60 dark:bg-blue-800 dark:hover:bg-blue-700 sm:text-sm;
   }
 
   .btn-rose {
-    @apply inline-flex min-h-11 cursor-pointer items-center justify-center gap-2 rounded border border-rose-700 bg-rose-700 px-3.5 py-2.5 text-xs font-semibold text-white shadow-none transition hover:bg-rose-800 disabled:cursor-not-allowed disabled:opacity-60 sm:text-sm;
+    @apply inline-flex min-h-11 cursor-pointer items-center justify-center gap-2 rounded border border-rose-800 bg-rose-800 px-3 py-2 text-xs font-medium text-white shadow-none transition hover:bg-rose-900 disabled:cursor-not-allowed disabled:opacity-60 sm:text-sm;
   }
 
   .tab-btn {
@@ -61,7 +61,7 @@
   }
 
   .modal-shell {
-    @apply flex max-h-[92vh] w-full flex-col overflow-hidden rounded-md border border-slate-300 bg-white shadow-none dark:border-slate-700 dark:bg-slate-900;
+    @apply flex max-h-[92vh] w-full flex-col overflow-hidden rounded-md border border-slate-300 bg-white shadow-none dark:border-slate-800 dark:bg-[#111827];
   }
 
   .table-scroll {
@@ -81,11 +81,26 @@
   }
 
   .add-menu-backdrop {
-    @apply fixed inset-0 z-[39] bg-slate-950/55 backdrop-blur-[1px] sm:hidden;
+    @apply fixed inset-0 z-[99998] bg-slate-950/60 backdrop-blur-[1px] sm:hidden;
   }
 
   .add-menu-panel {
-    @apply absolute right-0 top-full z-50 mt-2 w-64 rounded-md border border-slate-200 bg-white py-2 shadow-xs dark:border-slate-700 dark:bg-slate-800;
+    @apply fixed z-[99999] w-64 max-w-[calc(100vw-2rem)] overflow-y-auto rounded-md border border-slate-300 bg-white py-2 shadow-xl dark:border-slate-700 dark:bg-[#111827];
+    max-height: calc(100vh - 2rem);
+    max-height: calc(100dvh - 2rem);
+  }
+
+  .add-menu-mobile-sheet {
+    inset-inline: max(1rem, env(safe-area-inset-left));
+    top: auto;
+    bottom: max(1rem, env(safe-area-inset-bottom));
+    width: auto;
+    max-width: 24rem;
+    max-height: min(70vh, 32rem);
+    max-height: min(70dvh, 32rem);
+    margin-inline: auto;
+    border-radius: 0.375rem;
+    animation: add-sheet-enter 160ms ease-out both;
   }
 
   .card :where(h1, h2, h3, p, a) {
@@ -102,20 +117,8 @@
     scrollbar-color: #475569 #1e293b;
   }
 
-  @media (max-width: 639px) {
-    .add-menu-panel:not(.hidden) {
-      position: fixed;
-      inset-inline: 1rem;
-      top: auto;
-      bottom: calc(1rem + env(safe-area-inset-bottom));
-      width: auto;
-      max-width: 24rem;
-      max-height: calc(100dvh - 2rem - env(safe-area-inset-top) - env(safe-area-inset-bottom));
-      margin-inline: auto;
-      overflow-y: auto;
-      border-radius: 0.75rem;
-      z-index: 9999;
-    }
+  .kpi-value {
+    @apply font-mono font-bold text-slate-900 dark:text-white;
   }
 
   .badge-available {
@@ -127,6 +130,106 @@
   }
 }
 
+@keyframes add-sheet-enter {
+  from { opacity: 0; transform: translateY(0.75rem); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .add-menu-mobile-sheet {
+    animation: none;
+  }
+}
+
+html:not(.dark) body {
+  background-color: #f1f5f9;
+}
+
+html.dark body {
+  background-color: #090d16;
+}
+
+html.dark .card,
+html.dark .modal-shell,
+html.dark .add-menu-panel {
+  border-color: #1f2937;
+  background-color: #111827;
+}
+
+html:not(.dark) .rounded-lg,
+html.dark .rounded-lg {
+  border-radius: 0.25rem;
+}
+
 html:not(.dark) .text-slate-500 {
   color: #475569;
+}
+
+html:not(.dark) .td.font-mono[class*="text-emerald-"],
+html:not(.dark) .td.font-mono[class*="text-rose-"],
+html:not(.dark) .td.font-mono[class*="text-amber-"],
+html:not(.dark) .td .font-mono[class*="text-emerald-"],
+html:not(.dark) .td .font-mono[class*="text-rose-"],
+html:not(.dark) .td .font-mono[class*="text-amber-"] {
+  color: #0f172a;
+}
+
+html.dark .td.font-mono[class*="text-emerald-"],
+html.dark .td.font-mono[class*="text-rose-"],
+html.dark .td.font-mono[class*="text-amber-"],
+html.dark .td .font-mono[class*="text-emerald-"],
+html.dark .td .font-mono[class*="text-rose-"],
+html.dark .td .font-mono[class*="text-amber-"] {
+  color: #f8fafc;
+}
+
+html:not(.dark) :is(
+  [class~="text-emerald-500"],
+  [class~="text-emerald-600"],
+  [class~="text-emerald-700"],
+  [class~="text-rose-500"],
+  [class~="text-rose-600"],
+  [class~="text-rose-700"],
+  [class~="text-amber-500"],
+  [class~="text-amber-600"],
+  [class~="text-amber-700"]
+):not([class*="bg-emerald-"]):not([class*="bg-rose-"]):not([class*="bg-amber-"]) {
+  color: #334155;
+}
+
+html.dark :is(
+  [class~="text-emerald-400"],
+  [class~="text-emerald-500"],
+  [class~="text-emerald-600"],
+  [class~="text-emerald-700"],
+  [class~="text-rose-400"],
+  [class~="text-rose-500"],
+  [class~="text-rose-600"],
+  [class~="text-rose-700"],
+  [class~="text-amber-400"],
+  [class~="text-amber-500"],
+  [class~="text-amber-600"],
+  [class~="text-amber-700"]
+):not([class*="dark:bg-emerald-"]):not([class*="dark:bg-rose-"]):not([class*="dark:bg-amber-"]) {
+  color: #cbd5e1;
+}
+
+@media (max-width: 639px) {
+  #headerActions {
+    width: 100%;
+    justify-content: space-between;
+    gap: 0.5rem;
+  }
+
+  #monthFilterControl {
+    min-width: 0;
+    flex: 1 1 9rem;
+    padding: 0.5rem 0.75rem;
+  }
+
+  #monthFilter {
+    min-width: 0;
+    max-width: 10rem;
+    padding: 0.375rem 0.5rem;
+  }
 }

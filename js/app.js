@@ -126,31 +126,87 @@ const SUPABASE_URL = 'https://pofpqcvejdrlxindicpc.supabase.co';
         return createEmptyDatabase();
       },
 
+      _addMenuPlaceholder: null,
+      _addMenuPreviousOverflow: '',
+
       toggleAddMenu(e) {
-        if (e) e.stopPropagation();
+        e?.stopPropagation();
         const menu = document.getElementById('addNewDropdownMenu');
-        if (!menu) return;
-        const isOpen = menu.classList.contains('hidden');
-        menu.classList.toggle('hidden', !isOpen);
-        const backdrop = document.getElementById('addNewDropdownBackdrop');
-        if (backdrop) backdrop.classList.toggle('hidden', !isOpen);
+        const wrapper = document.getElementById('addNewDropdownWrapper');
+        if (!menu || !wrapper) return;
+        if (!menu.classList.contains('hidden')) {
+          this.closeAddMenu();
+          return;
+        }
+
+        this._addMenuPreviousOverflow = document.body.style.overflow;
+        this._addMenuPlaceholder = document.createComment('add-menu-position');
+        wrapper.insertBefore(this._addMenuPlaceholder, menu);
+        document.body.appendChild(menu);
+        menu.classList.remove('hidden');
+        this.positionAddMenu();
+
         const chev = document.getElementById('addMenuChevron');
         const toggle = document.getElementById('addNewDropdownToggle');
-        if (chev) chev.style.transform = isOpen ? 'rotate(180deg)' : 'rotate(0deg)';
-        if (toggle) toggle.setAttribute('aria-expanded', String(isOpen));
-        document.body.style.overflow = isOpen && window.matchMedia('(max-width: 639px)').matches ? 'hidden' : '';
+        if (chev) chev.style.transform = 'rotate(180deg)';
+        if (toggle) toggle.setAttribute('aria-expanded', 'true');
+      },
+
+      positionAddMenu() {
+        const menu = document.getElementById('addNewDropdownMenu');
+        const toggle = document.getElementById('addNewDropdownToggle');
+        const backdrop = document.getElementById('addNewDropdownBackdrop');
+        if (!menu || !toggle || menu.classList.contains('hidden')) return;
+
+        const isMobile = window.matchMedia('(max-width: 639px)').matches;
+        menu.classList.toggle('add-menu-mobile-sheet', isMobile);
+        if (backdrop) backdrop.classList.toggle('hidden', !isMobile);
+
+        if (isMobile) {
+          menu.style.cssText = '';
+          document.body.style.overflow = 'hidden';
+          return;
+        }
+
+        document.body.style.overflow = this._addMenuPreviousOverflow;
+        const trigger = toggle.getBoundingClientRect();
+        const margin = 16;
+        const width = Math.min(menu.getBoundingClientRect().width || 256, window.innerWidth - margin * 2);
+        menu.style.position = 'fixed';
+        menu.style.width = `${width}px`;
+        menu.style.maxWidth = `calc(100vw - ${margin * 2}px)`;
+        menu.style.maxHeight = `calc(100vh - ${margin * 2}px)`;
+        menu.style.maxHeight = `calc(100dvh - ${margin * 2}px)`;
+
+        const left = Math.max(margin, Math.min(trigger.right - width, window.innerWidth - width - margin));
+        const menuHeight = menu.getBoundingClientRect().height;
+        const below = trigger.bottom + 8;
+        const top = below + menuHeight <= window.innerHeight - margin
+          ? below
+          : Math.max(margin, trigger.top - menuHeight - 8);
+        menu.style.left = `${left}px`;
+        menu.style.top = `${top}px`;
+        menu.style.right = 'auto';
+        menu.style.bottom = 'auto';
       },
 
       closeAddMenu() {
         const menu = document.getElementById('addNewDropdownMenu');
-        if (menu) menu.classList.add('hidden');
+        if (menu) {
+          menu.classList.add('hidden');
+          menu.classList.remove('add-menu-mobile-sheet');
+          menu.style.cssText = '';
+          if (this._addMenuPlaceholder?.isConnected) this._addMenuPlaceholder.replaceWith(menu);
+        }
+        this._addMenuPlaceholder = null;
         const backdrop = document.getElementById('addNewDropdownBackdrop');
         if (backdrop) backdrop.classList.add('hidden');
         const chev = document.getElementById('addMenuChevron');
         const toggle = document.getElementById('addNewDropdownToggle');
         if (chev) chev.style.transform = 'rotate(0deg)';
         if (toggle) toggle.setAttribute('aria-expanded', 'false');
-        document.body.style.overflow = '';
+        document.body.style.overflow = this._addMenuPreviousOverflow;
+        this._addMenuPreviousOverflow = '';
       },
 
       initTheme() {
@@ -193,7 +249,8 @@ const SUPABASE_URL = 'https://pofpqcvejdrlxindicpc.supabase.co';
 
         document.addEventListener('click', (e) => {
           const wrapper = document.getElementById('addNewDropdownWrapper');
-          if (wrapper && !wrapper.contains(e.target)) {
+          const menu = document.getElementById('addNewDropdownMenu');
+          if (wrapper && !wrapper.contains(e.target) && !menu?.contains(e.target)) {
             this.closeAddMenu();
           }
         });
@@ -203,9 +260,15 @@ const SUPABASE_URL = 'https://pofpqcvejdrlxindicpc.supabase.co';
         window.addEventListener('resize', () => {
           const menu = document.getElementById('addNewDropdownMenu');
           if (menu && !menu.classList.contains('hidden')) {
-            document.body.style.overflow = window.matchMedia('(max-width: 639px)').matches ? 'hidden' : '';
+            this.positionAddMenu();
           }
         });
+        window.addEventListener('scroll', () => {
+          const menu = document.getElementById('addNewDropdownMenu');
+          if (menu && !menu.classList.contains('hidden') && !window.matchMedia('(max-width: 639px)').matches) {
+            this.positionAddMenu();
+          }
+        }, true);
 
         // Verificar si hay sesión activa en Supabase
         let session;
