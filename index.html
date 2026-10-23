@@ -46,6 +46,7 @@
   <div id="authGateOverlay" class="auth-overlay fixed inset-0 z-[10000] flex items-center justify-center overflow-y-auto p-4 sm:p-6">
     <button type="button" onclick="App.toggleTheme()" class="auth-theme-toggle" aria-label="Cambiar tema" title="Cambiar tema">
       <i id="authThemeIcon" class="fa-solid fa-moon"></i>
+      <span id="authThemeLabel">Modo oscuro</span>
     </button>
     <div class="auth-card relative z-10 w-full max-w-md rounded-2xl border border-slate-700/70 bg-slate-900/95 p-6 text-white shadow-2xl backdrop-blur-xl sm:p-8">
       <div class="auth-brand-panel mb-7 overflow-hidden rounded-md">
@@ -177,7 +178,7 @@
         </div>
 
         <button type="button" id="operationsMenuToggle" onclick="App.toggleOperationsMenu(event)" class="btn-outline !px-3" aria-label="Abrir menú de operaciones" aria-expanded="false" aria-controls="operationsMenu">
-          <i class="fa-solid fa-gear"></i><span class="sm:hidden">Más</span>
+          <i class="fa-solid fa-gear"></i>
         </button>
       </div>
     </div>
@@ -222,10 +223,6 @@
           <button type="button" onclick="App.switchTab('catalogs')" id="tabBtn_catalogs" class="tab-btn">
             <i class="fa-solid fa-folder-open text-xs"></i>
             <span>Catálogos</span>
-          </button>
-          <button type="button" onclick="App.switchTab('security')" id="tabBtn_security" class="tab-btn">
-            <i class="fa-solid fa-shield-halved text-xs text-amber-500"></i>
-            <span>Respaldo y Seguridad</span>
           </button>
         </div>
       </nav>
@@ -911,6 +908,8 @@ const SUPABASE_URL = 'https://pofpqcvejdrlxindicpc.supabase.co';
         if (icon) icon.className = isDark ? 'fa-solid fa-sun w-4' : 'fa-solid fa-moon w-4';
         const authIcon = document.getElementById('authThemeIcon');
         if (authIcon) authIcon.className = isDark ? 'fa-solid fa-sun' : 'fa-solid fa-moon';
+        const authLabel = document.getElementById('authThemeLabel');
+        if (authLabel) authLabel.textContent = isDark ? 'Modo claro' : 'Modo oscuro';
       },
 
       currentUser: null,
@@ -1202,6 +1201,14 @@ const SUPABASE_URL = 'https://pofpqcvejdrlxindicpc.supabase.co';
           const btn = document.getElementById('tabBtn_' + t);
           if (panel) panel.classList.toggle('hidden', t !== tab);
           if (btn) btn.className = t === tab ? 'tab-btn tab-btn-active' : 'tab-btn';
+        });
+        ['trips', 'scheduled', 'trucks', 'incidents', 'analytics'].forEach(t => {
+          const btn = document.getElementById('bnavBtn_' + t);
+          if (!btn) return;
+          const active = t === tab;
+          btn.classList.toggle('is-active', active);
+          if (active) btn.setAttribute('aria-current', 'page');
+          else btn.removeAttribute('aria-current');
         });
         if (tab === 'analytics') {
           this.renderAnalyticsCharts();
@@ -2065,13 +2072,29 @@ const SUPABASE_URL = 'https://pofpqcvejdrlxindicpc.supabase.co';
         const routeOpts = this.db.routes.map(r => `<option value="${r.name}"></option>`).join('');
         const selHelpers = t ? (t.helperIds || []).map(String) : [];
 
-        const truckFieldHtml = this.db.trucks.length > 0
-          ? `<select id="fTripTruck" required class="inp">${this.db.trucks.map(k => `<option value="${k.id}" ${t && String(t.truckId) === String(k.id) ? 'selected' : ''}>${k.name}</option>`).join('')}</select>`
-          : `<input type="text" id="fTripNewTruckName" required placeholder="Ej. Ficha 01 - Isuzu (Se creará)" class="inp" />`;
+        const trucks = this.db.trucks.filter(truck => truck.status !== 'Fuera de Servicio');
+        if (!t && (!trucks.length || !this.db.drivers.length)) {
+          const missing = [
+            !trucks.length ? 'un camión disponible' : '',
+            !this.db.drivers.length ? 'un chofer' : ''
+          ].filter(Boolean).join(' y ');
+          this.openModal('Completa los registros requeridos', `
+            <div class="space-y-4 text-sm text-slate-700 dark:text-slate-300">
+              <p>Antes de registrar un viaje, crea ${missing} desde la pestaña correspondiente.</p>
+              <div class="flex flex-wrap gap-2">
+                ${!trucks.length ? `<button type="button" onclick="App.closeModal(); App.switchTab('trucks')" class="btn-rose">Primero registra un camión</button>` : ''}
+                ${!this.db.drivers.length ? `<button type="button" onclick="App.closeModal(); App.switchTab('drivers')" class="btn-rose">Primero registra un chofer</button>` : ''}
+              </div>
+            </div>`);
+          return;
+        }
+        const truckFieldHtml = trucks.length > 0
+          ? `<select id="fTripTruck" required class="inp"><option value="">Selecciona un camión</option>${trucks.map(k => `<option value="${k.id}" ${t && String(t.truckId) === String(k.id) ? 'selected' : ''}>${k.name}</option>`).join('')}</select>`
+          : `<select id="fTripTruck" required class="inp" disabled><option value="">No hay camiones disponibles</option></select>`;
 
         const driverFieldHtml = this.db.drivers.length > 0
-          ? `<select id="fTripDriver" required class="inp">${this.db.drivers.map(d => `<option value="${d.id}" ${t && String(t.driverId) === String(d.id) ? 'selected' : ''}>${d.name}</option>`).join('')}</select>`
-          : `<input type="text" id="fTripNewDriverName" required placeholder="Ej. Ramón Almonte (Se creará)" class="inp" />`;
+          ? `<select id="fTripDriver" required class="inp"><option value="">Selecciona un chofer</option>${this.db.drivers.map(d => `<option value="${d.id}" ${t && String(t.driverId) === String(d.id) ? 'selected' : ''}>${d.name}</option>`).join('')}</select>`
+          : `<select id="fTripDriver" required class="inp" disabled><option value="">No hay choferes registrados</option></select>`;
 
         const helpersChecks = this.db.helpers.length > 0
           ? this.db.helpers.map(h => `
@@ -2140,18 +2163,30 @@ const SUPABASE_URL = 'https://pofpqcvejdrlxindicpc.supabase.co';
 
       saveTrip(e, id = null, fromScheduledId = null) {
         e.preventDefault();
-        let truckId = document.getElementById('fTripTruck')?.value;
-        const newTruckName = document.getElementById('fTripNewTruckName')?.value.trim();
-        if (!truckId && newTruckName) {
-          truckId = this.uid('trk');
-          this.db.trucks.push({ id: truckId, name: newTruckName, plate: 'S/P', model: 'General' });
+        const truckId = document.getElementById('fTripTruck')?.value;
+        const driverId = document.getElementById('fTripDriver')?.value;
+        const truck = this.db.trucks.find(item => String(item.id) === String(truckId));
+        const driver = this.db.drivers.find(item => String(item.id) === String(driverId));
+        if (!truck || truck.status === 'Fuera de Servicio') {
+          this.showToast('Selecciona un camión disponible registrado', true);
+          return;
         }
-
-        let driverId = document.getElementById('fTripDriver')?.value;
-        const newDriverName = document.getElementById('fTripNewDriverName')?.value.trim();
-        if (!driverId && newDriverName) {
-          driverId = this.uid('drv');
-          this.db.drivers.push({ id: driverId, name: newDriverName, phone: '', note: '' });
+        if (!driver) {
+          this.showToast('Selecciona un chofer registrado', true);
+          return;
+        }
+        const route = document.getElementById('fTripRoute').value.trim();
+        const dateVal = document.getElementById('fTripDate').value;
+        const clientsCount = Number(document.getElementById('fTripClients').value);
+        const amountFields = ['fTripGross', 'fTripFuel', 'fTripTolls', 'fTripDrvPay', 'fTripHlpPay', 'fTripOther'];
+        const amounts = amountFields.map(fieldId => {
+          const value = document.getElementById(fieldId).value;
+          return value === '' && fieldId === 'fTripOther' ? 0 : Number(value);
+        });
+        if (route.length < 3 || !dateVal || !Number.isInteger(clientsCount) || clientsCount < 1 ||
+            amounts.some(value => !Number.isFinite(value) || value < 0 || value > 100000000) || amounts[0] <= 0) {
+          this.showToast('Revisa la ruta, clientes y montos: deben ser válidos y no negativos', true);
+          return;
         }
 
         let helperIds = [...document.querySelectorAll('input[name="tripHelpers"]:checked')].map(c => c.value);
@@ -2162,9 +2197,6 @@ const SUPABASE_URL = 'https://pofpqcvejdrlxindicpc.supabase.co';
           helperIds.push(hId);
         }
 
-        const route = document.getElementById('fTripRoute').value.trim();
-        const dateVal = document.getElementById('fTripDate').value;
-
         if (route && !this.db.routes.some(r => r.name.toLowerCase() === route.toLowerCase())) {
           this.db.routes.push({ id: this.uid('rt'), name: route });
         }
@@ -2172,16 +2204,16 @@ const SUPABASE_URL = 'https://pofpqcvejdrlxindicpc.supabase.co';
         const payload = {
           date: dateVal,
           route,
-          clientsCount: Number(document.getElementById('fTripClients').value) || 1,
+          clientsCount,
           truckId,
           driverId,
           helperIds,
-          freightGross: Number(document.getElementById('fTripGross').value) || 0,
-          fuelCost: Number(document.getElementById('fTripFuel').value) || 0,
-          tollsCost: Number(document.getElementById('fTripTolls').value) || 0,
-          driverPay: Number(document.getElementById('fTripDrvPay').value) || 0,
-          helperPay: Number(document.getElementById('fTripHlpPay').value) || 0,
-          otherCost: Number(document.getElementById('fTripOther').value) || 0,
+          freightGross: amounts[0],
+          fuelCost: amounts[1],
+          tollsCost: amounts[2],
+          driverPay: amounts[3],
+          helperPay: amounts[4],
+          otherCost: amounts[5],
           notes: document.getElementById('fTripNotes').value.trim()
         };
 
@@ -2295,6 +2327,16 @@ const SUPABASE_URL = 'https://pofpqcvejdrlxindicpc.supabase.co';
         const helperIds = [...document.querySelectorAll('input[name="schedHelpers"]:checked')].map(c => c.value);
         const route = document.getElementById('fSchRoute').value.trim();
         const dateVal = document.getElementById('fSchDate').value;
+        const financialValues = ['fTripGross', 'fTripFuel', 'fTripTolls', 'fTripDrvPay', 'fTripHlpPay', 'fTripOther']
+          .map(fieldId => document.getElementById(fieldId).value)
+          .filter(value => value !== '')
+          .map(Number);
+        const clientsInput = document.getElementById('fSchClients').value;
+        if (!dateVal || route.length < 3 || (clientsInput && (!Number.isInteger(Number(clientsInput)) || Number(clientsInput) < 1)) ||
+            financialValues.some(value => !Number.isFinite(value) || value < 0 || value > 100000000)) {
+          this.showToast('Revisa la fecha, ruta, clientes y montos del viaje', true);
+          return;
+        }
 
         if (route && !this.db.routes.some(r => r.name.toLowerCase() === route.toLowerCase())) {
           this.db.routes.push({ id: this.uid('rt'), name: route });
@@ -2386,6 +2428,12 @@ const SUPABASE_URL = 'https://pofpqcvejdrlxindicpc.supabase.co';
 
       saveIncident(e) {
         e.preventDefault();
+        const cost = Number(document.getElementById('fIncCost').value);
+        const description = document.getElementById('fIncDesc').value.trim();
+        if (!Number.isFinite(cost) || cost < 0 || cost > 100000000 || description.length < 5) {
+          this.showToast('La descripción debe tener al menos 5 caracteres y el costo no puede ser negativo', true);
+          return;
+        }
         let truckId = document.getElementById('fIncTruck')?.value;
         const newTrk = document.getElementById('fIncNewTruck')?.value.trim();
         if (!truckId && newTrk) {
@@ -2408,8 +2456,8 @@ const SUPABASE_URL = 'https://pofpqcvejdrlxindicpc.supabase.co';
           severity: document.getElementById('fIncSeverity').value,
           truckId,
           driverId,
-          description: document.getElementById('fIncDesc').value.trim(),
-          cost: Number(document.getElementById('fIncCost').value) || 0
+          description,
+          cost
         });
         this.save();
         this.syncFilterWithNewRecordDate(dateVal);
@@ -2439,6 +2487,10 @@ const SUPABASE_URL = 'https://pofpqcvejdrlxindicpc.supabase.co';
       saveDriver(e, id = null) {
         e.preventDefault();
         const data = { name: document.getElementById('fDrvName').value.trim(), phone: document.getElementById('fDrvPhone').value.trim(), note: document.getElementById('fDrvNote').value.trim() };
+        if (data.name.length < 3 || (data.phone && !/^[+\d\s()-]{7,20}$/.test(data.phone))) {
+          this.showToast('Ingresa un nombre válido y un teléfono de 7 a 20 dígitos', true);
+          return;
+        }
         if (id) Object.assign(this.db.drivers.find(x => String(x.id) === String(id)), data);
         else this.db.drivers.push({ id: this.uid('drv'), ...data });
         this.save(); this.closeModal(); this.renderAll();
@@ -2463,6 +2515,10 @@ const SUPABASE_URL = 'https://pofpqcvejdrlxindicpc.supabase.co';
       saveTruck(e, id = null) {
         e.preventDefault();
         const data = { name: document.getElementById('fTrkName').value.trim(), plate: document.getElementById('fTrkPlate').value.trim(), model: document.getElementById('fTrkModel').value.trim() };
+        if (data.name.length < 2 || data.plate.length < 4 || data.model.length < 2) {
+          this.showToast('Completa ficha, placa y modelo con datos válidos', true);
+          return;
+        }
         if (id) Object.assign(this.db.trucks.find(x => String(x.id) === String(id)), data);
         else this.db.trucks.push({ id: this.uid('trk'), ...data });
         this.save(); this.closeModal(); this.renderAll();
@@ -2493,6 +2549,12 @@ const SUPABASE_URL = 'https://pofpqcvejdrlxindicpc.supabase.co';
       },
       saveMaintenance(e) {
         e.preventDefault();
+        const cost = Number(document.getElementById('fMntCost').value);
+        const description = document.getElementById('fMntDesc').value.trim();
+        if (!Number.isFinite(cost) || cost <= 0 || cost > 100000000 || description.length < 4) {
+          this.showToast('Ingresa un costo positivo y una descripción válida', true);
+          return;
+        }
         let truckId = document.getElementById('fMntTruck')?.value;
         const newTrk = document.getElementById('fMntNewTruck')?.value.trim();
         if (!truckId && newTrk) {
@@ -2506,8 +2568,8 @@ const SUPABASE_URL = 'https://pofpqcvejdrlxindicpc.supabase.co';
           id: this.uid('mnt'),
           date: dateVal,
           truckId,
-          description: document.getElementById('fMntDesc').value.trim(),
-          cost: Number(document.getElementById('fMntCost').value) || 0
+          description,
+          cost
         });
         this.save();
         this.syncFilterWithNewRecordDate(dateVal);
@@ -2860,27 +2922,27 @@ const SUPABASE_URL = 'https://pofpqcvejdrlxindicpc.supabase.co';
   }
 </script>
   <!-- BARRA DE NAVEGACIÓN INFERIOR (MOBILE-FIRST) -->
-  <div class="sm:hidden fixed bottom-0 left-0 right-0 z-50 bg-slate-900/95 backdrop-blur border-t border-slate-800 flex justify-around items-center py-2 px-1 text-white shadow-2xl">
-    <button type="button" onclick="App.switchTab('trips')" id="bnavBtn_trips" class="flex flex-col items-center text-emerald-400 font-bold text-[10px] gap-0.5">
+  <nav id="mobileBottomNav" class="mobile-bottom-nav sm:hidden" aria-label="Navegación principal">
+    <button type="button" onclick="App.switchTab('trips')" id="bnavBtn_trips" class="mobile-nav-btn is-active" aria-current="page">
       <i class="fa-solid fa-table-list text-base"></i>
       <span>Viajes</span>
     </button>
-    <button type="button" onclick="App.switchTab('scheduled')" id="bnavBtn_scheduled" class="flex flex-col items-center text-slate-400 font-medium text-[10px] gap-0.5">
+    <button type="button" onclick="App.switchTab('scheduled')" id="bnavBtn_scheduled" class="mobile-nav-btn">
       <i class="fa-regular fa-calendar-check text-base"></i>
       <span>Agenda</span>
     </button>
-    <button type="button" onclick="App.switchTab('trucks')" id="bnavBtn_trucks" class="flex flex-col items-center text-slate-400 font-medium text-[10px] gap-0.5">
+    <button type="button" onclick="App.switchTab('trucks')" id="bnavBtn_trucks" class="mobile-nav-btn">
       <i class="fa-solid fa-truck text-base"></i>
       <span>Flota</span>
     </button>
-    <button type="button" onclick="App.switchTab('incidents')" id="bnavBtn_incidents" class="flex flex-col items-center text-slate-400 font-medium text-[10px] gap-0.5">
+    <button type="button" onclick="App.switchTab('incidents')" id="bnavBtn_incidents" class="mobile-nav-btn">
       <i class="fa-solid fa-triangle-exclamation text-base"></i>
       <span>Incidencias</span>
     </button>
-    <button type="button" onclick="App.switchTab('analytics')" id="bnavBtn_analytics" class="flex flex-col items-center text-slate-400 font-medium text-[10px] gap-0.5">
+    <button type="button" onclick="App.switchTab('analytics')" id="bnavBtn_analytics" class="mobile-nav-btn">
       <i class="fa-solid fa-chart-pie text-base"></i>
       <span>Reportes</span>
     </button>
-  </div>
+  </nav>
 </body>
 </html>
