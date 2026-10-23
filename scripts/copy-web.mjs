@@ -7,8 +7,9 @@ const rootAssets = [
   'app.bundle.js',
   'manifest.json',
   'sw.js',
-  'icono-192.png',
-  'icono-512.png'
+  'miflota-icon-192.png',
+  'miflota-icon-512.png',
+  'nuevologoCompleto512.jpg'
 ];
 
 await mkdir('www', { recursive: true });

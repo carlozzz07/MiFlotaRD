@@ -110,9 +110,53 @@ const SUPABASE_URL = 'https://pofpqcvejdrlxindicpc.supabase.co';
 
       formatMonthLabel(yyyyMm) {
         if (!yyyyMm || yyyyMm === 'ALL') return 'Todos los meses (Histórico)';
+        if (yyyyMm === 'CUSTOM') {
+          const start = document.getElementById('periodStartDate')?.value;
+          const end = document.getElementById('periodEndDate')?.value;
+          if (!start || !end) return 'Rango personalizado';
+          return `${new Date(`${start}T12:00:00`).toLocaleDateString('es-DO')} – ${new Date(`${end}T12:00:00`).toLocaleDateString('es-DO')}`;
+        }
+        if (yyyyMm === 'QUARTER') {
+          const { quarter, year } = this.getCurrentQuarterRange();
+          return `Trimestre ${quarter} · ${year}`;
+        }
         const [year, month] = yyyyMm.split('-');
         const mIdx = parseInt(month, 10) - 1;
         return `${MONTHS_ES[mIdx] || month} ${year}`;
+      },
+
+      getCurrentQuarterRange() {
+        const now = new Date();
+        const year = now.getFullYear();
+        const firstMonth = Math.floor(now.getMonth() / 3) * 3;
+        const quarter = Math.floor(now.getMonth() / 3) + 1;
+        const start = `${year}-${String(firstMonth + 1).padStart(2, '0')}-01`;
+        const end = `${year}-${String(firstMonth + 3).padStart(2, '0')}-${String(new Date(year, firstMonth + 3, 0).getDate()).padStart(2, '0')}`;
+        return { start, end, quarter, year };
+      },
+
+      handlePeriodChange() {
+        const select = document.getElementById('monthFilter');
+        const customFields = document.getElementById('customPeriodFields');
+        const error = document.getElementById('periodRangeError');
+        const isCustom = select?.value === 'CUSTOM';
+        customFields?.classList.toggle('hidden', !isCustom);
+        customFields?.classList.toggle('flex', isCustom);
+
+        if (isCustom) {
+          const startInput = document.getElementById('periodStartDate');
+          const endInput = document.getElementById('periodEndDate');
+          const now = new Date();
+          const today = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+          if (!startInput.value || !endInput.value) {
+            startInput.value = `${today.slice(0, 8)}01`;
+            endInput.value = today;
+          }
+          error?.classList.toggle('hidden', startInput.value <= endInput.value);
+        } else {
+          error?.classList.add('hidden');
+        }
+        this.renderAll();
       },
 
       offsetDateISO(days) {
@@ -128,6 +172,22 @@ const SUPABASE_URL = 'https://pofpqcvejdrlxindicpc.supabase.co';
 
       _addMenuPlaceholder: null,
       _addMenuPreviousOverflow: '',
+
+      toggleOperationsMenu(e) {
+        e?.stopPropagation();
+        const panel = document.getElementById('operationsMenu');
+        if (!panel) return;
+        const isOpening = panel.classList.contains('hidden');
+        panel.classList.toggle('hidden', !isOpening);
+        document.getElementById('operationsMenuBackdrop')?.classList.toggle('hidden', !isOpening || !window.matchMedia('(max-width: 639px)').matches);
+        document.getElementById('operationsMenuToggle')?.setAttribute('aria-expanded', String(isOpening));
+      },
+
+      closeOperationsMenu() {
+        document.getElementById('operationsMenu')?.classList.add('hidden');
+        document.getElementById('operationsMenuBackdrop')?.classList.add('hidden');
+        document.getElementById('operationsMenuToggle')?.setAttribute('aria-expanded', 'false');
+      },
 
       toggleAddMenu(e) {
         e?.stopPropagation();
@@ -225,7 +285,9 @@ const SUPABASE_URL = 'https://pofpqcvejdrlxindicpc.supabase.co';
       updateThemeIcon() {
         const isDark = document.documentElement.classList.contains('dark');
         const icon = document.getElementById('themeIcon');
-        if (icon) icon.className = isDark ? 'fa-solid fa-sun text-amber-400 text-sm' : 'fa-solid fa-moon text-slate-600 text-sm';
+        if (icon) icon.className = isDark ? 'fa-solid fa-sun w-4' : 'fa-solid fa-moon w-4';
+        const authIcon = document.getElementById('authThemeIcon');
+        if (authIcon) authIcon.className = isDark ? 'fa-solid fa-sun' : 'fa-solid fa-moon';
       },
 
       currentUser: null,
@@ -253,9 +315,15 @@ const SUPABASE_URL = 'https://pofpqcvejdrlxindicpc.supabase.co';
           if (wrapper && !wrapper.contains(e.target) && !menu?.contains(e.target)) {
             this.closeAddMenu();
           }
+          const operationsMenu = document.getElementById('operationsMenu');
+          const operationsToggle = document.getElementById('operationsMenuToggle');
+          if (!operationsMenu?.contains(e.target) && !operationsToggle?.contains(e.target)) this.closeOperationsMenu();
         });
         document.addEventListener('keydown', (e) => {
-          if (e.key === 'Escape') this.closeAddMenu();
+          if (e.key === 'Escape') {
+            this.closeAddMenu();
+            this.closeOperationsMenu();
+          }
         });
         window.addEventListener('resize', () => {
           const menu = document.getElementById('addNewDropdownMenu');
@@ -316,7 +384,6 @@ const SUPABASE_URL = 'https://pofpqcvejdrlxindicpc.supabase.co';
 
       async unlockAndLoadCloudData(user) {
         this.currentUser = user;
-        document.getElementById('authGateOverlay').classList.add('hidden');
 
         const { database, cloudError } = await loadDatabase(user, databaseAuth);
         this.db = database;
@@ -329,6 +396,8 @@ const SUPABASE_URL = 'https://pofpqcvejdrlxindicpc.supabase.co';
 
         this.populateMonthFilter();
         this.renderAll();
+        document.getElementById('authGateOverlay').classList.add('hidden');
+        document.body.classList.remove('auth-locked');
 
         const userName = user.email ? user.email.split('@')[0] : 'Administrador';
         this.showToast(`¡Bienvenido de nuevo, ${userName}!`);
@@ -338,6 +407,7 @@ const SUPABASE_URL = 'https://pofpqcvejdrlxindicpc.supabase.co';
         if (!confirm('¿Cerrar sesión en este dispositivo?')) return;
         await Auth.signOut(supabaseClient);
         this.currentUser = null;
+        document.body.classList.add('auth-locked');
         document.getElementById('authGateOverlay').classList.remove('hidden');
       },
 
@@ -361,8 +431,18 @@ const SUPABASE_URL = 'https://pofpqcvejdrlxindicpc.supabase.co';
       // Cruza fechas de forma segura contra el selector de mes global ("YYYY-MM" o "ALL")
       matchesPeriod(recordDate, periodCode) {
         const target = periodCode || this.getSelectedMonth();
-        if (!target || target === 'ALL') return true;
         const clean = String(recordDate || '').trim();
+        if (!target || target === 'ALL') return true;
+        if (target === 'QUARTER' || target === 'CUSTOM') {
+          const range = target === 'QUARTER'
+            ? this.getCurrentQuarterRange()
+            : {
+                start: document.getElementById('periodStartDate')?.value || '',
+                end: document.getElementById('periodEndDate')?.value || ''
+              };
+          if (!range.start || !range.end || range.start > range.end) return false;
+          return clean >= range.start && clean <= range.end;
+        }
         return clean.slice(0, 7) === target;
       },
 
@@ -380,13 +460,23 @@ const SUPABASE_URL = 'https://pofpqcvejdrlxindicpc.supabase.co';
         const sel = document.getElementById('monthFilter');
         const prev = forceSelectMonth || sel?.value || 'ALL';
         const sorted = this.getAvailableMonths();
-        sel.innerHTML = `<option value="ALL">Todos los meses (Histórico)</option>` +
-          sorted.map(m => `<option value="${m}">${this.formatMonthLabel(m)}</option>`).join('');
+        sel.innerHTML = `<option value="ALL">Todos los meses (Histórico)</option>
+          <optgroup label="Periodos rápidos">
+            <option value="QUARTER">Trimestre actual</option>
+            <option value="CUSTOM">Rango personalizado</option>
+          </optgroup>
+          <optgroup label="Meses disponibles">${sorted
+            .map(m => `<option value="${m}">${this.formatMonthLabel(m)}</option>`).join('')}
+          </optgroup>`;
         if ([...sel.options].some(o => o.value === prev)) {
           sel.value = prev;
         } else {
           sel.value = 'ALL';
         }
+        const custom = sel.value === 'CUSTOM';
+        const customFields = document.getElementById('customPeriodFields');
+        customFields?.classList.toggle('hidden', !custom);
+        customFields?.classList.toggle('flex', custom);
       },
 
       getSelectedMonth() {
@@ -398,7 +488,7 @@ const SUPABASE_URL = 'https://pofpqcvejdrlxindicpc.supabase.co';
       syncFilterWithNewRecordDate(dateStr) {
         const current = this.getSelectedMonth();
         const recMonth = String(dateStr || '').trim().slice(0, 7);
-        if (current !== 'ALL' && recMonth && recMonth !== current) {
+        if (current !== 'ALL' && recMonth && !this.matchesPeriod(dateStr, current)) {
           this.populateMonthFilter(recMonth);
         } else {
           this.populateMonthFilter(current);

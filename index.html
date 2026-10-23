@@ -34,82 +34,46 @@
   <!-- PEGA AQUÍ LAS CONFIGURACIONES PWA DE IOS Y ANDROID                -->
   <!-- ================================================================= -->
   <link rel="manifest" href="manifest.json" />
-  <link rel="shortcut icon" href="icono-192.png" type="image/png" />
-  <link rel="icon" type="image/png" href="icono-192.png" />
+  <link rel="shortcut icon" href="miflota-icon-192.png" type="image/png" />
+  <link rel="icon" type="image/png" href="miflota-icon-192.png" />
   <meta name="theme-color" content="#0f172a" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="MiFlota RD" />
-  <link rel="apple-touch-icon" href="icono-512.png" />
+  <link rel="apple-touch-icon" href="miflota-icon-512.png" />
 </head>
-<body class="min-h-screen flex flex-col">
-  <!-- Login corporativo split-screen -->
-  <div id="authGateOverlay" class="fixed inset-0 z-[10000] overflow-y-auto bg-slate-50 dark:bg-slate-950">
-    <div class="grid min-h-screen grid-cols-1 lg:grid-cols-12">
-      <section class="hidden flex-col justify-between border-r border-slate-800 bg-slate-900 p-12 text-white lg:col-span-7 lg:flex">
-        <div class="flex items-center gap-3">
-          <span class="flex h-11 w-11 items-center justify-center rounded-md border border-slate-700 bg-slate-800 text-slate-200">
-            <i class="fa-solid fa-truck-moving text-lg"></i>
-          </span>
-          <div>
-            <p class="font-bold tracking-tight">MiFlota RD</p>
-            <p class="text-xs text-slate-400">ERP de Control Logístico y Financiero</p>
-          </div>
+<body class="auth-locked min-h-screen flex flex-col">
+  <div id="authGateOverlay" class="auth-overlay fixed inset-0 z-[10000] flex items-center justify-center overflow-y-auto p-4 sm:p-6">
+    <button type="button" onclick="App.toggleTheme()" class="auth-theme-toggle" aria-label="Cambiar tema" title="Cambiar tema">
+      <i id="authThemeIcon" class="fa-solid fa-moon"></i>
+    </button>
+    <div class="auth-card relative z-10 w-full max-w-md rounded-2xl border border-slate-700/70 bg-slate-900/95 p-6 text-white shadow-2xl backdrop-blur-xl sm:p-8">
+      <div class="auth-brand-panel mb-7 overflow-hidden rounded-md">
+        <img src="nuevologoCompleto512.jpg" alt="MiFlota RD — Gestión de flotas" class="auth-brand-image" />
+      </div>
+      <p class="mb-2 text-xs font-semibold uppercase tracking-wider text-blue-300">Acceso seguro</p>
+      <h1 class="text-2xl font-bold tracking-tight">Plataforma de Control Logístico</h1>
+      <p class="mt-2 text-sm text-slate-300">Ingrese sus credenciales corporativas</p>
+      <form onsubmit="App.loginWithSupabase(event)" class="mt-7 space-y-5">
+        <div>
+          <label for="authEmail" class="auth-label">Correo Electrónico</label>
+          <input type="email" id="authEmail" required autocomplete="username" placeholder="nombre@empresa.com" class="auth-input" />
         </div>
-
-        <div class="max-w-2xl">
-          <p class="mb-4 text-xs font-semibold uppercase tracking-[0.2em] text-blue-300">Plataforma operativa empresarial</p>
-          <h1 class="text-3xl font-bold leading-tight xl:text-4xl">
-            Gestión de Flota Pesada, Liquidación de Fletes, Control de Mantenimiento y Auditoría Contable en Tiempo Real
-          </h1>
-          <p class="mt-5 max-w-xl text-sm leading-6 text-slate-300">
-            Información operativa y financiera centralizada para tomar decisiones con precisión y mantener cada operación bajo control.
-          </p>
-        </div>
-
-        <footer class="flex flex-wrap items-center justify-between gap-3 border-t border-slate-800 pt-5 text-[11px] text-slate-400">
-          <div class="flex flex-wrap items-center gap-x-5 gap-y-2">
-            <span><i class="fa-solid fa-lock mr-1.5 text-slate-300"></i>Conexión Cifrada TLS</span>
-            <span><i class="fa-solid fa-cloud-arrow-up mr-1.5 text-slate-300"></i>Sincronización Cloud Activa</span>
-          </div>
-          <span>© MiFlota RD · Uso corporativo</span>
-        </footer>
-      </section>
-
-      <section class="flex min-h-screen items-center justify-center bg-slate-50 p-6 dark:bg-slate-950 sm:p-12 lg:col-span-5">
-        <div class="w-full max-w-sm">
-          <div class="mb-8">
-            <p class="mb-2 text-xs font-semibold uppercase tracking-wider text-blue-900 dark:text-blue-400">Acceso seguro</p>
-            <h2 class="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">Iniciar Sesión Operativa</h2>
-            <p class="mt-2 text-sm text-slate-600 dark:text-slate-400">Ingrese sus credenciales corporativas de acceso</p>
-          </div>
-
-          <form onsubmit="App.loginWithSupabase(event)" class="space-y-5">
-            <div>
-              <label for="authEmail" class="lbl">Correo Electrónico</label>
-              <input type="email" id="authEmail" required autocomplete="username" placeholder="nombre@empresa.com" class="inp" />
-            </div>
-            <div>
-              <label for="authPassword" class="lbl">Contraseña</label>
-              <div class="relative">
-                <input type="password" id="authPassword" required autocomplete="current-password" placeholder="Ingrese su contraseña" class="inp pr-12" />
-                <button type="button" id="authPasswordToggle" onclick="App.toggleAuthPassword()" aria-label="Mostrar contraseña" aria-pressed="false" class="absolute inset-y-0 right-0 flex min-h-11 w-11 items-center justify-center rounded-r border-l border-slate-300 text-slate-600 hover:bg-slate-100 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800">
-                  <i id="authPasswordToggleIcon" class="fa-regular fa-eye"></i>
-                </button>
-              </div>
-            </div>
-            <p id="authErrorMsg" class="hidden rounded border border-rose-200 bg-rose-50 p-3 text-xs font-semibold text-rose-700 dark:border-rose-800 dark:bg-rose-950/40 dark:text-rose-300"></p>
-            <button type="submit" id="authSubmitBtn" class="btn-primary h-10 w-full rounded font-semibold">
-              <i class="fa-solid fa-lock-open"></i>
-              <span>Iniciar Sesión</span>
+        <div>
+          <label for="authPassword" class="auth-label">Contraseña</label>
+          <div class="relative">
+            <input type="password" id="authPassword" required autocomplete="current-password" placeholder="Ingrese su contraseña" class="auth-input pr-12" />
+            <button type="button" id="authPasswordToggle" onclick="App.toggleAuthPassword()" aria-label="Mostrar contraseña" aria-pressed="false" class="absolute inset-y-0 right-0 flex min-h-11 w-11 items-center justify-center rounded-r border-l border-slate-700 text-slate-300 hover:bg-slate-800">
+              <i id="authPasswordToggleIcon" class="fa-regular fa-eye"></i>
             </button>
-          </form>
-
-          <p class="mt-8 border-t border-slate-200 pt-5 text-center text-[11px] text-slate-600 dark:border-slate-800 dark:text-slate-400 lg:hidden">
-            MiFlota RD — ERP de Control Logístico y Financiero
-          </p>
+          </div>
         </div>
-      </section>
+        <p id="authErrorMsg" class="hidden rounded border border-rose-800 bg-rose-950/50 p-3 text-xs font-semibold text-rose-200"></p>
+        <button type="submit" id="authSubmitBtn" class="btn-primary h-11 w-full rounded font-semibold">
+          <i class="fa-solid fa-lock-open"></i><span>Iniciar Sesión</span>
+        </button>
+      </form>
+      <p class="mt-7 border-t border-slate-700 pt-4 text-center text-[11px] text-slate-400">© MiFlota RD · Uso corporativo</p>
     </div>
   </div>
 
@@ -142,27 +106,25 @@
   <header class="bg-white dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 sticky top-0 z-40">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 py-3 flex flex-wrap items-center justify-between gap-3">
       
-      <!-- Izquierda: Solo Logo Camión Verde + "MiFlota RD" -->
       <div class="flex items-center gap-3">
-        <div class="w-10 h-10 rounded-md bg-slate-100 border border-slate-200 flex items-center justify-center text-slate-700 dark:bg-slate-800 dark:border-slate-700 dark:text-slate-200 shrink-0">
-          <i class="fa-solid fa-truck-moving text-lg"></i>
-        </div>
-        <span class="font-extrabold text-lg sm:text-xl tracking-tight text-slate-900 dark:text-white">MiFlota RD</span>
+        <img src="miflota-icon-192.png" alt="" class="h-10 w-10 rounded-md border border-slate-200 object-cover dark:border-slate-700" />
+        <span class="font-extrabold text-lg tracking-tight text-slate-900 dark:text-white sm:text-xl">MiFlota RD</span>
       </div>
 
-      <!-- Derecha: Selector Global Permanente de MES Y AÑO + Botón "+ Agregar Nuevo..." + Dark Mode -->
       <div id="headerActions" class="flex w-full flex-wrap items-center justify-between gap-2 sm:w-auto sm:justify-end sm:gap-2.5">
-
-        <!-- 1. FILTRO DE MES GLOBAL Y PERSISTENTE (SIEMPRE VISIBLE EN TODAS LAS PESTAÑAS) -->
-        <div id="monthFilterControl" class="flex items-center gap-2 bg-slate-900 dark:bg-slate-950 text-white px-3 py-2 sm:px-3.5 sm:py-1.5 rounded-md border border-slate-800 shadow-none">
-          <i class="fa-regular fa-calendar-days text-slate-300 text-xs"></i>
-          <span class="text-[11px] font-bold uppercase tracking-wider text-slate-300 hidden sm:inline">MES Y AÑO:</span>
-          <select id="monthFilter" onchange="App.renderAll()" class="bg-slate-800 text-white text-xs sm:text-sm font-semibold rounded px-2 py-1.5 border border-slate-700 focus:outline-none cursor-pointer"></select>
+        <div id="monthFilterControl" class="period-control">
+          <i class="fa-regular fa-calendar-days text-slate-500 dark:text-slate-400"></i>
+          <select id="monthFilter" onchange="App.handlePeriodChange()" aria-label="Seleccionar periodo" class="period-select"></select>
+          <div id="customPeriodFields" class="hidden items-center gap-1.5">
+            <input id="periodStartDate" type="date" aria-label="Desde" class="period-date" onchange="App.handlePeriodChange()" />
+            <span class="text-xs text-slate-400">—</span>
+            <input id="periodEndDate" type="date" aria-label="Hasta" class="period-date" onchange="App.handlePeriodChange()" />
+          </div>
+          <span id="periodRangeError" class="hidden text-[10px] font-medium text-rose-700 dark:text-rose-300">Revise el rango</span>
         </div>
 
-        <!-- Botón Único "+ Agregar Nuevo..." con Dropdown -->
         <div id="addNewDropdownWrapper">
-          <button type="button" id="addNewDropdownToggle" onclick="App.toggleAddMenu(event)" class="btn-emerald" aria-haspopup="true" aria-expanded="false" aria-controls="addNewDropdownMenu">
+          <button type="button" id="addNewDropdownToggle" onclick="App.toggleAddMenu(event)" class="btn-primary" aria-haspopup="true" aria-expanded="false" aria-controls="addNewDropdownMenu">
             <i class="fa-solid fa-plus"></i>
             <span>+ Agregar Nuevo...</span>
             <i id="addMenuChevron" class="fa-solid fa-chevron-down text-[11px] ml-0.5 transition-transform duration-150"></i>
@@ -214,16 +176,8 @@
           </div>
         </div>
 
-        <!-- Botón Modo Claro / Oscuro -->
-        <button type="button" onclick="App.toggleTheme()" class="btn-outline !p-2 rounded" title="Cambiar Modo Claro / Oscuro">
-          <i id="themeIcon" class="fa-solid fa-moon text-sm"></i>
-        </button>
-<!-- Estado de Sincronización y Botón Cerrar Sesión -->
-        <span id="cloudSyncBadge" class="hidden sm:inline-flex items-center gap-1.5 text-[11px] font-semibold px-2.5 py-1 rounded-lg bg-emerald-50 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800">
-          <i class="fa-solid fa-cloud-check"></i> Nube Activa
-        </span>
-        <button type="button" onclick="App.logoutSupabase()" class="btn-outline !p-2 rounded text-rose-600 hover:bg-rose-50" title="Cerrar Sesión">
-          <i class="fa-solid fa-right-from-bracket text-sm"></i>
+        <button type="button" id="operationsMenuToggle" onclick="App.toggleOperationsMenu(event)" class="btn-outline !px-3" aria-label="Abrir menú de operaciones" aria-expanded="false" aria-controls="operationsMenu">
+          <i class="fa-solid fa-gear"></i><span class="sm:hidden">Más</span>
         </button>
       </div>
     </div>
@@ -277,6 +231,24 @@
       </nav>
     </div>
   </header>
+  <div id="operationsMenu" class="operations-menu-panel hidden" role="menu" aria-labelledby="operationsMenuToggle">
+    <div class="border-b border-slate-200 px-4 py-3 dark:border-slate-700">
+      <p class="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">Opciones operativas</p>
+      <span id="cloudSyncBadge" class="mt-2 inline-flex items-center gap-1.5 text-[11px] font-semibold text-slate-600 dark:text-slate-300">
+        <i class="fa-solid fa-cloud-check"></i> Nube Activa
+      </span>
+    </div>
+    <button type="button" role="menuitem" onclick="App.toggleTheme()" class="operations-menu-item">
+      <i id="themeIcon" class="fa-solid fa-moon w-4"></i><span>Cambiar tema</span>
+    </button>
+    <button type="button" role="menuitem" onclick="App.closeOperationsMenu(); App.switchTab('security')" class="operations-menu-item">
+      <i class="fa-solid fa-shield-halved w-4"></i><span>Configuración y respaldo</span>
+    </button>
+    <button type="button" role="menuitem" onclick="App.closeOperationsMenu(); App.logoutSupabase()" class="operations-menu-item text-rose-700 dark:text-rose-300">
+      <i class="fa-solid fa-right-from-bracket w-4"></i><span>Cerrar sesión</span>
+    </button>
+  </div>
+  <div id="operationsMenuBackdrop" class="operations-menu-backdrop hidden" onclick="App.closeOperationsMenu()" aria-hidden="true"></div>
 
   <!-- ===================================================================== -->
   <!-- CONTENIDO PRINCIPAL                                                   -->
@@ -507,8 +479,9 @@
           <h3 class="font-bold text-base text-slate-900 dark:text-white">Distribución de Gastos</h3>
           <p class="text-xs text-slate-500 dark:text-slate-400 mb-4">Combustible, Peajes, Nómina, Taller e Incidencias del periodo activo</p>
         </div>
-        <div class="relative h-64 w-full flex items-center justify-center">
+        <div id="expensesChartHost" class="relative flex h-64 w-full items-center justify-center">
           <canvas id="canvasExpensesDoughnut"></canvas>
+          <div id="expensesChartEmpty" class="empty-state absolute inset-0 hidden bg-white dark:bg-[#111827]"></div>
         </div>
         <div id="expensesLegendBox" class="mt-4 pt-3 border-t border-slate-100 dark:border-slate-700 grid grid-cols-2 gap-2 text-xs"></div>
       </div>
@@ -518,8 +491,9 @@
           <h3 class="font-bold text-base text-slate-900 dark:text-white">Rentabilidad por Camión (RD$)</h3>
           <p class="text-xs text-slate-500 dark:text-slate-400 mb-4">Comparativa de Ingresos por Fletes vs Gastos vs Ganancia Neta en el periodo activo</p>
         </div>
-        <div class="relative h-72 w-full">
+        <div id="trucksChartHost" class="relative h-72 w-full">
           <canvas id="canvasTrucksBar"></canvas>
+          <div id="trucksChartEmpty" class="empty-state absolute inset-0 hidden bg-white dark:bg-[#111827]"></div>
         </div>
       </div>
     </section>
@@ -738,9 +712,53 @@ const SUPABASE_URL = 'https://pofpqcvejdrlxindicpc.supabase.co';
 
       formatMonthLabel(yyyyMm) {
         if (!yyyyMm || yyyyMm === 'ALL') return 'Todos los meses (Histórico)';
+        if (yyyyMm === 'CUSTOM') {
+          const start = document.getElementById('periodStartDate')?.value;
+          const end = document.getElementById('periodEndDate')?.value;
+          if (!start || !end) return 'Rango personalizado';
+          return `${new Date(`${start}T12:00:00`).toLocaleDateString('es-DO')} – ${new Date(`${end}T12:00:00`).toLocaleDateString('es-DO')}`;
+        }
+        if (yyyyMm === 'QUARTER') {
+          const { quarter, year } = this.getCurrentQuarterRange();
+          return `Trimestre ${quarter} · ${year}`;
+        }
         const [year, month] = yyyyMm.split('-');
         const mIdx = parseInt(month, 10) - 1;
         return `${MONTHS_ES[mIdx] || month} ${year}`;
+      },
+
+      getCurrentQuarterRange() {
+        const now = new Date();
+        const year = now.getFullYear();
+        const firstMonth = Math.floor(now.getMonth() / 3) * 3;
+        const quarter = Math.floor(now.getMonth() / 3) + 1;
+        const start = `${year}-${String(firstMonth + 1).padStart(2, '0')}-01`;
+        const end = `${year}-${String(firstMonth + 3).padStart(2, '0')}-${String(new Date(year, firstMonth + 3, 0).getDate()).padStart(2, '0')}`;
+        return { start, end, quarter, year };
+      },
+
+      handlePeriodChange() {
+        const select = document.getElementById('monthFilter');
+        const customFields = document.getElementById('customPeriodFields');
+        const error = document.getElementById('periodRangeError');
+        const isCustom = select?.value === 'CUSTOM';
+        customFields?.classList.toggle('hidden', !isCustom);
+        customFields?.classList.toggle('flex', isCustom);
+
+        if (isCustom) {
+          const startInput = document.getElementById('periodStartDate');
+          const endInput = document.getElementById('periodEndDate');
+          const now = new Date();
+          const today = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+          if (!startInput.value || !endInput.value) {
+            startInput.value = `${today.slice(0, 8)}01`;
+            endInput.value = today;
+          }
+          error?.classList.toggle('hidden', startInput.value <= endInput.value);
+        } else {
+          error?.classList.add('hidden');
+        }
+        this.renderAll();
       },
 
       offsetDateISO(days) {
@@ -765,6 +783,22 @@ const SUPABASE_URL = 'https://pofpqcvejdrlxindicpc.supabase.co';
 
       _addMenuPlaceholder: null,
       _addMenuPreviousOverflow: '',
+
+      toggleOperationsMenu(e) {
+        e?.stopPropagation();
+        const panel = document.getElementById('operationsMenu');
+        if (!panel) return;
+        const isOpening = panel.classList.contains('hidden');
+        panel.classList.toggle('hidden', !isOpening);
+        document.getElementById('operationsMenuBackdrop')?.classList.toggle('hidden', !isOpening || !window.matchMedia('(max-width: 639px)').matches);
+        document.getElementById('operationsMenuToggle')?.setAttribute('aria-expanded', String(isOpening));
+      },
+
+      closeOperationsMenu() {
+        document.getElementById('operationsMenu')?.classList.add('hidden');
+        document.getElementById('operationsMenuBackdrop')?.classList.add('hidden');
+        document.getElementById('operationsMenuToggle')?.setAttribute('aria-expanded', 'false');
+      },
 
       toggleAddMenu(e) {
         e?.stopPropagation();
@@ -874,7 +908,9 @@ const SUPABASE_URL = 'https://pofpqcvejdrlxindicpc.supabase.co';
       updateThemeIcon() {
         const isDark = document.documentElement.classList.contains('dark');
         const icon = document.getElementById('themeIcon');
-        if (icon) icon.className = isDark ? 'fa-solid fa-sun text-amber-400 text-sm' : 'fa-solid fa-moon text-slate-600 text-sm';
+        if (icon) icon.className = isDark ? 'fa-solid fa-sun w-4' : 'fa-solid fa-moon w-4';
+        const authIcon = document.getElementById('authThemeIcon');
+        if (authIcon) authIcon.className = isDark ? 'fa-solid fa-sun' : 'fa-solid fa-moon';
       },
 
       currentUser: null,
@@ -889,9 +925,15 @@ const SUPABASE_URL = 'https://pofpqcvejdrlxindicpc.supabase.co';
           if (wrapper && !wrapper.contains(e.target) && !menu?.contains(e.target)) {
             this.closeAddMenu();
           }
+          const operationsMenu = document.getElementById('operationsMenu');
+          const operationsToggle = document.getElementById('operationsMenuToggle');
+          if (!operationsMenu?.contains(e.target) && !operationsToggle?.contains(e.target)) this.closeOperationsMenu();
         });
         document.addEventListener('keydown', (e) => {
-          if (e.key === 'Escape') this.closeAddMenu();
+          if (e.key === 'Escape') {
+            this.closeAddMenu();
+            this.closeOperationsMenu();
+          }
         });
         window.addEventListener('resize', () => {
           const menu = document.getElementById('addNewDropdownMenu');
@@ -945,7 +987,6 @@ const SUPABASE_URL = 'https://pofpqcvejdrlxindicpc.supabase.co';
 
       async unlockAndLoadCloudData(user) {
         this.currentUser = user;
-        document.getElementById('authGateOverlay').classList.add('hidden');
 
         // 1. Buscar datos del usuario en la nube (Supabase)
         const { data, error } = await supabaseClient
@@ -970,12 +1011,15 @@ const SUPABASE_URL = 'https://pofpqcvejdrlxindicpc.supabase.co';
 
         this.populateMonthFilter();
         this.renderAll();
+        document.getElementById('authGateOverlay').classList.add('hidden');
+        document.body.classList.remove('auth-locked');
       },
 
       async logoutSupabase() {
         if (!confirm('¿Cerrar sesión en este dispositivo?')) return;
         await supabaseClient.auth.signOut();
         this.currentUser = null;
+        document.body.classList.add('auth-locked');
         document.getElementById('authGateOverlay').classList.remove('hidden');
       },
 
@@ -1027,8 +1071,18 @@ const SUPABASE_URL = 'https://pofpqcvejdrlxindicpc.supabase.co';
       // Cruza fechas de forma segura contra el selector de mes global ("YYYY-MM" o "ALL")
       matchesPeriod(recordDate, periodCode) {
         const target = periodCode || this.getSelectedMonth();
-        if (!target || target === 'ALL') return true;
         const clean = String(recordDate || '').trim();
+        if (!target || target === 'ALL') return true;
+        if (target === 'QUARTER' || target === 'CUSTOM') {
+          const range = target === 'QUARTER'
+            ? this.getCurrentQuarterRange()
+            : {
+                start: document.getElementById('periodStartDate')?.value || '',
+                end: document.getElementById('periodEndDate')?.value || ''
+              };
+          if (!range.start || !range.end || range.start > range.end) return false;
+          return clean >= range.start && clean <= range.end;
+        }
         return clean.slice(0, 7) === target;
       },
 
@@ -1046,13 +1100,23 @@ const SUPABASE_URL = 'https://pofpqcvejdrlxindicpc.supabase.co';
         const sel = document.getElementById('monthFilter');
         const prev = forceSelectMonth || sel?.value || 'ALL';
         const sorted = this.getAvailableMonths();
-        sel.innerHTML = `<option value="ALL">Todos los meses (Histórico)</option>` +
-          sorted.map(m => `<option value="${m}">${this.formatMonthLabel(m)}</option>`).join('');
+        sel.innerHTML = `<option value="ALL">Todos los meses (Histórico)</option>
+          <optgroup label="Periodos rápidos">
+            <option value="QUARTER">Trimestre actual</option>
+            <option value="CUSTOM">Rango personalizado</option>
+          </optgroup>
+          <optgroup label="Meses disponibles">${sorted
+            .map(m => `<option value="${m}">${this.formatMonthLabel(m)}</option>`).join('')}
+          </optgroup>`;
         if ([...sel.options].some(o => o.value === prev)) {
           sel.value = prev;
         } else {
           sel.value = 'ALL';
         }
+        const custom = sel.value === 'CUSTOM';
+        const customFields = document.getElementById('customPeriodFields');
+        customFields?.classList.toggle('hidden', !custom);
+        customFields?.classList.toggle('flex', custom);
       },
 
       getSelectedMonth() {
@@ -1064,7 +1128,7 @@ const SUPABASE_URL = 'https://pofpqcvejdrlxindicpc.supabase.co';
       syncFilterWithNewRecordDate(dateStr) {
         const current = this.getSelectedMonth();
         const recMonth = String(dateStr || '').trim().slice(0, 7);
-        if (current !== 'ALL' && recMonth && recMonth !== current) {
+        if (current !== 'ALL' && recMonth && !this.matchesPeriod(dateStr, current)) {
           this.populateMonthFilter(recMonth);
         } else {
           this.populateMonthFilter(current);
@@ -1131,6 +1195,7 @@ const SUPABASE_URL = 'https://pofpqcvejdrlxindicpc.supabase.co';
       },
 
       switchTab(tab) {
+        this.closeOperationsMenu();
         this.activeTab = tab;
         ['trips', 'scheduled', 'trucks', 'incidents', 'drivers', 'analytics', 'reports', 'catalogs', 'security'].forEach(t => {
           const panel = document.getElementById('tabPanel_' + t);
@@ -1291,6 +1356,16 @@ const SUPABASE_URL = 'https://pofpqcvejdrlxindicpc.supabase.co';
       },
 
       // PESTAÑA 1: Centro de Viajes
+      emptyStateMarkup() {
+        return `<div class="empty-state">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 4.5h16.5v15h-16.5zM3.75 9h16.5m-12.75 4.5h4.5m-4.5 3h7.5" />
+          </svg>
+          <span class="empty-state-title">No hay datos disponibles para este periodo</span>
+          <span class="empty-state-count">0 registros</span>
+        </div>`;
+      },
+
       renderTripsTab() {
         const fDrv = document.getElementById('tripFilterDriver').value || 'ALL';
         const fTrk = document.getElementById('tripFilterTruck').value || 'ALL';
@@ -1305,10 +1380,7 @@ const SUPABASE_URL = 'https://pofpqcvejdrlxindicpc.supabase.co';
         if (trips.length === 0) {
           tbody.innerHTML = `
             <tr>
-              <td colspan="13" class="py-12 text-center text-slate-400 text-xs">
-                <i class="fa-solid fa-route text-2xl mb-2 block text-slate-300 dark:text-slate-600"></i>
-                No hay viajes registrados en este periodo. Haz clic en <b>"+ Agregar Nuevo..."</b> arriba para registrar un viaje.
-              </td>
+              <td colspan="13" class="p-0">${this.emptyStateMarkup()}</td>
             </tr>`;
           tfoot.innerHTML = '';
           return;
@@ -1525,7 +1597,7 @@ const SUPABASE_URL = 'https://pofpqcvejdrlxindicpc.supabase.co';
 
         const mBody = document.getElementById('tableMaintBody');
         mBody.innerHTML = maints.length === 0
-          ? `<tr><td colspan="5" class="py-6 text-center text-slate-400 text-xs">Sin mantenimientos registrados en este periodo.</td></tr>`
+          ? `<tr><td colspan="5" class="p-0">${this.emptyStateMarkup()}</td></tr>`
           : maints.map(m => `
             <tr class="hover:bg-slate-50 dark:hover:bg-slate-700/40">
               <td class="td font-mono font-semibold whitespace-nowrap">${m.date}</td>
@@ -1544,7 +1616,7 @@ const SUPABASE_URL = 'https://pofpqcvejdrlxindicpc.supabase.co';
         const tbody = document.getElementById('tableIncidentsBody');
 
         if (list.length === 0) {
-          tbody.innerHTML = `<tr><td colspan="7" class="py-8 text-center text-slate-400 text-xs">No hay incidencias registradas en este periodo.</td></tr>`;
+          tbody.innerHTML = `<tr><td colspan="7" class="p-0">${this.emptyStateMarkup()}</td></tr>`;
           return;
         }
 
@@ -1576,9 +1648,9 @@ const SUPABASE_URL = 'https://pofpqcvejdrlxindicpc.supabase.co';
 
         if (this.db.drivers.length === 0) {
           grid.innerHTML = `
-            <div class="col-span-full py-10 text-center border border-dashed border-slate-300 dark:border-slate-700 rounded-md">
-              <p class="text-sm font-semibold text-slate-600 dark:text-slate-300">No hay choferes registrados</p>
-              <button type="button" onclick="App.openDriverModal()" class="btn-primary mt-3">+ Crear Primer Chofer</button>
+            <div class="col-span-full flex flex-col items-center rounded-md border border-dashed border-slate-300 dark:border-slate-700">
+              ${this.emptyStateMarkup()}
+              <button type="button" onclick="App.openDriverModal()" class="btn-primary mb-5">+ Crear Primer Chofer</button>
             </div>`;
           return;
         }
@@ -1637,35 +1709,44 @@ const SUPABASE_URL = 'https://pofpqcvejdrlxindicpc.supabase.co';
         const isDark = document.documentElement.classList.contains('dark');
         const textColor = isDark ? '#cbd5e1' : '#334155';
 
-        const ctxD = document.getElementById('canvasExpensesDoughnut').getContext('2d');
+        const canvasD = document.getElementById('canvasExpensesDoughnut');
+        const emptyD = document.getElementById('expensesChartEmpty');
         if (this.chartDoughnut) this.chartDoughnut.destroy();
+        this.chartDoughnut = null;
 
         const labelsD = ['Combustible', 'Peajes', 'Nómina', 'Otros', 'Taller', 'Incidencias'];
         const dataD = [s.fuel, s.tolls, payroll, s.other, s.maintTotal, s.incidentTotal];
-        const colorsD = ['#d97706', '#0284c7', '#4f46e5', '#64748b', '#e11d48', '#be123c'];
+        const hasExpenseData = dataD.some(value => value > 0);
+        canvasD.classList.toggle('hidden', !hasExpenseData);
+        emptyD.classList.toggle('hidden', hasExpenseData);
+        emptyD.innerHTML = hasExpenseData ? '' : this.emptyStateMarkup();
 
-        this.chartDoughnut = new Chart(ctxD, {
-          type: 'doughnut',
-          data: {
-            labels: labelsD,
-            datasets: [{ data: dataD, backgroundColor: colorsD, borderWidth: 2, borderColor: isDark ? '#1e293b' : '#ffffff' }]
-          },
-          options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: { legend: { position: 'bottom', labels: { color: textColor, boxWidth: 12, font: { size: 11 } } } }
-          }
-        });
+        if (hasExpenseData) {
+          this.chartDoughnut = new Chart(canvasD.getContext('2d'), {
+            type: 'doughnut',
+            data: {
+              labels: labelsD,
+              datasets: [{ data: dataD, backgroundColor: ['#475569', '#1d4ed8', '#64748b', '#0f766e', '#9a3412', '#b91c1c'], borderWidth: 2, borderColor: isDark ? '#111827' : '#ffffff' }]
+            },
+            options: {
+              responsive: true,
+              maintainAspectRatio: false,
+              plugins: { legend: { position: 'bottom', labels: { color: textColor, boxWidth: 12, font: { size: 11 } } } }
+            }
+          });
+        }
 
-        document.getElementById('expensesLegendBox').innerHTML = labelsD.map((l, i) => `
+        document.getElementById('expensesLegendBox').innerHTML = hasExpenseData ? labelsD.map((l, i) => `
           <div class="flex items-center justify-between p-2 rounded bg-slate-50 dark:bg-slate-900">
             <span class="truncate text-slate-600 dark:text-slate-300">${l}</span>
             <span class="font-mono font-bold ml-2">${this.formatRD(dataD[i])}</span>
           </div>
-        `).join('');
+        `).join('') : '<div class="col-span-2 text-center text-xs text-slate-500 dark:text-slate-400">0 registros</div>';
 
-        const ctxB = document.getElementById('canvasTrucksBar').getContext('2d');
+        const canvasB = document.getElementById('canvasTrucksBar');
+        const emptyB = document.getElementById('trucksChartEmpty');
         if (this.chartBar) this.chartBar.destroy();
+        this.chartBar = null;
 
         const names = this.db.trucks.map(t => t.name);
         const incArr = [], costArr = [], netArr = [];
@@ -1684,26 +1765,33 @@ const SUPABASE_URL = 'https://pofpqcvejdrlxindicpc.supabase.co';
           netArr.push(g - totalCost);
         });
 
-        this.chartBar = new Chart(ctxB, {
-          type: 'bar',
-          data: {
-            labels: names.length ? names : ['Sin camiones registrados'],
-            datasets: [
-              { label: 'Ingresos Fletes', data: incArr.length ? incArr : [0], backgroundColor: '#0f172a', borderRadius: 4 },
-              { label: 'Gastos', data: costArr.length ? costArr : [0], backgroundColor: '#e11d48', borderRadius: 4 },
-              { label: 'Ganancia Neta', data: netArr.length ? netArr : [0], backgroundColor: '#059669', borderRadius: 4 }
-            ]
-          },
-          options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: { legend: { position: 'bottom', labels: { color: textColor } } },
-            scales: {
-              x: { ticks: { color: textColor } },
-              y: { beginAtZero: true, ticks: { color: textColor } }
+        const hasFleetData = names.length > 0 && (s.trips.length > 0 || s.maints.length > 0 || s.incidents.length > 0);
+        canvasB.classList.toggle('hidden', !hasFleetData);
+        emptyB.classList.toggle('hidden', hasFleetData);
+        emptyB.innerHTML = hasFleetData ? '' : this.emptyStateMarkup();
+
+        if (hasFleetData) {
+          this.chartBar = new Chart(canvasB.getContext('2d'), {
+            type: 'bar',
+            data: {
+              labels: names,
+              datasets: [
+                { label: 'Ingresos Fletes', data: incArr, backgroundColor: '#1e3a8a', borderRadius: 3 },
+                { label: 'Gastos', data: costArr, backgroundColor: '#64748b', borderRadius: 3 },
+                { label: 'Ganancia Neta', data: netArr, backgroundColor: '#0f766e', borderRadius: 3 }
+              ]
+            },
+            options: {
+              responsive: true,
+              maintainAspectRatio: false,
+              plugins: { legend: { position: 'bottom', labels: { color: textColor } } },
+              scales: {
+                x: { ticks: { color: textColor } },
+                y: { beginAtZero: true, ticks: { color: textColor } }
+              }
             }
-          }
-        });
+          });
+        }
       },
 
       // PESTAÑA 8: Catálogos

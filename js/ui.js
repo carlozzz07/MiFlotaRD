@@ -134,6 +134,7 @@ closeModal() {
       },
 
 switchTab(tab) {
+        this.closeOperationsMenu?.();
         this.activeTab = tab;
         ['trips', 'scheduled', 'trucks', 'incidents', 'drivers', 'analytics', 'reports', 'catalogs', 'security'].forEach(t => {
           const panel = document.getElementById('tabPanel_' + t);
@@ -275,6 +276,16 @@ renderAll() {
         }
       },
 
+emptyStateMarkup() {
+        return `<div class="empty-state">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 4.5h16.5v15h-16.5zM3.75 9h16.5m-12.75 4.5h4.5m-4.5 3h7.5" />
+          </svg>
+          <span class="empty-state-title">No hay datos disponibles para este periodo</span>
+          <span class="empty-state-count">0 registros</span>
+        </div>`;
+      },
+
 renderTripsTab() {
         const fDrv = document.getElementById('tripFilterDriver').value || 'ALL';
         const fTrk = document.getElementById('tripFilterTruck').value || 'ALL';
@@ -292,10 +303,7 @@ renderTripsTab() {
         if (trips.length === 0) {
           tbody.innerHTML = `
             <tr>
-              <td colspan="13" class="py-12 text-center text-slate-400 text-xs">
-                <i class="fa-solid fa-route text-2xl mb-2 block text-slate-300 dark:text-slate-600"></i>
-                ${search ? 'No hay viajes que coincidan con la búsqueda y los filtros.' : 'No hay viajes registrados en este periodo. Haz clic en <b>"+ Agregar Nuevo..."</b> arriba para registrar un viaje.'}
-              </td>
+              <td colspan="13" class="p-0">${this.emptyStateMarkup()}</td>
             </tr>`;
           tfoot.innerHTML = '';
           return;
@@ -511,7 +519,7 @@ renderTrucksTab() {
 
         const mBody = document.getElementById('tableMaintBody');
         mBody.innerHTML = maints.length === 0
-          ? `<tr><td colspan="5" class="py-6 text-center text-slate-400 text-xs">Sin mantenimientos registrados en este periodo.</td></tr>`
+          ? `<tr><td colspan="5" class="p-0">${this.emptyStateMarkup()}</td></tr>`
           : maints.map(m => `
             <tr class="hover:bg-slate-50 dark:hover:bg-slate-700/40">
               <td class="td font-mono font-semibold whitespace-nowrap">${m.date}</td>
@@ -529,7 +537,7 @@ renderIncidentsTab() {
         const tbody = document.getElementById('tableIncidentsBody');
 
         if (list.length === 0) {
-          tbody.innerHTML = `<tr><td colspan="7" class="py-8 text-center text-slate-400 text-xs">No hay incidencias registradas en este periodo.</td></tr>`;
+          tbody.innerHTML = `<tr><td colspan="7" class="p-0">${this.emptyStateMarkup()}</td></tr>`;
           return;
         }
 
@@ -560,9 +568,9 @@ renderDriversTab() {
 
         if (this.db.drivers.length === 0) {
           grid.innerHTML = `
-            <div class="col-span-full py-10 text-center border border-dashed border-slate-300 dark:border-slate-700 rounded-md">
-              <p class="text-sm font-semibold text-slate-600 dark:text-slate-300">No hay choferes registrados</p>
-              <button type="button" onclick="App.openDriverModal()" class="btn-primary mt-3">+ Crear Primer Chofer</button>
+            <div class="col-span-full flex flex-col items-center rounded-md border border-dashed border-slate-300 dark:border-slate-700">
+              ${this.emptyStateMarkup()}
+              <button type="button" onclick="App.openDriverModal()" class="btn-primary mb-5">+ Crear Primer Chofer</button>
             </div>`;
           return;
         }
@@ -627,35 +635,44 @@ renderAnalyticsCharts() {
         const isDark = document.documentElement.classList.contains('dark');
         const textColor = isDark ? '#cbd5e1' : '#334155';
 
-        const ctxD = document.getElementById('canvasExpensesDoughnut').getContext('2d');
+        const canvasD = document.getElementById('canvasExpensesDoughnut');
+        const emptyD = document.getElementById('expensesChartEmpty');
         if (this.chartDoughnut) this.chartDoughnut.destroy();
+        this.chartDoughnut = null;
 
         const labelsD = ['Combustible', 'Peajes', 'Nómina', 'Otros', 'Taller', 'Incidencias'];
         const dataD = [s.fuel, s.tolls, payroll, s.other, s.maintTotal, s.incidentTotal];
-        const colorsD = ['#d97706', '#0284c7', '#4f46e5', '#64748b', '#e11d48', '#be123c'];
+        const hasExpenseData = dataD.some(value => value > 0);
+        canvasD.classList.toggle('hidden', !hasExpenseData);
+        emptyD.classList.toggle('hidden', hasExpenseData);
+        emptyD.innerHTML = hasExpenseData ? '' : this.emptyStateMarkup();
 
-        this.chartDoughnut = new Chart(ctxD, {
-          type: 'doughnut',
-          data: {
-            labels: labelsD,
-            datasets: [{ data: dataD, backgroundColor: colorsD, borderWidth: 2, borderColor: isDark ? '#1e293b' : '#ffffff' }]
-          },
-          options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: { legend: { position: 'bottom', labels: { color: textColor, boxWidth: 12, font: { size: 11 } } } }
-          }
-        });
+        if (hasExpenseData) {
+          this.chartDoughnut = new Chart(canvasD.getContext('2d'), {
+            type: 'doughnut',
+            data: {
+              labels: labelsD,
+              datasets: [{ data: dataD, backgroundColor: ['#475569', '#1d4ed8', '#64748b', '#0f766e', '#9a3412', '#b91c1c'], borderWidth: 2, borderColor: isDark ? '#111827' : '#ffffff' }]
+            },
+            options: {
+              responsive: true,
+              maintainAspectRatio: false,
+              plugins: { legend: { position: 'bottom', labels: { color: textColor, boxWidth: 12, font: { size: 11 } } } }
+            }
+          });
+        }
 
-        document.getElementById('expensesLegendBox').innerHTML = labelsD.map((l, i) => `
+        document.getElementById('expensesLegendBox').innerHTML = hasExpenseData ? labelsD.map((l, i) => `
           <div class="flex items-center justify-between p-2 rounded bg-slate-50 dark:bg-slate-900">
             <span class="truncate text-slate-600 dark:text-slate-300">${l}</span>
             <span class="font-mono font-bold ml-2">${this.formatRD(dataD[i])}</span>
           </div>
-        `).join('');
+        `).join('') : '<div class="col-span-2 text-center text-xs text-slate-500 dark:text-slate-400">0 registros</div>';
 
-        const ctxB = document.getElementById('canvasTrucksBar').getContext('2d');
+        const canvasB = document.getElementById('canvasTrucksBar');
+        const emptyB = document.getElementById('trucksChartEmpty');
         if (this.chartBar) this.chartBar.destroy();
+        this.chartBar = null;
 
         const names = this.db.trucks.map(t => t.name);
         const incArr = [], costArr = [], netArr = [];
@@ -674,26 +691,33 @@ renderAnalyticsCharts() {
           netArr.push(g - totalCost);
         });
 
-        this.chartBar = new Chart(ctxB, {
-          type: 'bar',
-          data: {
-            labels: names.length ? names : ['Sin camiones registrados'],
-            datasets: [
-              { label: 'Ingresos Fletes', data: incArr.length ? incArr : [0], backgroundColor: '#0f172a', borderRadius: 4 },
-              { label: 'Gastos', data: costArr.length ? costArr : [0], backgroundColor: '#e11d48', borderRadius: 4 },
-              { label: 'Ganancia Neta', data: netArr.length ? netArr : [0], backgroundColor: '#059669', borderRadius: 4 }
-            ]
-          },
-          options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: { legend: { position: 'bottom', labels: { color: textColor } } },
-            scales: {
-              x: { ticks: { color: textColor } },
-              y: { beginAtZero: true, ticks: { color: textColor } }
+        const hasFleetData = names.length > 0 && (s.trips.length > 0 || s.maints.length > 0 || s.incidents.length > 0);
+        canvasB.classList.toggle('hidden', !hasFleetData);
+        emptyB.classList.toggle('hidden', hasFleetData);
+        emptyB.innerHTML = hasFleetData ? '' : this.emptyStateMarkup();
+
+        if (hasFleetData) {
+          this.chartBar = new Chart(canvasB.getContext('2d'), {
+            type: 'bar',
+            data: {
+              labels: names,
+              datasets: [
+                { label: 'Ingresos Fletes', data: incArr, backgroundColor: '#1e3a8a', borderRadius: 3 },
+                { label: 'Gastos', data: costArr, backgroundColor: '#64748b', borderRadius: 3 },
+                { label: 'Ganancia Neta', data: netArr, backgroundColor: '#0f766e', borderRadius: 3 }
+              ]
+            },
+            options: {
+              responsive: true,
+              maintainAspectRatio: false,
+              plugins: { legend: { position: 'bottom', labels: { color: textColor } } },
+              scales: {
+                x: { ticks: { color: textColor } },
+                y: { beginAtZero: true, ticks: { color: textColor } }
+              }
             }
-          }
-        });
+          });
+        }
       },
 
 renderCatalogsTab() {
