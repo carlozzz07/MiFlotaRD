@@ -3,13 +3,13 @@
 
 @layer base {
   body {
-    @apply min-h-screen bg-slate-50 font-sans text-slate-900 antialiased transition-colors duration-150 dark:bg-slate-950 dark:text-slate-100;
+    @apply min-h-screen bg-[#f8fafc] font-sans text-slate-900 antialiased transition-colors duration-150 dark:bg-slate-950 dark:text-slate-100;
   }
 }
 
 @layer components {
   .card {
-    @apply rounded-md border border-slate-300 bg-white shadow-none dark:border-slate-700 dark:bg-slate-900;
+    @apply min-w-0 max-w-full rounded-md border border-slate-200 bg-white shadow-xs dark:border-slate-700 dark:bg-slate-900 dark:shadow-none;
   }
 
   .inp {
@@ -21,15 +21,23 @@
   }
 
   .btn-primary {
-    @apply inline-flex h-9 cursor-pointer items-center justify-center gap-2 rounded bg-blue-900 px-3.5 py-1.5 text-xs font-semibold text-white shadow-none transition hover:bg-blue-800 disabled:cursor-not-allowed disabled:opacity-60 dark:bg-blue-600 dark:hover:bg-blue-500 sm:text-sm;
+    @apply inline-flex min-h-11 cursor-pointer items-center justify-center gap-2 rounded bg-blue-900 px-3.5 py-2.5 text-xs font-semibold text-white shadow-none transition hover:bg-blue-800 disabled:cursor-not-allowed disabled:opacity-60 dark:bg-blue-600 dark:hover:bg-blue-500 sm:text-sm;
   }
 
   .btn-outline {
-    @apply inline-flex h-9 cursor-pointer items-center justify-center gap-1.5 rounded border border-slate-300 bg-white px-3 py-1.5 text-xs font-medium text-slate-700 shadow-none transition hover:bg-slate-100 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200 dark:hover:bg-slate-800;
+    @apply inline-flex min-h-11 cursor-pointer items-center justify-center gap-1.5 rounded border border-slate-300 bg-white px-3 py-2.5 text-xs font-medium text-slate-700 shadow-none transition hover:bg-slate-100 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200 dark:hover:bg-slate-800;
   }
 
   .btn-whatsapp {
-    @apply inline-flex h-9 cursor-pointer items-center justify-center gap-1.5 rounded border border-slate-300 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 shadow-none transition hover:bg-slate-100 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200 dark:hover:bg-slate-800;
+    @apply inline-flex min-h-11 cursor-pointer items-center justify-center gap-1.5 rounded border border-slate-300 bg-white px-3 py-2.5 text-xs font-semibold text-slate-700 shadow-none transition hover:bg-slate-100 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200 dark:hover:bg-slate-800;
+  }
+
+  .btn-emerald {
+    @apply inline-flex min-h-11 cursor-pointer items-center justify-center gap-2 rounded bg-blue-900 px-3.5 py-2.5 text-xs font-semibold text-white shadow-none transition hover:bg-blue-800 disabled:cursor-not-allowed disabled:opacity-60 dark:bg-blue-600 dark:hover:bg-blue-500 sm:text-sm;
+  }
+
+  .btn-rose {
+    @apply inline-flex min-h-11 cursor-pointer items-center justify-center gap-2 rounded border border-rose-700 bg-rose-700 px-3.5 py-2.5 text-xs font-semibold text-white shadow-none transition hover:bg-rose-800 disabled:cursor-not-allowed disabled:opacity-60 sm:text-sm;
   }
 
   .tab-btn {
@@ -57,7 +65,57 @@
   }
 
   .table-scroll {
-    @apply overflow-x-auto rounded-md border border-slate-300 dark:border-slate-700;
+    @apply overscroll-x-contain overflow-x-auto scroll-smooth rounded-md border border-slate-200 dark:border-slate-700;
+    background-color: #fff;
+    background-image:
+      linear-gradient(to right, #fff 30%, rgb(255 255 255 / 0%)),
+      linear-gradient(to left, #fff 30%, rgb(255 255 255 / 0%)),
+      radial-gradient(farthest-side at 0 50%, rgb(15 23 42 / 18%), transparent),
+      radial-gradient(farthest-side at 100% 50%, rgb(15 23 42 / 18%), transparent);
+    background-position: left center, right center, left center, right center;
+    background-repeat: no-repeat;
+    background-size: 24px 100%, 24px 100%, 8px 100%, 8px 100%;
+    background-attachment: local, local, scroll, scroll;
+    scrollbar-color: #94a3b8 #e2e8f0;
+    scrollbar-width: thin;
+  }
+
+  .add-menu-backdrop {
+    @apply fixed inset-0 z-[39] bg-slate-950/55 backdrop-blur-[1px] sm:hidden;
+  }
+
+  .add-menu-panel {
+    @apply absolute right-0 top-full z-50 mt-2 w-64 rounded-md border border-slate-200 bg-white py-2 shadow-xs dark:border-slate-700 dark:bg-slate-800;
+  }
+
+  .card :where(h1, h2, h3, p, a) {
+    overflow-wrap: anywhere;
+  }
+
+  .dark .table-scroll {
+    background-color: #0f172a;
+    background-image:
+      linear-gradient(to right, #0f172a 30%, rgb(15 23 42 / 0%)),
+      linear-gradient(to left, #0f172a 30%, rgb(15 23 42 / 0%)),
+      radial-gradient(farthest-side at 0 50%, rgb(0 0 0 / 35%), transparent),
+      radial-gradient(farthest-side at 100% 50%, rgb(0 0 0 / 35%), transparent);
+    scrollbar-color: #475569 #1e293b;
+  }
+
+  @media (max-width: 639px) {
+    .add-menu-panel:not(.hidden) {
+      position: fixed;
+      inset-inline: 1rem;
+      top: auto;
+      bottom: calc(1rem + env(safe-area-inset-bottom));
+      width: auto;
+      max-width: 24rem;
+      max-height: calc(100dvh - 2rem - env(safe-area-inset-top) - env(safe-area-inset-bottom));
+      margin-inline: auto;
+      overflow-y: auto;
+      border-radius: 0.75rem;
+      z-index: 9999;
+    }
   }
 
   .badge-available {
@@ -67,4 +125,8 @@
   .badge-out-of-service {
     @apply inline-flex items-center rounded border border-rose-200 bg-rose-50 px-2 py-0.5 text-[11px] font-semibold text-rose-700 dark:border-rose-900 dark:bg-rose-950/40 dark:text-rose-300;
   }
+}
+
+html:not(.dark) .text-slate-500 {
+  color: #475569;
 }

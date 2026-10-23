@@ -138,8 +138,14 @@ switchTab(tab) {
         ['trips', 'scheduled', 'trucks', 'incidents', 'drivers', 'analytics', 'reports', 'catalogs', 'security'].forEach(t => {
           const panel = document.getElementById('tabPanel_' + t);
           const btn = document.getElementById('tabBtn_' + t);
+          const bnav = document.getElementById('bnavBtn_' + t);
           if (panel) panel.classList.toggle('hidden', t !== tab);
           if (btn) btn.className = t === tab ? 'tab-btn tab-btn-active' : 'tab-btn';
+          if (bnav) {
+            bnav.className = t === tab
+              ? 'flex flex-col items-center text-emerald-400 font-bold text-[10px] gap-0.5'
+              : 'flex flex-col items-center text-slate-400 font-medium text-[10px] gap-0.5';
+          }
         });
         if (tab === 'analytics') {
           this.renderAnalyticsCharts();

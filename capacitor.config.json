@@ -1,5 +1,19 @@
 {
-  "appId": "com.example.app",
-  "appName": "miflotard-main",
-  "webDir": "www"
+  "appId": "com.miflotard.app",
+  "appName": "MiFlota RD",
+  "webDir": "www",
+  "plugins": {
+    "PushNotifications": {
+      "presentationOptions": ["badge", "sound", "alert"]
+    },
+    "LocalNotifications": {
+      "smallIcon": "ic_stat_icon_config_sample",
+      "iconColor": "#059669"
+    },
+    "SplashScreen": {
+      "launchShowDuration": 1500,
+      "backgroundColor": "#0f172a",
+      "showSpinner": false
+    }
+  }
 }

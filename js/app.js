@@ -129,16 +129,28 @@ const SUPABASE_URL = 'https://pofpqcvejdrlxindicpc.supabase.co';
       toggleAddMenu(e) {
         if (e) e.stopPropagation();
         const menu = document.getElementById('addNewDropdownMenu');
+        if (!menu) return;
+        const isOpen = menu.classList.contains('hidden');
+        menu.classList.toggle('hidden', !isOpen);
+        const backdrop = document.getElementById('addNewDropdownBackdrop');
+        if (backdrop) backdrop.classList.toggle('hidden', !isOpen);
         const chev = document.getElementById('addMenuChevron');
-        const isHidden = menu.classList.toggle('hidden');
-        if (chev) chev.style.transform = isHidden ? 'rotate(0deg)' : 'rotate(180deg)';
+        const toggle = document.getElementById('addNewDropdownToggle');
+        if (chev) chev.style.transform = isOpen ? 'rotate(180deg)' : 'rotate(0deg)';
+        if (toggle) toggle.setAttribute('aria-expanded', String(isOpen));
+        document.body.style.overflow = isOpen && window.matchMedia('(max-width: 639px)').matches ? 'hidden' : '';
       },
 
       closeAddMenu() {
         const menu = document.getElementById('addNewDropdownMenu');
-        const chev = document.getElementById('addMenuChevron');
         if (menu) menu.classList.add('hidden');
+        const backdrop = document.getElementById('addNewDropdownBackdrop');
+        if (backdrop) backdrop.classList.add('hidden');
+        const chev = document.getElementById('addMenuChevron');
+        const toggle = document.getElementById('addNewDropdownToggle');
         if (chev) chev.style.transform = 'rotate(0deg)';
+        if (toggle) toggle.setAttribute('aria-expanded', 'false');
+        document.body.style.overflow = '';
       },
 
       initTheme() {
@@ -183,6 +195,15 @@ const SUPABASE_URL = 'https://pofpqcvejdrlxindicpc.supabase.co';
           const wrapper = document.getElementById('addNewDropdownWrapper');
           if (wrapper && !wrapper.contains(e.target)) {
             this.closeAddMenu();
+          }
+        });
+        document.addEventListener('keydown', (e) => {
+          if (e.key === 'Escape') this.closeAddMenu();
+        });
+        window.addEventListener('resize', () => {
+          const menu = document.getElementById('addNewDropdownMenu');
+          if (menu && !menu.classList.contains('hidden')) {
+            document.body.style.overflow = window.matchMedia('(max-width: 639px)').matches ? 'hidden' : '';
           }
         });
 
@@ -245,6 +266,9 @@ const SUPABASE_URL = 'https://pofpqcvejdrlxindicpc.supabase.co';
 
         this.populateMonthFilter();
         this.renderAll();
+
+        const userName = user.email ? user.email.split('@')[0] : 'Administrador';
+        this.showToast(`¡Bienvenido de nuevo, ${userName}!`);
       },
 
       async logoutSupabase() {

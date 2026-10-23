@@ -6,6 +6,8 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>MiFlota RD</title>
+
+  <link rel="stylesheet" href="styles.css" />
   <!-- FontAwesome 6 Free CDN -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
   <!-- Chart.js CDN -->
@@ -25,12 +27,13 @@
   <script src="https://cdn.sheetjs.com/xlsx-latest/package/dist/xlsx.full.min.js"></script>
   <!-- Google Fonts: Inter & JetBrains Mono -->
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600;700&display=swap" rel="stylesheet" />
+<!-- Google Fonts: Inter & JetBrains Mono -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600;700&display=swap" rel="stylesheet" />
 
   <!-- ================================================================= -->
   <!-- PEGA AQUÍ LAS CONFIGURACIONES PWA DE IOS Y ANDROID                -->
   <!-- ================================================================= -->
   <link rel="manifest" href="manifest.json" />
-  <link rel="stylesheet" href="styles.css" />
   <link rel="shortcut icon" href="icono-192.png" type="image/png" />
   <link rel="icon" type="image/png" href="icono-192.png" />
   <meta name="theme-color" content="#0f172a" />
@@ -40,12 +43,12 @@
   <link rel="apple-touch-icon" href="icono-512.png" />
 </head>
 <body class="min-h-screen flex flex-col">
-<!-- PANTALLA DE BLOQUEO Y LOGIN CORPORATIVO (SUPABASE AUTH) -->
-  <div id="authGateOverlay" class="fixed inset-0 z-[10000] bg-slate-50 dark:bg-slate-950">
+  <!-- Login corporativo split-screen -->
+  <div id="authGateOverlay" class="fixed inset-0 z-[10000] overflow-y-auto bg-slate-50 dark:bg-slate-950">
     <div class="grid min-h-screen grid-cols-1 lg:grid-cols-12">
       <section class="hidden flex-col justify-between border-r border-slate-800 bg-slate-900 p-12 text-white lg:col-span-7 lg:flex">
         <div class="flex items-center gap-3">
-          <span class="flex h-10 w-10 items-center justify-center rounded border border-slate-700 bg-slate-800 text-slate-200">
+          <span class="flex h-11 w-11 items-center justify-center rounded-md border border-slate-700 bg-slate-800 text-slate-200">
             <i class="fa-solid fa-truck-moving text-lg"></i>
           </span>
           <div>
@@ -53,25 +56,31 @@
             <p class="text-xs text-slate-400">ERP de Control Logístico y Financiero</p>
           </div>
         </div>
+
         <div class="max-w-2xl">
-          <p class="mb-4 text-xs font-semibold uppercase tracking-[0.18em] text-blue-300">Plataforma operativa empresarial</p>
-          <h1 class="text-3xl font-semibold leading-tight xl:text-4xl">Gestión de Flota Pesada, Liquidación de Fletes, Control de Mantenimiento y Auditoría Contable en Tiempo Real</h1>
-          <p class="mt-5 max-w-xl text-sm leading-6 text-slate-400">Información operativa y financiera centralizada para tomar decisiones con precisión y mantener cada operación bajo control.</p>
+          <p class="mb-4 text-xs font-semibold uppercase tracking-[0.2em] text-blue-300">Plataforma operativa empresarial</p>
+          <h1 class="text-3xl font-bold leading-tight xl:text-4xl">
+            Gestión de Flota Pesada, Liquidación de Fletes, Control de Mantenimiento y Auditoría Contable en Tiempo Real
+          </h1>
+          <p class="mt-5 max-w-xl text-sm leading-6 text-slate-300">
+            Información operativa y financiera centralizada para tomar decisiones con precisión y mantener cada operación bajo control.
+          </p>
         </div>
-        <div class="flex flex-wrap items-center justify-between gap-4 border-t border-slate-800 pt-5 text-xs text-slate-400">
-          <div class="flex flex-wrap gap-x-5 gap-y-2">
-            <span><i class="fa-solid fa-lock mr-2 text-slate-300"></i>Conexión Cifrada TLS</span>
-            <span><i class="fa-solid fa-cloud-arrow-up mr-2 text-slate-300"></i>Sincronización Cloud Activa</span>
+
+        <footer class="flex flex-wrap items-center justify-between gap-3 border-t border-slate-800 pt-5 text-[11px] text-slate-400">
+          <div class="flex flex-wrap items-center gap-x-5 gap-y-2">
+            <span><i class="fa-solid fa-lock mr-1.5 text-slate-300"></i>Conexión Cifrada TLS</span>
+            <span><i class="fa-solid fa-cloud-arrow-up mr-1.5 text-slate-300"></i>Sincronización Cloud Activa</span>
           </div>
           <span>© MiFlota RD · Uso corporativo</span>
-        </div>
+        </footer>
       </section>
 
-      <section class="flex items-center justify-center bg-slate-50 p-6 dark:bg-slate-950 sm:p-12 lg:col-span-5">
+      <section class="flex min-h-screen items-center justify-center bg-slate-50 p-6 dark:bg-slate-950 sm:p-12 lg:col-span-5">
         <div class="w-full max-w-sm">
           <div class="mb-8">
-            <p class="text-xs font-semibold uppercase tracking-wider text-blue-900 dark:text-blue-400">Acceso seguro</p>
-            <h2 class="mt-2 text-2xl font-bold text-slate-900 dark:text-white">Iniciar Sesión Operativa</h2>
+            <p class="mb-2 text-xs font-semibold uppercase tracking-wider text-blue-900 dark:text-blue-400">Acceso seguro</p>
+            <h2 class="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">Iniciar Sesión Operativa</h2>
             <p class="mt-2 text-sm text-slate-600 dark:text-slate-400">Ingrese sus credenciales corporativas de acceso</p>
           </div>
 
@@ -83,55 +92,59 @@
             <div>
               <label for="authPassword" class="lbl">Contraseña</label>
               <div class="relative">
-                <input type="password" id="authPassword" required autocomplete="current-password" placeholder="Ingrese su contraseña" class="inp pr-11" />
-                <button type="button" id="authPasswordToggle" onclick="App.toggleAuthPassword()" class="absolute inset-y-0 right-0 flex w-10 items-center justify-center rounded text-slate-500 hover:text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-900 dark:hover:text-white dark:focus:ring-blue-500" aria-label="Mostrar contraseña" aria-pressed="false">
+                <input type="password" id="authPassword" required autocomplete="current-password" placeholder="Ingrese su contraseña" class="inp pr-12" />
+                <button type="button" id="authPasswordToggle" onclick="App.toggleAuthPassword()" aria-label="Mostrar contraseña" aria-pressed="false" class="absolute inset-y-0 right-0 flex min-h-11 w-11 items-center justify-center rounded-r border-l border-slate-300 text-slate-600 hover:bg-slate-100 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800">
                   <i id="authPasswordToggleIcon" class="fa-regular fa-eye"></i>
                 </button>
               </div>
             </div>
-            <p id="authErrorMsg" class="hidden rounded border border-rose-200 bg-rose-50 p-2.5 text-xs font-semibold text-rose-700 dark:border-rose-900 dark:bg-rose-950/40 dark:text-rose-300"></p>
-            <button type="submit" id="authSubmitBtn" class="h-10 w-full rounded bg-blue-900 px-4 text-sm font-semibold text-white transition hover:bg-blue-800 disabled:cursor-not-allowed disabled:opacity-60 dark:bg-blue-600 dark:hover:bg-blue-500">
-              <i class="fa-solid fa-lock-open mr-2"></i>
+            <p id="authErrorMsg" class="hidden rounded border border-rose-200 bg-rose-50 p-3 text-xs font-semibold text-rose-700 dark:border-rose-800 dark:bg-rose-950/40 dark:text-rose-300"></p>
+            <button type="submit" id="authSubmitBtn" class="btn-primary h-10 w-full rounded font-semibold">
+              <i class="fa-solid fa-lock-open"></i>
               <span>Iniciar Sesión</span>
             </button>
           </form>
-          <p class="mt-8 border-t border-slate-300 pt-4 text-xs text-slate-500 dark:border-slate-800 dark:text-slate-500 lg:hidden">MiFlota RD — ERP de Control Logístico y Financiero</p>
+
+          <p class="mt-8 border-t border-slate-200 pt-5 text-center text-[11px] text-slate-600 dark:border-slate-800 dark:text-slate-400 lg:hidden">
+            MiFlota RD — ERP de Control Logístico y Financiero
+          </p>
         </div>
       </section>
     </div>
   </div>
 
   <!-- NOTIFICACIÓN TOAST -->
-  <div id="toast" class="fixed bottom-5 right-5 z-[9999] hidden max-w-sm bg-slate-900 dark:bg-white text-white dark:text-slate-900 px-4 py-3 rounded-md shadow-none border border-slate-700 dark:border-slate-300 flex items-center gap-3">
+  <div id="toast" class="fixed bottom-5 right-5 z-[9999] hidden max-w-sm bg-slate-900 dark:bg-white text-white dark:text-slate-900 px-4 py-3 rounded-xl shadow-lg border border-slate-700 dark:border-slate-200 flex items-center gap-3">
     <i id="toastIcon" class="fa-solid fa-circle-check text-emerald-400 dark:text-emerald-600 text-base"></i>
     <span id="toastMsg" class="text-xs sm:text-sm font-medium">Acción completada</span>
   </div>
 
   <!-- MODAL UNIVERSAL -->
-  <div id="modalOverlay" class="modal-overlay hidden">
-    <div id="modalContainer" class="modal-shell max-w-2xl">
+  <div id="modalOverlay" class="fixed inset-0 bg-slate-900/50 z-[9000] hidden flex items-center justify-center p-3 sm:p-4 max-sm:items-end max-sm:p-0">
+    <div id="modalContainer" class="card w-full max-w-2xl overflow-hidden flex flex-col max-h-[92vh] max-sm:rounded-b-none max-sm:rounded-t-2xl max-sm:max-h-[88vh]">
       <div class="bg-slate-900 dark:bg-slate-950 text-white px-5 py-3.5 flex items-center justify-between shrink-0">
         <h3 id="modalTitle" class="font-semibold text-sm sm:text-base">Formulario</h3>
-        <button type="button" onclick="App.closeModal()" class="text-slate-400 hover:text-white transition w-8 h-8 rounded-md flex items-center justify-center">
+        <button type="button" onclick="App.closeModal()" class="text-slate-400 hover:text-white transition w-8 h-8 rounded-lg flex items-center justify-center">
           <i class="fa-solid fa-xmark text-base"></i>
         </button>
       </div>
-      <div id="modalBody" class="flex-1 overflow-y-auto p-5"></div>
+      <div id="modalBody" class="p-5 overflow-y-auto flex-1"></div>
     </div>
   </div>
 
   <!-- INPUT OCULTO PARA RESTAURAR BACKUP JSON -->
   <input type="file" id="restoreJsonInput" accept=".json" class="hidden" onchange="App.restoreBackupJSON(event)" />
+  <div id="addNewDropdownBackdrop" class="add-menu-backdrop hidden" onclick="App.closeAddMenu()" aria-hidden="true"></div>
 
   <!-- ===================================================================== -->
   <!-- CABECERA PRINCIPAL FIJA CON FILTRO DE MES GLOBAL Y PERMANENTE         -->
   <!-- ===================================================================== -->
-  <header class="bg-white dark:bg-slate-800 border-b border-slate-300 dark:border-slate-700 sticky top-0 z-40">
+  <header class="bg-white dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 sticky top-0 z-40">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 py-3 flex flex-wrap items-center justify-between gap-3">
       
       <!-- Izquierda: Solo Logo Camión Verde + "MiFlota RD" -->
       <div class="flex items-center gap-3">
-        <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-md border border-slate-300 bg-slate-100 text-slate-700 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200">
+        <div class="w-10 h-10 rounded-xl bg-emerald-600/15 border border-emerald-500/30 flex items-center justify-center text-emerald-600 dark:text-emerald-400 shrink-0">
           <i class="fa-solid fa-truck-moving text-lg"></i>
         </div>
         <span class="font-extrabold text-lg sm:text-xl tracking-tight text-slate-900 dark:text-white">MiFlota RD</span>
@@ -141,26 +154,26 @@
       <div class="flex flex-wrap items-center gap-2.5">
         
         <!-- 1. FILTRO DE MES GLOBAL Y PERSISTENTE (SIEMPRE VISIBLE EN TODAS LAS PESTAÑAS) -->
-        <div class="flex items-center gap-2 bg-slate-900 dark:bg-slate-950 text-white px-3.5 py-1.5 rounded-md border border-slate-800 shadow-none">
-          <i class="fa-regular fa-calendar-days text-slate-300 text-xs"></i>
+        <div class="flex items-center gap-2 bg-slate-900 dark:bg-slate-950 text-white px-3.5 py-1.5 rounded-xl border border-slate-800 shadow-sm">
+          <i class="fa-regular fa-calendar-days text-emerald-400 text-xs"></i>
           <span class="text-[11px] font-bold uppercase tracking-wider text-slate-300 hidden sm:inline">MES Y AÑO:</span>
-          <select id="monthFilter" onchange="App.renderAll()" class="h-9 rounded border border-white/15 bg-slate-800 px-3 py-1.5 text-sm font-semibold text-white focus:outline-none cursor-pointer"></select>
+          <select id="monthFilter" onchange="App.renderAll()" class="bg-slate-800 text-white text-xs sm:text-sm font-extrabold rounded-lg px-2.5 py-1 border border-white/15 focus:outline-none cursor-pointer"></select>
         </div>
 
         <!-- Botón Único "+ Agregar Nuevo..." con Dropdown -->
         <div class="relative" id="addNewDropdownWrapper">
-          <button type="button" onclick="App.toggleAddMenu(event)" class="btn-primary shadow-none !py-2">
+          <button type="button" id="addNewDropdownToggle" onclick="App.toggleAddMenu(event)" class="btn-emerald" aria-haspopup="true" aria-expanded="false" aria-controls="addNewDropdownMenu">
             <i class="fa-solid fa-plus"></i>
             <span>+ Agregar Nuevo...</span>
             <i id="addMenuChevron" class="fa-solid fa-chevron-down text-[11px] ml-0.5 transition-transform duration-150"></i>
           </button>
 
           <!-- Menú Desplegable -->
-          <div id="addNewDropdownMenu" class="hidden absolute right-0 mt-2 w-64 bg-white dark:bg-slate-800 rounded-md shadow-none border border-slate-300 dark:border-slate-700 py-2 z-50">
+          <div id="addNewDropdownMenu" class="add-menu-panel hidden" role="menu" aria-labelledby="addNewDropdownToggle">
             <div class="px-3.5 py-1.5 text-[10px] font-bold uppercase tracking-wider text-slate-400">Seleccionar Registro</div>
             
-            <button type="button" onclick="App.closeAddMenu(); App.openTripModal()" class="w-full text-left px-4 py-2.5 text-xs sm:text-sm font-medium text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700/70 flex items-center gap-3 transition">
-              <span class="w-7 h-7 rounded-md bg-slate-100 text-slate-600 dark:bg-slate-700 dark:text-slate-300 flex items-center justify-center shrink-0">
+            <button type="button" role="menuitem" onclick="App.closeAddMenu(); App.openTripModal()" class="w-full text-left px-4 py-3 text-xs sm:text-sm font-medium text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700/70 flex items-center gap-3 transition">
+              <span class="w-7 h-7 rounded-lg bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0">
                 <i class="fa-solid fa-route"></i>
               </span>
               <div>
@@ -169,8 +182,8 @@
               </div>
             </button>
 
-            <button type="button" onclick="App.closeAddMenu(); App.openScheduledModal()" class="w-full text-left px-4 py-2.5 text-xs sm:text-sm font-medium text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700/70 flex items-center gap-3 transition">
-              <span class="w-7 h-7 rounded-md bg-slate-100 text-slate-600 dark:bg-slate-700 dark:text-slate-300 flex items-center justify-center shrink-0">
+            <button type="button" role="menuitem" onclick="App.closeAddMenu(); App.openScheduledModal()" class="w-full text-left px-4 py-3 text-xs sm:text-sm font-medium text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700/70 flex items-center gap-3 transition">
+              <span class="w-7 h-7 rounded-lg bg-indigo-500/15 text-indigo-600 dark:text-indigo-400 flex items-center justify-center shrink-0">
                 <i class="fa-regular fa-bell"></i>
               </span>
               <div>
@@ -179,8 +192,8 @@
               </div>
             </button>
 
-            <button type="button" onclick="App.closeAddMenu(); App.openIncidentModal()" class="w-full text-left px-4 py-2.5 text-xs sm:text-sm font-medium text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700/70 flex items-center gap-3 transition">
-              <span class="w-7 h-7 rounded-md bg-slate-100 text-slate-600 dark:bg-slate-700 dark:text-slate-300 flex items-center justify-center shrink-0">
+            <button type="button" role="menuitem" onclick="App.closeAddMenu(); App.openIncidentModal()" class="w-full text-left px-4 py-3 text-xs sm:text-sm font-medium text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700/70 flex items-center gap-3 transition">
+              <span class="w-7 h-7 rounded-lg bg-rose-500/15 text-rose-600 dark:text-rose-400 flex items-center justify-center shrink-0">
                 <i class="fa-solid fa-triangle-exclamation"></i>
               </span>
               <div>
@@ -189,8 +202,8 @@
               </div>
             </button>
 
-            <button type="button" onclick="App.closeAddMenu(); App.openMaintenanceModal()" class="w-full text-left px-4 py-2.5 text-xs sm:text-sm font-medium text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700/70 flex items-center gap-3 transition">
-              <span class="w-7 h-7 rounded-md bg-slate-100 text-slate-600 dark:bg-slate-700 dark:text-slate-300 flex items-center justify-center shrink-0">
+            <button type="button" role="menuitem" onclick="App.closeAddMenu(); App.openMaintenanceModal()" class="w-full text-left px-4 py-3 text-xs sm:text-sm font-medium text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700/70 flex items-center gap-3 transition">
+              <span class="w-7 h-7 rounded-lg bg-amber-500/15 text-amber-600 dark:text-amber-400 flex items-center justify-center shrink-0">
                 <i class="fa-solid fa-screwdriver-wrench"></i>
               </span>
               <div>
@@ -202,14 +215,14 @@
         </div>
 
         <!-- Botón Modo Claro / Oscuro -->
-        <button type="button" onclick="App.toggleTheme()" class="btn-outline !p-2 rounded" title="Cambiar Modo Claro / Oscuro">
+        <button type="button" onclick="App.toggleTheme()" class="btn-outline !p-2 rounded-xl" title="Cambiar Modo Claro / Oscuro">
           <i id="themeIcon" class="fa-solid fa-moon text-sm"></i>
         </button>
 <!-- Estado de Sincronización y Botón Cerrar Sesión -->
-        <span id="cloudSyncBadge" class="hidden sm:inline-flex items-center gap-1.5 text-[11px] font-semibold px-2.5 py-1 rounded-md bg-emerald-50 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800">
+        <span id="cloudSyncBadge" class="hidden sm:inline-flex items-center gap-1.5 text-[11px] font-semibold px-2.5 py-1 rounded-lg bg-emerald-50 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800">
           <i class="fa-solid fa-cloud-check"></i> Nube Activa
         </span>
-        <button type="button" onclick="App.logoutSupabase()" class="btn-outline !p-2 rounded text-slate-600" title="Cerrar Sesión">
+        <button type="button" onclick="App.logoutSupabase()" class="btn-outline !p-2 rounded-xl text-rose-600 hover:bg-rose-50" title="Cerrar Sesión">
           <i class="fa-solid fa-right-from-bracket text-sm"></i>
         </button>
       </div>
@@ -249,7 +262,7 @@
             <span>Analítica Visual</span>
           </button>
           <button type="button" onclick="App.switchTab('reports')" id="tabBtn_reports" class="tab-btn">
-            <i class="fa-solid fa-file-export text-xs text-slate-500 dark:text-slate-400"></i>
+            <i class="fa-solid fa-file-export text-xs text-emerald-600 dark:text-emerald-400"></i>
             <span>Reportes y Exportación</span>
           </button>
           <button type="button" onclick="App.switchTab('catalogs')" id="tabBtn_catalogs" class="tab-btn">
@@ -281,10 +294,10 @@
       <!-- KPIS FINANCIEROS DEL PERIODO SELECCIONADO -->
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <!-- KPI 1: Ganancia Neta -->
-        <div class="card p-5">
+        <div class="card p-5 border-l-4 border-l-emerald-600">
           <div class="flex items-center justify-between mb-1.5">
             <span class="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">Ganancia Neta</span>
-            <i class="fa-solid fa-sack-dollar text-slate-500 dark:text-slate-400"></i>
+            <i class="fa-solid fa-sack-dollar text-emerald-600 dark:text-emerald-400"></i>
           </div>
           <div id="kpiOwnerNet" class="text-2xl font-mono font-bold text-slate-900 dark:text-white">RD$ 0.00</div>
           <p id="kpiMarginPercent" class="text-xs text-slate-500 dark:text-slate-400 mt-1">Fletes − (Viajes + Taller + Incidencias)</p>
@@ -307,7 +320,7 @@
         <div class="card p-5">
           <div class="flex items-center justify-between mb-1.5">
             <span class="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">Gastos Viajes</span>
-            <i class="fa-solid fa-gas-pump text-slate-500 dark:text-slate-400"></i>
+            <i class="fa-solid fa-gas-pump text-amber-600 dark:text-amber-400"></i>
           </div>
           <div id="kpiTripExpensesTotal" class="text-2xl font-mono font-bold text-slate-900 dark:text-white">RD$ 0.00</div>
           <p id="kpiTripExpensesBreakdown" class="text-[11px] text-slate-500 dark:text-slate-400 mt-1 truncate">
@@ -319,7 +332,7 @@
         <div class="card p-5">
           <div class="flex items-center justify-between mb-1.5">
             <span class="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">Gastos Taller e Incidencias</span>
-            <i class="fa-solid fa-screwdriver-wrench text-slate-500 dark:text-slate-400"></i>
+            <i class="fa-solid fa-screwdriver-wrench text-rose-600 dark:text-rose-400"></i>
           </div>
           <div id="kpiMaintAndIncTotal" class="text-2xl font-mono font-bold text-rose-600 dark:text-rose-400">RD$ 0.00</div>
           <p id="kpiMaintAndIncBreakdown" class="text-[11px] text-slate-500 dark:text-slate-400 mt-1">
@@ -336,17 +349,16 @@
             <p id="periodSummaryLabel" class="text-xs text-slate-500 dark:text-slate-400"></p>
           </div>
           <div class="flex flex-wrap items-center gap-2">
-            <input type="search" id="tripSearchInput" oninput="App.renderTripsTab()" placeholder="Buscar por ruta, camión o nota..." class="inp !w-full sm:!w-64" aria-label="Buscar viajes" />
-            <select id="tripFilterDriver" onchange="App.renderTripsTab()" class="inp !w-auto">
+            <select id="tripFilterDriver" onchange="App.renderTripsTab()" class="inp !w-auto !py-1.5 text-xs">
               <option value="ALL">Todos los choferes</option>
             </select>
-            <select id="tripFilterTruck" onchange="App.renderTripsTab()" class="inp !w-auto">
+            <select id="tripFilterTruck" onchange="App.renderTripsTab()" class="inp !w-auto !py-1.5 text-xs">
               <option value="ALL">Todos los camiones</option>
             </select>
           </div>
         </div>
 
-        <div class="overflow-x-auto border border-slate-300 dark:border-slate-700 rounded-md">
+        <div class="table-scroll">
           <table class="w-full border-collapse">
             <thead>
               <tr>
@@ -361,12 +373,12 @@
                 <th class="th text-right">Ayudante</th>
                 <th class="th text-right">Otros</th>
                 <th class="th text-right">Gasto Total</th>
-                <th class="th text-right">Ganancia Neta</th>
+                <th class="th text-right bg-emerald-50 dark:bg-emerald-950/40 text-emerald-800 dark:text-emerald-300">Ganancia Neta</th>
                 <th class="th text-center">Acciones</th>
               </tr>
             </thead>
             <tbody id="tableTripsBody"></tbody>
-            <tfoot id="tableTripsFoot" class="bg-slate-50 dark:bg-slate-800/90 font-mono font-bold text-xs border-t-2 border-slate-300 dark:border-slate-700"></tfoot>
+            <tfoot id="tableTripsFoot" class="bg-slate-50 dark:bg-slate-800/90 font-mono font-bold text-xs border-t-2 border-slate-200 dark:border-slate-700"></tfoot>
           </table>
         </div>
       </div>
@@ -419,7 +431,7 @@
           <h3 class="font-bold text-sm sm:text-base text-slate-900 dark:text-white">Registro de Mantenimientos de Taller (Periodo Seleccionado)</h3>
           <button type="button" onclick="App.openMaintenanceModal()" class="btn-outline !py-1.5">+ Agregar Mantenimiento</button>
         </div>
-        <div class="overflow-x-auto border border-slate-300 dark:border-slate-700 rounded-md">
+        <div class="table-scroll">
           <table class="w-full border-collapse">
             <thead>
               <tr>
@@ -447,12 +459,12 @@
             Registro de choques, averías o multas del periodo seleccionado. El costo en RD$ se descuenta automáticamente de la Ganancia Neta del camión afectado.
           </p>
         </div>
-        <button type="button" onclick="App.openIncidentModal()" class="btn-primary">
+        <button type="button" onclick="App.openIncidentModal()" class="btn-rose">
           <i class="fa-solid fa-plus"></i> + Registrar Incidencia
         </button>
       </div>
 
-      <div class="overflow-x-auto border border-slate-300 dark:border-slate-700 rounded-md">
+      <div class="table-scroll">
         <table class="w-full border-collapse">
           <thead>
             <tr>
@@ -517,8 +529,8 @@
     <!-- =================================================================== -->
     <section id="tabPanel_reports" class="hidden space-y-6">
       <div class="card p-6">
-        <div class="pb-5 border-b border-slate-300 dark:border-slate-700">
-          <span class="text-[11px] font-bold uppercase tracking-wider text-blue-900 dark:text-blue-400 block">Centro de Documentos Contables</span>
+        <div class="pb-5 border-b border-slate-200 dark:border-slate-700">
+          <span class="text-[11px] font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400 block">Centro de Documentos Contables</span>
           <h2 class="text-lg sm:text-xl font-extrabold text-slate-900 dark:text-white mt-0.5">Reportes y Exportación</h2>
           <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">
             Resumen actual para <b id="reportPeriodTitle" class="text-slate-900 dark:text-white">Todos los meses</b>. Al hacer clic en descargar, podrás confirmar o elegir el mes exacto a exportar.
@@ -527,19 +539,19 @@
 
         <!-- Resumen del Periodo Seleccionado -->
         <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 my-6">
-          <div class="p-4 rounded-md bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700">
+          <div class="p-4 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700">
             <span class="text-[11px] font-semibold uppercase text-slate-400 block">Viajes del Periodo</span>
             <span id="repTripsCount" class="text-lg font-mono font-bold text-slate-900 dark:text-white mt-1 block">0 viajes</span>
           </div>
-          <div class="p-4 rounded-md bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700">
+          <div class="p-4 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700">
             <span class="text-[11px] font-semibold uppercase text-slate-400 block">Ingresos Fletes</span>
             <span id="repGross" class="text-lg font-mono font-bold text-slate-900 dark:text-white mt-1 block">RD$ 0.00</span>
           </div>
-          <div class="p-4 rounded-md bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700">
+          <div class="p-4 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700">
             <span class="text-[11px] font-semibold uppercase text-slate-400 block">Gastos y Taller</span>
             <span id="repTotalExpenses" class="text-lg font-mono font-bold text-rose-600 mt-1 block">RD$ 0.00</span>
           </div>
-          <div class="p-4 rounded-md bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800/60">
+          <div class="p-4 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800/60">
             <span class="text-[11px] font-bold uppercase text-emerald-800 dark:text-emerald-300 block">Ganancia Neta</span>
             <span id="repNet" class="text-lg font-mono font-bold text-emerald-700 dark:text-emerald-400 mt-1 block">RD$ 0.00</span>
           </div>
@@ -548,9 +560,9 @@
         <!-- Tarjetas de Exportación con Popup de Selección de Periodo -->
         <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
           <!-- Tarjeta 1: Reporte Corporativo PDF -->
-          <div class="p-6 rounded-md border border-slate-300 dark:border-slate-700 hover:border-slate-500 dark:hover:border-slate-500 transition flex flex-col justify-between bg-white dark:bg-slate-900">
+          <div class="p-6 rounded-2xl border-2 border-slate-200 dark:border-slate-700 hover:border-slate-900 dark:hover:border-slate-400 transition flex flex-col justify-between bg-slate-50/50 dark:bg-slate-900/40">
             <div class="flex items-start gap-4">
-              <div class="flex h-14 w-14 shrink-0 items-center justify-center rounded-md border border-slate-300 bg-slate-100 text-slate-600 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300 text-2xl">
+              <div class="w-14 h-14 rounded-2xl bg-rose-600/10 border border-rose-500/20 text-rose-600 dark:text-rose-400 flex items-center justify-center text-2xl shrink-0">
                 <i class="fa-solid fa-file-pdf"></i>
               </div>
               <div>
@@ -560,7 +572,7 @@
                 </p>
               </div>
             </div>
-            <div class="mt-6 pt-4 border-t border-slate-300 dark:border-slate-700 flex justify-end">
+            <div class="mt-6 pt-4 border-t border-slate-200 dark:border-slate-700 flex justify-end">
               <button type="button" onclick="App.openExportPeriodModal('PDF')" class="btn-primary w-full sm:w-auto !py-2.5 !px-5">
                 <i class="fa-solid fa-file-pdf"></i>
                 <span>Descargar PDF...</span>
@@ -569,9 +581,9 @@
           </div>
 
           <!-- Tarjeta 2: Excel Real (.xlsx con SheetJS) -->
-          <div class="p-6 rounded-md border border-slate-300 dark:border-slate-700 hover:border-slate-500 dark:hover:border-slate-500 transition flex flex-col justify-between bg-white dark:bg-slate-900">
+          <div class="p-6 rounded-2xl border-2 border-slate-200 dark:border-slate-700 hover:border-emerald-600 dark:hover:border-emerald-400 transition flex flex-col justify-between bg-slate-50/50 dark:bg-slate-900/40">
             <div class="flex items-start gap-4">
-              <div class="flex h-14 w-14 shrink-0 items-center justify-center rounded-md border border-slate-300 bg-slate-100 text-slate-600 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300 text-2xl">
+              <div class="w-14 h-14 rounded-2xl bg-emerald-600/10 border border-emerald-500/20 text-emerald-600 dark:text-emerald-400 flex items-center justify-center text-2xl shrink-0">
                 <i class="fa-solid fa-file-excel"></i>
               </div>
               <div>
@@ -581,8 +593,8 @@
                 </p>
               </div>
             </div>
-            <div class="mt-6 pt-4 border-t border-slate-300 dark:border-slate-700 flex justify-end">
-              <button type="button" onclick="App.openExportPeriodModal('EXCEL')" class="btn-primary w-full sm:w-auto !py-2.5 !px-5">
+            <div class="mt-6 pt-4 border-t border-slate-200 dark:border-slate-700 flex justify-end">
+              <button type="button" onclick="App.openExportPeriodModal('EXCEL')" class="btn-emerald w-full sm:w-auto !py-2.5 !px-5">
                 <i class="fa-solid fa-file-excel"></i>
                 <span>Descargar Excel (.xlsx)...</span>
               </button>
@@ -623,20 +635,20 @@
     <!-- PESTAÑA 9: PESTAÑA DEDICADA DE RESPALDO Y SEGURIDAD                 -->
     <!-- =================================================================== -->
     <section id="tabPanel_security" class="hidden space-y-6">
-      <div class="card p-6">
+      <div class="card p-6 border-l-4 border-l-emerald-600">
         <div class="flex items-start gap-4">
-          <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-md border border-slate-300 bg-slate-100 text-slate-600 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300 text-xl">
+          <div class="w-12 h-12 rounded-2xl bg-emerald-600/10 border border-emerald-500/20 text-emerald-600 dark:text-emerald-400 flex items-center justify-center text-xl shrink-0">
             <i class="fa-solid fa-shield-halved"></i>
           </div>
           <div class="flex-1">
-            <span class="text-[11px] font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400 block">Protección de Información Local</span>
+            <span class="text-[11px] font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400 block">Protección de Información Local</span>
             <h2 class="text-lg font-extrabold text-slate-900 dark:text-white mt-0.5">Copia de Seguridad y Restauración (.JSON)</h2>
             <p class="text-xs text-slate-500 dark:text-slate-400 mt-1 max-w-2xl leading-relaxed">
               Toda la información de <b>MiFlota RD</b> se almacena localmente en este navegador. Descargue periódicamente una copia de seguridad (`.json`) para resguardar sus registros contables o trasladarlos a otro equipo.
             </p>
 
             <div class="flex flex-wrap items-center gap-3 mt-5 pt-4 border-t border-slate-100 dark:border-slate-700">
-              <button type="button" onclick="App.exportBackupJSON()" class="btn-primary">
+              <button type="button" onclick="App.exportBackupJSON()" class="btn-emerald">
                 <i class="fa-solid fa-download"></i>
                 <span>Descargar Copia de Seguridad (.JSON)</span>
               </button>
@@ -650,10 +662,10 @@
       </div>
 
       <!-- Zona Delicada: Vaciar Sistema -->
-      <div class="card p-6 bg-white dark:bg-slate-900">
+      <div class="card p-6 border-2 border-rose-500/40 bg-rose-50/30 dark:bg-rose-950/15">
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div class="flex items-start gap-4">
-            <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-md border border-slate-300 bg-slate-100 text-slate-600 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300 text-xl">
+            <div class="w-12 h-12 rounded-2xl bg-rose-600/15 text-rose-600 dark:text-rose-400 flex items-center justify-center text-xl shrink-0">
               <i class="fa-solid fa-triangle-exclamation"></i>
             </div>
             <div>
@@ -664,7 +676,7 @@
               </p>
             </div>
           </div>
-          <button type="button" onclick="App.clearAllData()" class="btn-outline shrink-0 self-end sm:self-center !py-2.5 !px-4">
+          <button type="button" onclick="App.clearAllData()" class="btn-rose shrink-0 self-end sm:self-center !py-2.5 !px-4">
             <i class="fa-solid fa-trash-can"></i>
             <span>Vaciar Todo el Sistema</span>
           </button>
@@ -674,10 +686,2050 @@
 
   </main>
 
-  <footer class="mt-auto py-4 text-center text-xs text-slate-400 border-t border-slate-300 dark:border-slate-800 bg-white dark:bg-slate-900">
-    MiFlota RD · Almacenamiento Local (`localStorage`)
+  <footer class="mt-auto py-3 text-center text-[11px] text-slate-400 border-t border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 mb-14 sm:mb-0">
+    MiFlota RD © 2026
   </footer>
 
-  <script type="module" src="./app.bundle.js"></script>
+  <!-- ===================================================================== -->
+  <!-- LÓGICA JAVASCRIPT DE PRODUCCIÓN                                       -->
+  <!-- ===================================================================== -->
+  <script>
+const SUPABASE_URL = 'https://pofpqcvejdrlxindicpc.supabase.co';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBvZnBxY3ZlamRybHhpbmRpY3BjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI2MTc0NzUsImV4cCI6MjEwODE5MzQ3NX0.flLYbLEnM3gro3JpG4ANvrCiks7nXauGPxDN4uVIqIE';
+    const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    const STORAGE_KEY = 'miflota_rd_prod_v1';
+    const THEME_KEY = 'miflota_rd_theme_prod_v1';
+
+    const MONTHS_ES = [
+      'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
+      'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
+    ];
+
+    const App = {
+      db: null,
+      activeTab: 'trips',
+      chartDoughnut: null,
+      chartBar: null,
+
+      uid(prefix = 'id') {
+        return `${prefix}_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 6)}`;
+      },
+
+      formatRD(val) {
+        const num = Number(val) || 0;
+        const sign = num < 0 ? '-' : '';
+        const formatted = new Intl.NumberFormat('en-US', {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2
+        }).format(Math.abs(num));
+        return `${sign}RD$ ${formatted}`;
+      },
+
+      formatTime12h(timeStr) {
+        if (!timeStr) return 'Sin hora';
+        const [hStr, mStr] = timeStr.split(':');
+        let h = parseInt(hStr, 10);
+        if (isNaN(h)) return timeStr;
+        const ampm = h >= 12 ? 'PM' : 'AM';
+        h = h % 12 || 12;
+        return `${String(h).padStart(2, '0')}:${mStr} ${ampm}`;
+      },
+
+      formatMonthLabel(yyyyMm) {
+        if (!yyyyMm || yyyyMm === 'ALL') return 'Todos los meses (Histórico)';
+        const [year, month] = yyyyMm.split('-');
+        const mIdx = parseInt(month, 10) - 1;
+        return `${MONTHS_ES[mIdx] || month} ${year}`;
+      },
+
+      offsetDateISO(days) {
+        const d = new Date();
+        d.setDate(d.getDate() + days);
+        return d.toISOString().split('T')[0];
+      },
+
+      // Base de datos inicial 100% en blanco
+      getEmptyDatabase() {
+        return {
+          trucks: [],
+          drivers: [],
+          helpers: [],
+          routes: [],
+          trips: [],
+          scheduledTrips: [],
+          maintenances: [],
+          incidents: []
+        };
+      },
+
+      toggleAddMenu(e) {
+        if (e) e.stopPropagation();
+        const menu = document.getElementById('addNewDropdownMenu');
+        if (!menu) return;
+        const isOpen = menu.classList.contains('hidden');
+        menu.classList.toggle('hidden', !isOpen);
+        const backdrop = document.getElementById('addNewDropdownBackdrop');
+        if (backdrop) backdrop.classList.toggle('hidden', !isOpen);
+        const chev = document.getElementById('addMenuChevron');
+        const toggle = document.getElementById('addNewDropdownToggle');
+        if (chev) chev.style.transform = isOpen ? 'rotate(180deg)' : 'rotate(0deg)';
+        if (toggle) toggle.setAttribute('aria-expanded', String(isOpen));
+        document.body.style.overflow = isOpen && window.matchMedia('(max-width: 639px)').matches ? 'hidden' : '';
+      },
+
+      closeAddMenu() {
+        const menu = document.getElementById('addNewDropdownMenu');
+        if (menu) menu.classList.add('hidden');
+        const backdrop = document.getElementById('addNewDropdownBackdrop');
+        if (backdrop) backdrop.classList.add('hidden');
+        const chev = document.getElementById('addMenuChevron');
+        const toggle = document.getElementById('addNewDropdownToggle');
+        if (chev) chev.style.transform = 'rotate(0deg)';
+        if (toggle) toggle.setAttribute('aria-expanded', 'false');
+        document.body.style.overflow = '';
+      },
+
+      toggleAuthPassword() {
+        const input = document.getElementById('authPassword');
+        const button = document.getElementById('authPasswordToggle');
+        const icon = document.getElementById('authPasswordToggleIcon');
+        if (!input || !button || !icon) return;
+        const showPassword = input.type === 'password';
+        input.type = showPassword ? 'text' : 'password';
+        button.setAttribute('aria-pressed', String(showPassword));
+        button.setAttribute('aria-label', showPassword ? 'Ocultar contraseña' : 'Mostrar contraseña');
+        icon.className = showPassword ? 'fa-regular fa-eye-slash' : 'fa-regular fa-eye';
+      },
+
+      initTheme() {
+        const saved = localStorage.getItem(THEME_KEY) || 'light';
+        document.documentElement.classList.toggle('dark', saved === 'dark');
+        this.updateThemeIcon();
+      },
+
+      toggleTheme() {
+        const isDark = document.documentElement.classList.toggle('dark');
+        localStorage.setItem(THEME_KEY, isDark ? 'dark' : 'light');
+        this.updateThemeIcon();
+        if (this.activeTab === 'analytics') this.renderAnalyticsCharts();
+      },
+
+      updateThemeIcon() {
+        const isDark = document.documentElement.classList.contains('dark');
+        const icon = document.getElementById('themeIcon');
+        if (icon) icon.className = isDark ? 'fa-solid fa-sun text-amber-400 text-sm' : 'fa-solid fa-moon text-slate-600 text-sm';
+      },
+
+      currentUser: null,
+
+      async init() {
+        this.initTheme();
+        this.db = this.getEmptyDatabase();
+
+        document.addEventListener('click', (e) => {
+          const wrapper = document.getElementById('addNewDropdownWrapper');
+          if (wrapper && !wrapper.contains(e.target)) {
+            this.closeAddMenu();
+          }
+        });
+        document.addEventListener('keydown', (e) => {
+          if (e.key === 'Escape') this.closeAddMenu();
+        });
+        window.addEventListener('resize', () => {
+          const menu = document.getElementById('addNewDropdownMenu');
+          if (menu && !menu.classList.contains('hidden')) {
+            document.body.style.overflow = window.matchMedia('(max-width: 639px)').matches ? 'hidden' : '';
+          }
+        });
+
+        // Verificar si hay sesión activa en Supabase
+        const { data: { session } } = await supabaseClient.auth.getSession();
+        if (session && session.user) {
+          await this.unlockAndLoadCloudData(session.user);
+        } else {
+          document.getElementById('authGateOverlay').classList.remove('hidden');
+        }
+      },
+
+      async loginWithSupabase(e) {
+        e.preventDefault();
+        const email = document.getElementById('authEmail').value.trim();
+        const password = document.getElementById('authPassword').value;
+        const errEl = document.getElementById('authErrorMsg');
+        const btn = document.getElementById('authSubmitBtn');
+
+        errEl.classList.add('hidden');
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Verificando...';
+
+        const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
+
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fa-solid fa-lock-open"></i> <span>Iniciar Sesión Segura</span>';
+
+        if (error) {
+          errEl.textContent = 'Credenciales inválidas. Verifica tu correo y contraseña.';
+          errEl.classList.remove('hidden');
+          return;
+        }
+
+        if (data && data.user) {
+          await this.unlockAndLoadCloudData(data.user);
+          this.showToast('Sesión iniciada y datos sincronizados');
+        }
+      },
+
+      async unlockAndLoadCloudData(user) {
+        this.currentUser = user;
+        document.getElementById('authGateOverlay').classList.add('hidden');
+
+        // 1. Buscar datos del usuario en la nube (Supabase)
+        const { data, error } = await supabaseClient
+          .from('flota_cloud_store')
+          .select('db_data')
+          .eq('user_id', user.id)
+          .maybeSingle();
+
+        if (!error && data && data.db_data && Object.keys(data.db_data).length > 0) {
+          this.db = data.db_data;
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(this.db));
+        } else {
+          // Si es primera vez en la nube, revisar si tenía algo local o iniciar vacío
+          const savedLocal = localStorage.getItem(STORAGE_KEY);
+          this.db = savedLocal ? JSON.parse(savedLocal) : this.getEmptyDatabase();
+          await this.save();
+        }
+
+        ['trucks', 'drivers', 'helpers', 'routes', 'trips', 'scheduledTrips', 'maintenances', 'incidents'].forEach(k => {
+          if (!Array.isArray(this.db[k])) this.db[k] = [];
+        });
+
+        this.populateMonthFilter();
+        this.renderAll();
+      },
+
+      async logoutSupabase() {
+        if (!confirm('¿Cerrar sesión en este dispositivo?')) return;
+        await supabaseClient.auth.signOut();
+        this.currentUser = null;
+        document.getElementById('authGateOverlay').classList.remove('hidden');
+      },
+
+      async save() {
+        // 1. Guardado instantáneo en memoria local (velocidad inmediata)
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(this.db));
+
+        // 2. Sincronización en tiempo real con la Nube (Supabase)
+        if (!this.currentUser) return;
+        const badge = document.getElementById('cloudSyncBadge');
+        if (badge) badge.innerHTML = '<i class="fa-solid fa-arrows-rotate fa-spin"></i> Guardando...';
+
+        const { error } = await supabaseClient
+          .from('flota_cloud_store')
+          .upsert({
+            user_id: this.currentUser.id,
+            db_data: this.db,
+            updated_at: new Date().toISOString()
+          });
+
+        if (badge) {
+          badge.innerHTML = error
+            ? '<i class="fa-solid fa-triangle-exclamation text-rose-500"></i> Solo Local'
+            : '<i class="fa-solid fa-cloud-check"></i> Sincronizado';
+        }
+      },
+      showToast(msg, isError = false) {
+        const t = document.getElementById('toast');
+        document.getElementById('toastIcon').className = isError
+          ? 'fa-solid fa-circle-exclamation text-rose-500 text-base'
+          : 'fa-solid fa-circle-check text-emerald-500 text-base';
+        document.getElementById('toastMsg').textContent = msg;
+        t.classList.remove('hidden');
+        clearTimeout(this._timer);
+        this._timer = setTimeout(() => t.classList.add('hidden'), 3200);
+      },
+
+      openModal(title, html, maxWidthClass = 'max-w-2xl') {
+        document.getElementById('modalContainer').className = `card w-full ${maxWidthClass} overflow-hidden flex flex-col max-h-[92vh]`;
+        document.getElementById('modalTitle').textContent = title;
+        document.getElementById('modalBody').innerHTML = html;
+        document.getElementById('modalOverlay').classList.remove('hidden');
+      },
+
+      closeModal() {
+        document.getElementById('modalOverlay').classList.add('hidden');
+      },
+
+      // Cruza fechas de forma segura contra el selector de mes global ("YYYY-MM" o "ALL")
+      matchesPeriod(recordDate, periodCode) {
+        const target = periodCode || this.getSelectedMonth();
+        if (!target || target === 'ALL') return true;
+        const clean = String(recordDate || '').trim();
+        return clean.slice(0, 7) === target;
+      },
+
+      getAvailableMonths() {
+        const currentMonth = this.offsetDateISO(0).slice(0, 7);
+        const set = new Set([currentMonth]);
+        this.db.trips.forEach(t => { if (t.date) set.add(String(t.date).trim().slice(0, 7)); });
+        this.db.maintenances.forEach(m => { if (m.date) set.add(String(m.date).trim().slice(0, 7)); });
+        this.db.incidents.forEach(i => { if (i.date) set.add(String(i.date).trim().slice(0, 7)); });
+        this.db.scheduledTrips.forEach(s => { if (s.date) set.add(String(s.date).trim().slice(0, 7)); });
+        return [...set].filter(Boolean).sort().reverse();
+      },
+
+      populateMonthFilter(forceSelectMonth = null) {
+        const sel = document.getElementById('monthFilter');
+        const prev = forceSelectMonth || sel?.value || 'ALL';
+        const sorted = this.getAvailableMonths();
+        sel.innerHTML = `<option value="ALL">Todos los meses (Histórico)</option>` +
+          sorted.map(m => `<option value="${m}">${this.formatMonthLabel(m)}</option>`).join('');
+        if ([...sel.options].some(o => o.value === prev)) {
+          sel.value = prev;
+        } else {
+          sel.value = 'ALL';
+        }
+      },
+
+      getSelectedMonth() {
+        const val = document.getElementById('monthFilter')?.value;
+        return val ? val : 'ALL';
+      },
+
+      // Si el usuario tiene un mes específico filtrado y registra algo de otro mes, sincroniza el filtro para que vea su registro de inmediato
+      syncFilterWithNewRecordDate(dateStr) {
+        const current = this.getSelectedMonth();
+        const recMonth = String(dateStr || '').trim().slice(0, 7);
+        if (current !== 'ALL' && recMonth && recMonth !== current) {
+          this.populateMonthFilter(recMonth);
+        } else {
+          this.populateMonthFilter(current);
+        }
+      },
+
+      getFilteredTrips(monthOverride = null) {
+        const m = monthOverride || this.getSelectedMonth();
+        return this.db.trips
+          .filter(t => this.matchesPeriod(t.date, m))
+          .sort((a, b) => String(b.date || '').localeCompare(String(a.date || '')));
+      },
+
+      getFilteredMaintenances(monthOverride = null) {
+        const m = monthOverride || this.getSelectedMonth();
+        return this.db.maintenances
+          .filter(x => this.matchesPeriod(x.date, m))
+          .sort((a, b) => String(b.date || '').localeCompare(String(a.date || '')));
+      },
+
+      getFilteredIncidents(monthOverride = null) {
+        const m = monthOverride || this.getSelectedMonth();
+        return this.db.incidents
+          .filter(i => this.matchesPeriod(i.date, m))
+          .sort((a, b) => String(b.date || '').localeCompare(String(a.date || '')));
+      },
+
+      getAllScheduledSorted(monthOverride = null) {
+        const m = monthOverride || this.getSelectedMonth();
+        return this.db.scheduledTrips
+          .filter(s => this.matchesPeriod(s.date, m))
+          .sort((a, b) => `${a.date}T${a.departureTime || '00:00'}`.localeCompare(`${b.date}T${b.departureTime || '00:00'}`));
+      },
+
+      calcTrip(t) {
+        const gross = Number(t.freightGross) || 0;
+        const fuel = Number(t.fuelCost) || 0;
+        const tolls = Number(t.tollsCost) || 0;
+        const drvPay = Number(t.driverPay) || 0;
+        const hlpPay = Number(t.helperPay) || 0;
+        const other = Number(t.otherCost) || 0;
+        const totalExpense = fuel + tolls + drvPay + hlpPay + other;
+        const netOwner = gross - totalExpense;
+        const hasAnyFinancial = Boolean(
+          (t.freightGross !== '' && t.freightGross !== null && t.freightGross !== undefined && Number(t.freightGross) > 0) ||
+          totalExpense > 0
+        );
+        return { gross, fuel, tolls, drvPay, hlpPay, other, totalExpense, netOwner, hasAnyFinancial };
+      },
+
+      getTruckName(id) {
+        if (!id) return 'Por asignar';
+        return this.db.trucks.find(x => String(x.id) === String(id))?.name || 'Por asignar';
+      },
+
+      getDriverName(id) {
+        if (!id) return 'Por asignar';
+        return this.db.drivers.find(x => String(x.id) === String(id))?.name || 'Por asignar';
+      },
+
+      getHelpersNames(ids = []) {
+        if (!ids || ids.length === 0) return 'Sin ayudante';
+        return ids.map(id => this.db.helpers.find(x => String(x.id) === String(id))?.name).filter(Boolean).join(', ') || 'Sin ayudante';
+      },
+
+      switchTab(tab) {
+        this.activeTab = tab;
+        ['trips', 'scheduled', 'trucks', 'incidents', 'drivers', 'analytics', 'reports', 'catalogs', 'security'].forEach(t => {
+          const panel = document.getElementById('tabPanel_' + t);
+          const btn = document.getElementById('tabBtn_' + t);
+          if (panel) panel.classList.toggle('hidden', t !== tab);
+          if (btn) btn.className = t === tab ? 'tab-btn tab-btn-active' : 'tab-btn';
+        });
+        if (tab === 'analytics') {
+          this.renderAnalyticsCharts();
+        }
+      },
+
+      getPeriodSummary(monthOverride = null) {
+        const trips = this.getFilteredTrips(monthOverride);
+        const maints = this.getFilteredMaintenances(monthOverride);
+        const incidents = this.getFilteredIncidents(monthOverride);
+        const scheduled = this.getAllScheduledSorted(monthOverride);
+
+        let gross = 0, fuel = 0, tolls = 0, drvPay = 0, hlpPay = 0, other = 0, tripExp = 0, tripNet = 0, clients = 0;
+
+        trips.forEach(t => {
+          const m = this.calcTrip(t);
+          gross += m.gross; fuel += m.fuel; tolls += m.tolls;
+          drvPay += m.drvPay; hlpPay += m.hlpPay; other += m.other;
+          tripExp += m.totalExpense; tripNet += m.netOwner;
+          clients += Number(t.clientsCount) || 0;
+        });
+
+        const maintTotal = maints.reduce((s, x) => s + (Number(x.cost) || 0), 0);
+        const incidentTotal = incidents.reduce((s, x) => s + (Number(x.cost) || 0), 0);
+        const finalOwnerNet = tripNet - maintTotal - incidentTotal;
+        const marginPct = gross > 0 ? ((finalOwnerNet / gross) * 100).toFixed(1) : 0;
+
+        return { trips, maints, incidents, scheduled, gross, fuel, tolls, drvPay, hlpPay, other, tripExp, tripNet, maintTotal, incidentTotal, finalOwnerNet, clients, marginPct };
+      },
+
+      renderRemindersBanner() {
+        const container = document.getElementById('remindersBannerContainer');
+        const today = this.offsetDateISO(0);
+        const tomorrow = this.offsetDateISO(1);
+        const allSched = this.getAllScheduledSorted();
+        const urgent = allSched.filter(s => s.date === today || s.date === tomorrow || s.date < today);
+
+        if (urgent.length === 0) {
+          container.innerHTML = '';
+          return;
+        }
+
+        const rowsHtml = urgent.map(s => {
+          const isToday = s.date === today;
+          const isTomorrow = s.date === tomorrow;
+          const badge = isToday
+            ? `<span class="px-2 py-0.5 rounded text-[10px] font-bold uppercase bg-amber-500 text-slate-950">HOY</span>`
+            : (isTomorrow
+                ? `<span class="px-2 py-0.5 rounded text-[10px] font-bold uppercase bg-slate-900 dark:bg-white text-white dark:text-slate-900">MAÑANA</span>`
+                : `<span class="px-2 py-0.5 rounded text-[10px] font-bold uppercase bg-rose-600 text-white">PENDIENTE</span>`);
+
+          return `
+            <div class="p-3 rounded-lg bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <div class="text-xs">
+                <div class="flex flex-wrap items-center gap-2">
+                  ${badge}
+                  <span class="font-mono font-bold">${s.date}</span>
+                  <span class="text-amber-700 dark:text-amber-400 font-semibold"><i class="fa-regular fa-bell mr-1"></i>Recordar: ${this.formatTime12h(s.reminderTime || '06:00')}</span>
+                  <span class="text-emerald-700 dark:text-emerald-400 font-semibold"><i class="fa-solid fa-truck-fast mr-1"></i>Salida: ${this.formatTime12h(s.departureTime || '08:00')}</span>
+                  <span class="font-bold text-slate-900 dark:text-white">${s.route || 'Ruta por definir'}</span>
+                </div>
+                <div class="text-slate-500 dark:text-slate-400 mt-1">
+                  Camión: <b>${this.getTruckName(s.truckId)}</b> · Chofer: <b>${this.getDriverName(s.driverId)}</b>
+                  ${s.notes ? ` · <i>"${s.notes}"</i>` : ''}
+                </div>
+              </div>
+              <div class="flex items-center gap-2 shrink-0 self-end sm:self-center">
+                <button type="button" onclick="App.liquidateScheduledTrip('${s.id}')" class="btn-emerald !py-1.5 !px-3 text-xs">
+                  <i class="fa-solid fa-check"></i> Liquidar
+                </button>
+                <button type="button" onclick="App.openScheduledModal('${s.id}')" class="btn-outline !py-1.5 !px-2.5 text-xs">
+                  <i class="fa-solid fa-pen"></i>
+                </button>
+              </div>
+            </div>
+          `;
+        }).join('');
+
+        container.innerHTML = `
+          <div class="card p-4 border-l-4 border-l-amber-500">
+            <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
+              <div class="flex items-center gap-2">
+                <i class="fa-solid fa-bell text-amber-500"></i>
+                <h3 class="text-xs sm:text-sm font-bold uppercase tracking-wider text-slate-900 dark:text-white">
+                  Recordatorio de Viajes Anticipados (Hoy / Mañana)
+                </h3>
+              </div>
+              <button type="button" onclick="App.switchTab('scheduled')" class="text-xs font-semibold text-emerald-600 dark:text-emerald-400 hover:underline">
+                Ver toda la Agenda (${allSched.length}) →
+              </button>
+            </div>
+            <div class="space-y-2">${rowsHtml}</div>
+          </div>
+        `;
+      },
+
+      renderAll() {
+        const s = this.getPeriodSummary();
+        const periodLabel = this.formatMonthLabel(this.getSelectedMonth());
+        this.renderRemindersBanner();
+
+        document.getElementById('periodSummaryLabel').innerHTML =
+          `Periodo activo: <b class="text-slate-900 dark:text-white">${periodLabel}</b> (${s.trips.length} viajes · ${s.incidents.length} incidencias)`;
+
+        const netEl = document.getElementById('kpiOwnerNet');
+        netEl.textContent = this.formatRD(s.finalOwnerNet);
+        netEl.className = `text-2xl font-mono font-bold ${s.finalOwnerNet >= 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400'}`;
+
+        document.getElementById('kpiMarginPercent').textContent = `Margen: ${s.marginPct}% · Fletes − (Viajes + Taller + Incidencias)`;
+        document.getElementById('kpiGrossFreight').textContent = this.formatRD(s.gross);
+        document.getElementById('kpiTripsCount').textContent = s.trips.length;
+        document.getElementById('kpiClientsCount').textContent = s.clients;
+
+        document.getElementById('kpiTripExpensesTotal').textContent = this.formatRD(s.tripExp);
+        document.getElementById('kpiTripExpensesBreakdown').textContent =
+          `Comb: ${this.formatRD(s.fuel)} · Peajes: ${this.formatRD(s.tolls)} · Nómina: ${this.formatRD(s.drvPay + s.hlpPay)}`;
+
+        document.getElementById('kpiMaintAndIncTotal').textContent = this.formatRD(s.maintTotal + s.incidentTotal);
+        document.getElementById('kpiMaintAndIncBreakdown').textContent =
+          `Taller: ${this.formatRD(s.maintTotal)} · Incidencias: ${this.formatRD(s.incidentTotal)}`;
+
+        document.getElementById('badgeCountTrips').textContent = s.trips.length;
+        document.getElementById('badgeCountScheduled').textContent = s.scheduled.length;
+        document.getElementById('badgeCountTrucks').textContent = this.db.trucks.length;
+        document.getElementById('badgeCountIncidents').textContent = s.incidents.length;
+        document.getElementById('badgeCountDrivers').textContent = this.db.drivers.length;
+
+        // Actualizar pestaña Reportes con los datos del periodo global activo
+        document.getElementById('reportPeriodTitle').textContent = periodLabel;
+        document.getElementById('repTripsCount').textContent = `${s.trips.length} viaje(s)`;
+        document.getElementById('repGross').textContent = this.formatRD(s.gross);
+        document.getElementById('repTotalExpenses').textContent = this.formatRD(s.tripExp + s.maintTotal + s.incidentTotal);
+        document.getElementById('repNet').textContent = this.formatRD(s.finalOwnerNet);
+
+        const dSel = document.getElementById('tripFilterDriver');
+        const tSel = document.getElementById('tripFilterTruck');
+        const pD = dSel.value || 'ALL', pT = tSel.value || 'ALL';
+        dSel.innerHTML = `<option value="ALL">Todos los choferes</option>` + this.db.drivers.map(d => `<option value="${d.id}">${d.name}</option>`).join('');
+        if ([...dSel.options].some(o => o.value === pD)) dSel.value = pD;
+        tSel.innerHTML = `<option value="ALL">Todos los camiones</option>` + this.db.trucks.map(t => `<option value="${t.id}">${t.name}</option>`).join('');
+        if ([...tSel.options].some(o => o.value === pT)) tSel.value = pT;
+
+        this.renderTripsTab();
+        this.renderScheduledTab();
+        this.renderTrucksTab();
+        this.renderIncidentsTab();
+        this.renderDriversTab();
+        this.renderCatalogsTab();
+        if (this.activeTab === 'analytics') {
+          this.renderAnalyticsCharts();
+        }
+      },
+
+      // PESTAÑA 1: Centro de Viajes
+      renderTripsTab() {
+        const fDrv = document.getElementById('tripFilterDriver').value || 'ALL';
+        const fTrk = document.getElementById('tripFilterTruck').value || 'ALL';
+        const trips = this.getFilteredTrips().filter(t =>
+          (fDrv === 'ALL' || String(t.driverId) === String(fDrv)) &&
+          (fTrk === 'ALL' || String(t.truckId) === String(fTrk))
+        );
+
+        const tbody = document.getElementById('tableTripsBody');
+        const tfoot = document.getElementById('tableTripsFoot');
+
+        if (trips.length === 0) {
+          tbody.innerHTML = `
+            <tr>
+              <td colspan="13" class="py-12 text-center text-slate-400 text-xs">
+                <i class="fa-solid fa-route text-2xl mb-2 block text-slate-300 dark:text-slate-600"></i>
+                No hay viajes registrados en este periodo. Haz clic en <b>"+ Agregar Nuevo..."</b> arriba para registrar un viaje.
+              </td>
+            </tr>`;
+          tfoot.innerHTML = '';
+          return;
+        }
+
+        let sGross = 0, sFuel = 0, sTolls = 0, sDrv = 0, sHlp = 0, sOth = 0, sExp = 0, sNet = 0, sCli = 0;
+
+        tbody.innerHTML = trips.map(t => {
+          const m = this.calcTrip(t);
+          sGross += m.gross; sFuel += m.fuel; sTolls += m.tolls; sDrv += m.drvPay;
+          sHlp += m.hlpPay; sOth += m.other; sExp += m.totalExpense; sNet += m.netOwner;
+          sCli += Number(t.clientsCount) || 0;
+
+          return `
+            <tr class="hover:bg-slate-50 dark:hover:bg-slate-700/40">
+              <td class="td font-mono font-semibold whitespace-nowrap">${t.date}</td>
+              <td class="td">
+                <div class="font-semibold text-slate-900 dark:text-white">${t.route}</div>
+                <span class="text-[11px] text-slate-500 dark:text-slate-400">${t.clientsCount} cliente(s)</span>
+              </td>
+              <td class="td font-medium">${this.getTruckName(t.truckId)}</td>
+              <td class="td">
+                <div class="font-medium text-slate-900 dark:text-white">${this.getDriverName(t.driverId)}</div>
+                <div class="text-[11px] text-slate-400">Ayud: ${this.getHelpersNames(t.helperIds)}</div>
+              </td>
+              <td class="td text-right font-mono font-semibold whitespace-nowrap">${this.formatRD(m.gross)}</td>
+              <td class="td text-right font-mono text-amber-700 dark:text-amber-400 whitespace-nowrap">${this.formatRD(m.fuel)}</td>
+              <td class="td text-right font-mono text-amber-700 dark:text-amber-400 whitespace-nowrap">${this.formatRD(m.tolls)}</td>
+              <td class="td text-right font-mono whitespace-nowrap">${this.formatRD(m.drvPay)}</td>
+              <td class="td text-right font-mono whitespace-nowrap">${this.formatRD(m.hlpPay)}</td>
+              <td class="td text-right font-mono whitespace-nowrap">${this.formatRD(m.other)}</td>
+              <td class="td text-right font-mono font-semibold text-rose-600 dark:text-rose-400 whitespace-nowrap">${this.formatRD(m.totalExpense)}</td>
+              <td class="td text-right font-mono font-bold bg-emerald-50/60 dark:bg-emerald-950/30 ${m.netOwner >= 0 ? 'text-emerald-700 dark:text-emerald-400' : 'text-rose-600'} whitespace-nowrap">
+                ${this.formatRD(m.netOwner)}
+              </td>
+              <td class="td text-center whitespace-nowrap">
+                <button type="button" onclick="App.openTripModal('${t.id}')" class="btn-outline !py-1 !px-2 text-xs" title="Editar"><i class="fa-solid fa-pen"></i></button>
+                <button type="button" onclick="App.deleteTrip('${t.id}')" class="btn-outline !py-1 !px-2 text-xs hover:text-rose-600" title="Eliminar"><i class="fa-solid fa-trash"></i></button>
+              </td>
+            </tr>
+          `;
+        }).join('');
+
+        tfoot.innerHTML = `
+          <tr>
+            <td class="py-3 px-3">TOTAL (${trips.length})</td>
+            <td class="py-3 px-3">${sCli} clientes</td>
+            <td colspan="2"></td>
+            <td class="py-3 px-3 text-right whitespace-nowrap">${this.formatRD(sGross)}</td>
+            <td class="py-3 px-3 text-right whitespace-nowrap">${this.formatRD(sFuel)}</td>
+            <td class="py-3 px-3 text-right whitespace-nowrap">${this.formatRD(sTolls)}</td>
+            <td class="py-3 px-3 text-right whitespace-nowrap">${this.formatRD(sDrv)}</td>
+            <td class="py-3 px-3 text-right whitespace-nowrap">${this.formatRD(sHlp)}</td>
+            <td class="py-3 px-3 text-right whitespace-nowrap">${this.formatRD(sOth)}</td>
+            <td class="py-3 px-3 text-right text-rose-600 whitespace-nowrap">${this.formatRD(sExp)}</td>
+            <td class="py-3 px-3 text-right text-emerald-700 dark:text-emerald-400 whitespace-nowrap">${this.formatRD(sNet)}</td>
+            <td></td>
+          </tr>
+        `;
+      },
+
+      // PESTAÑA 2: Agenda Anticipada (filtrada por el mes global seleccionado)
+      renderScheduledTab() {
+        const list = this.getAllScheduledSorted();
+        const container = document.getElementById('scheduledListContainer');
+        const today = this.offsetDateISO(0);
+        const tomorrow = this.offsetDateISO(1);
+
+        if (list.length === 0) {
+          container.innerHTML = `
+            <div class="col-span-full py-10 text-center border border-dashed border-slate-300 dark:border-slate-700 rounded-xl">
+              <p class="text-sm font-semibold text-slate-600 dark:text-slate-300">No hay viajes anticipados programados en este periodo</p>
+              <button type="button" onclick="App.openScheduledModal()" class="btn-primary mt-3">+ Agendar Viaje Anticipado</button>
+            </div>`;
+          return;
+        }
+
+        container.innerHTML = list.map(s => {
+          const m = this.calcTrip(s);
+          const isToday = s.date === today;
+          const isTomorrow = s.date === tomorrow;
+          const badge = isToday
+            ? `<span class="px-2 py-0.5 rounded text-[10px] font-bold uppercase bg-amber-500 text-slate-950">HOY</span>`
+            : (isTomorrow
+                ? `<span class="px-2 py-0.5 rounded text-[10px] font-bold uppercase bg-slate-900 dark:bg-white text-white dark:text-slate-900">MAÑANA</span>`
+                : `<span class="px-2 py-0.5 rounded text-[10px] font-bold uppercase bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300">PROGRAMADO</span>`);
+
+          return `
+            <div class="card p-4 flex flex-col justify-between">
+              <div>
+                <div class="flex items-center justify-between gap-2 mb-3">
+                  ${badge}
+                  <span class="font-mono text-xs font-bold text-slate-700 dark:text-slate-300">${s.date}</span>
+                </div>
+
+                <div class="grid grid-cols-2 gap-2 p-2.5 rounded-lg bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-xs mb-3">
+                  <div>
+                    <span class="text-[10px] uppercase text-slate-400 block font-semibold">Recordar desde</span>
+                    <span class="font-mono font-bold text-amber-600 dark:text-amber-400">${this.formatTime12h(s.reminderTime || '06:00')}</span>
+                  </div>
+                  <div class="border-l border-slate-200 dark:border-slate-700 pl-2.5">
+                    <span class="text-[10px] uppercase text-slate-400 block font-semibold">Hora de Salida</span>
+                    <span class="font-mono font-bold text-emerald-600 dark:text-emerald-400">${this.formatTime12h(s.departureTime || '08:00')}</span>
+                  </div>
+                </div>
+
+                <h3 class="font-bold text-sm text-slate-900 dark:text-white">${s.route || 'Ruta por definir'}</h3>
+                <p class="text-xs text-slate-500 mt-0.5">${s.clientsCount ? `${s.clientsCount} cliente(s)` : 'Clientes por definir'}</p>
+
+                <div class="mt-3 pt-3 border-t border-slate-100 dark:border-slate-700 text-xs space-y-1 text-slate-600 dark:text-slate-300">
+                  <div><b>Camión:</b> ${this.getTruckName(s.truckId)}</div>
+                  <div><b>Chofer:</b> ${this.getDriverName(s.driverId)}</div>
+                  <div><b>Ayudante(s):</b> ${this.getHelpersNames(s.helperIds)}</div>
+                </div>
+
+                <div class="mt-3 p-2.5 rounded-lg bg-slate-50 dark:bg-slate-900 text-xs">
+                  ${m.hasAnyFinancial
+                    ? `<div class="flex justify-between"><span>Flete: <b>${this.formatRD(m.gross)}</b></span><span class="text-emerald-600 font-bold">Ganancia Neta: ${this.formatRD(m.netOwner)}</span></div>`
+                    : `<span class="text-slate-400 italic">Cobro y pagos opcionales (definir al liquidar)</span>`}
+                </div>
+
+                ${s.notes ? `<p class="text-xs text-slate-500 mt-2 italic">"${s.notes}"</p>` : ''}
+              </div>
+
+              <div class="pt-3 mt-3 border-t border-slate-100 dark:border-slate-700 flex items-center justify-between gap-2">
+                <button type="button" onclick="App.liquidateScheduledTrip('${s.id}')" class="btn-emerald !py-1.5 flex-1">
+                  <i class="fa-solid fa-check"></i> Liquidar
+                </button>
+                <button type="button" onclick="App.openScheduledModal('${s.id}')" class="btn-outline !py-1.5"><i class="fa-solid fa-pen"></i></button>
+                <button type="button" onclick="App.deleteScheduledTrip('${s.id}')" class="btn-outline !py-1.5 hover:text-rose-600"><i class="fa-solid fa-trash"></i></button>
+              </div>
+            </div>
+          `;
+        }).join('');
+      },
+
+      // PESTAÑA 3: Camiones y Taller (con botón "Ver Historial" del Camión respetando el mes seleccionado)
+      renderTrucksTab() {
+        const trips = this.getFilteredTrips();
+        const maints = this.getFilteredMaintenances();
+        const incidents = this.getFilteredIncidents();
+        const grid = document.getElementById('trucksGrid');
+
+        if (this.db.trucks.length === 0) {
+          grid.innerHTML = `
+            <div class="col-span-full py-10 text-center border border-dashed border-slate-300 dark:border-slate-700 rounded-xl">
+              <p class="text-sm font-semibold text-slate-600 dark:text-slate-300">No hay camiones registrados en la flota</p>
+              <button type="button" onclick="App.openTruckModal()" class="btn-primary mt-3">+ Crear Primer Camión</button>
+            </div>`;
+        } else {
+          grid.innerHTML = this.db.trucks.map(trk => {
+            const tTrips = trips.filter(t => String(t.truckId) === String(trk.id));
+            const tMaints = maints.filter(m => String(m.truckId) === String(trk.id));
+            const tIncs = incidents.filter(i => String(i.truckId) === String(trk.id));
+
+            let gross = 0, tripExp = 0, tripsNet = 0;
+            tTrips.forEach(t => {
+              const m = this.calcTrip(t);
+              gross += m.gross; tripExp += m.totalExpense; tripsNet += m.netOwner;
+            });
+            const maintCost = tMaints.reduce((s, x) => s + (Number(x.cost) || 0), 0);
+            const incCost = tIncs.reduce((s, x) => s + (Number(x.cost) || 0), 0);
+            const realNet = tripsNet - maintCost - incCost;
+
+            return `
+              <div class="card p-5 flex flex-col justify-between">
+                <div>
+                  <div class="flex items-center justify-between gap-3 pb-4 border-b border-slate-100 dark:border-slate-700">
+                    <div>
+                      <span class="text-[11px] font-mono font-semibold text-slate-400 block">Placa: ${trk.plate}</span>
+                      <h3 class="font-bold text-base text-slate-900 dark:text-white">${trk.name}</h3>
+                      <p class="text-xs text-slate-500">${trk.model}</p>
+                    </div>
+                    <div class="px-3.5 py-2.5 rounded-xl bg-slate-900 dark:bg-white text-white dark:text-slate-900 text-center min-w-[88px] shrink-0">
+                      <span class="text-2xl font-mono font-extrabold leading-none block">${tTrips.length}</span>
+                      <span class="text-[9px] font-bold uppercase tracking-wider block mt-1">Viajes</span>
+                    </div>
+                  </div>
+
+                  <div class="grid grid-cols-2 gap-2.5 my-4 text-xs">
+                    <div class="p-2.5 rounded-lg bg-slate-50 dark:bg-slate-900">
+                      <span class="text-slate-400 block">Total Fletes</span>
+                      <span class="font-mono font-bold text-slate-900 dark:text-white">${this.formatRD(gross)}</span>
+                    </div>
+                    <div class="p-2.5 rounded-lg bg-slate-50 dark:bg-slate-900">
+                      <span class="text-slate-400 block">Gastos Viajes</span>
+                      <span class="font-mono font-bold text-amber-600">-${this.formatRD(tripExp)}</span>
+                    </div>
+                    <div class="p-2.5 rounded-lg bg-slate-50 dark:bg-slate-900">
+                      <span class="text-slate-400 block">Taller (${tMaints.length})</span>
+                      <span class="font-mono font-bold text-rose-600">-${this.formatRD(maintCost)}</span>
+                    </div>
+                    <div class="p-2.5 rounded-lg bg-slate-50 dark:bg-slate-900">
+                      <span class="text-slate-400 block">Incidencias (${tIncs.length})</span>
+                      <span class="font-mono font-bold text-rose-600">-${this.formatRD(incCost)}</span>
+                    </div>
+                  </div>
+
+                  <div class="p-3 rounded-lg bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800/60 flex items-center justify-between">
+                    <span class="text-xs font-bold text-emerald-800 dark:text-emerald-300">Ganancia Neta</span>
+                    <span class="font-mono font-bold text-sm ${realNet >= 0 ? 'text-emerald-700 dark:text-emerald-400' : 'text-rose-600'}">${this.formatRD(realNet)}</span>
+                  </div>
+                </div>
+
+                <div class="pt-3 mt-3 border-t border-slate-100 dark:border-slate-700 flex items-center justify-between gap-2">
+                  <button type="button" onclick="App.openTruckHistoryModal('${trk.id}')" class="btn-primary !py-1.5 flex-1">Ver Historial</button>
+                  <button type="button" onclick="App.openTruckModal('${trk.id}')" class="btn-outline !py-1.5" title="Editar"><i class="fa-solid fa-pen"></i></button>
+                  <button type="button" onclick="App.deleteTruck('${trk.id}')" class="btn-outline !py-1.5 hover:text-rose-600" title="Eliminar"><i class="fa-solid fa-trash"></i></button>
+                </div>
+              </div>
+            `;
+          }).join('');
+        }
+
+        const mBody = document.getElementById('tableMaintBody');
+        mBody.innerHTML = maints.length === 0
+          ? `<tr><td colspan="5" class="py-6 text-center text-slate-400 text-xs">Sin mantenimientos registrados en este periodo.</td></tr>`
+          : maints.map(m => `
+            <tr class="hover:bg-slate-50 dark:hover:bg-slate-700/40">
+              <td class="td font-mono font-semibold whitespace-nowrap">${m.date}</td>
+              <td class="td font-semibold">${this.getTruckName(m.truckId)}</td>
+              <td class="td">${m.description}</td>
+              <td class="td text-right font-mono font-bold text-rose-600 whitespace-nowrap">${this.formatRD(m.cost)}</td>
+              <td class="td text-center">
+                <button type="button" onclick="App.deleteMaintenance('${m.id}')" class="btn-outline !py-1 !px-2 text-xs hover:text-rose-600"><i class="fa-solid fa-trash"></i></button>
+              </td>
+            </tr>`).join('');
+      },
+
+      // PESTAÑA 4: Incidencias
+      renderIncidentsTab() {
+        const list = this.getFilteredIncidents();
+        const tbody = document.getElementById('tableIncidentsBody');
+
+        if (list.length === 0) {
+          tbody.innerHTML = `<tr><td colspan="7" class="py-8 text-center text-slate-400 text-xs">No hay incidencias registradas en este periodo.</td></tr>`;
+          return;
+        }
+
+        tbody.innerHTML = list.map(inc => {
+          const badge = inc.severity === 'Alta'
+            ? 'bg-rose-100 text-rose-800 dark:bg-rose-900/40 dark:text-rose-300'
+            : (inc.severity === 'Media' ? 'bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-300' : 'bg-slate-100 text-slate-700 dark:bg-slate-700 dark:text-slate-300');
+
+          return `
+            <tr class="hover:bg-slate-50 dark:hover:bg-slate-700/40">
+              <td class="td font-mono font-semibold whitespace-nowrap">${inc.date}</td>
+              <td class="td font-semibold">${this.getTruckName(inc.truckId)}</td>
+              <td class="td">${this.getDriverName(inc.driverId)}</td>
+              <td class="td"><span class="px-2 py-0.5 rounded text-xs font-bold ${badge}">${inc.severity}</span></td>
+              <td class="td">${inc.description}</td>
+              <td class="td text-right font-mono font-bold text-rose-600 whitespace-nowrap">-${this.formatRD(inc.cost)}</td>
+              <td class="td text-center">
+                <button type="button" onclick="App.deleteIncident('${inc.id}')" class="btn-outline !py-1 !px-2 text-xs hover:text-rose-600"><i class="fa-solid fa-trash"></i></button>
+              </td>
+            </tr>
+          `;
+        }).join('');
+      },
+
+      // PESTAÑA 5: Choferes (con "Restante Generado")
+      renderDriversTab() {
+        const trips = this.getFilteredTrips();
+        const grid = document.getElementById('driversGrid');
+
+        if (this.db.drivers.length === 0) {
+          grid.innerHTML = `
+            <div class="col-span-full py-10 text-center border border-dashed border-slate-300 dark:border-slate-700 rounded-xl">
+              <p class="text-sm font-semibold text-slate-600 dark:text-slate-300">No hay choferes registrados</p>
+              <button type="button" onclick="App.openDriverModal()" class="btn-primary mt-3">+ Crear Primer Chofer</button>
+            </div>`;
+          return;
+        }
+
+        grid.innerHTML = this.db.drivers.map(drv => {
+          const dTrips = trips.filter(t => String(t.driverId) === String(drv.id));
+          let gross = 0, fuel = 0, drvPaid = 0, net = 0;
+          dTrips.forEach(t => {
+            const m = this.calcTrip(t);
+            gross += m.gross; fuel += m.fuel; drvPaid += m.drvPay; net += m.netOwner;
+          });
+
+          return `
+            <div class="card p-5 flex flex-col justify-between">
+              <div>
+                <div class="flex items-start justify-between gap-2 mb-3">
+                  <div>
+                    <h3 class="font-bold text-base text-slate-900 dark:text-white">${drv.name}</h3>
+                    <p class="text-xs text-slate-500">${drv.phone || ''} ${drv.note ? '· ' + drv.note : ''}</p>
+                  </div>
+                  <span class="px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-700 font-mono font-bold text-xs">${dTrips.length} viajes</span>
+                </div>
+                <div class="grid grid-cols-2 gap-2.5 my-4 text-xs">
+                  <div class="p-2.5 rounded-lg bg-slate-50 dark:bg-slate-900">
+                    <span class="text-slate-400 block">Total Fletes</span>
+                    <span class="font-mono font-bold">${this.formatRD(gross)}</span>
+                  </div>
+                  <div class="p-2.5 rounded-lg bg-slate-50 dark:bg-slate-900">
+                    <span class="text-slate-400 block">Combustible</span>
+                    <span class="font-mono font-bold text-amber-600">${this.formatRD(fuel)}</span>
+                  </div>
+                  <div class="p-2.5 rounded-lg bg-slate-50 dark:bg-slate-900">
+                    <span class="text-slate-400 block">Cobró Chofer</span>
+                    <span class="font-mono font-bold">${this.formatRD(drvPaid)}</span>
+                  </div>
+                  <div class="p-2.5 rounded-lg bg-emerald-50 dark:bg-emerald-950/40">
+                    <span class="text-emerald-700 dark:text-emerald-300 block font-semibold">Restante Generado</span>
+                    <span class="font-mono font-bold text-emerald-700 dark:text-emerald-400">${this.formatRD(net)}</span>
+                  </div>
+                </div>
+              </div>
+              <div class="pt-3 border-t border-slate-100 dark:border-slate-700 flex items-center justify-between gap-2">
+                <button type="button" onclick="App.openDriverHistoryModal('${drv.id}')" class="btn-primary !py-1.5 flex-1">Ver Historial</button>
+                <button type="button" onclick="App.openDriverModal('${drv.id}')" class="btn-outline !py-1.5"><i class="fa-solid fa-pen"></i></button>
+                <button type="button" onclick="App.deleteDriver('${drv.id}')" class="btn-outline !py-1.5 hover:text-rose-600"><i class="fa-solid fa-trash"></i></button>
+              </div>
+            </div>
+          `;
+        }).join('');
+      },
+
+      // PESTAÑA 6: Analítica Visual
+      renderAnalyticsCharts() {
+        const s = this.getPeriodSummary();
+        const payroll = s.drvPay + s.hlpPay;
+        const isDark = document.documentElement.classList.contains('dark');
+        const textColor = isDark ? '#cbd5e1' : '#334155';
+
+        const ctxD = document.getElementById('canvasExpensesDoughnut').getContext('2d');
+        if (this.chartDoughnut) this.chartDoughnut.destroy();
+
+        const labelsD = ['Combustible', 'Peajes', 'Nómina', 'Otros', 'Taller', 'Incidencias'];
+        const dataD = [s.fuel, s.tolls, payroll, s.other, s.maintTotal, s.incidentTotal];
+        const colorsD = ['#d97706', '#0284c7', '#4f46e5', '#64748b', '#e11d48', '#be123c'];
+
+        this.chartDoughnut = new Chart(ctxD, {
+          type: 'doughnut',
+          data: {
+            labels: labelsD,
+            datasets: [{ data: dataD, backgroundColor: colorsD, borderWidth: 2, borderColor: isDark ? '#1e293b' : '#ffffff' }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { position: 'bottom', labels: { color: textColor, boxWidth: 12, font: { size: 11 } } } }
+          }
+        });
+
+        document.getElementById('expensesLegendBox').innerHTML = labelsD.map((l, i) => `
+          <div class="flex items-center justify-between p-2 rounded bg-slate-50 dark:bg-slate-900">
+            <span class="truncate text-slate-600 dark:text-slate-300">${l}</span>
+            <span class="font-mono font-bold ml-2">${this.formatRD(dataD[i])}</span>
+          </div>
+        `).join('');
+
+        const ctxB = document.getElementById('canvasTrucksBar').getContext('2d');
+        if (this.chartBar) this.chartBar.destroy();
+
+        const names = this.db.trucks.map(t => t.name);
+        const incArr = [], costArr = [], netArr = [];
+
+        this.db.trucks.forEach(trk => {
+          const tTrips = s.trips.filter(t => String(t.truckId) === String(trk.id));
+          const tMaints = s.maints.filter(m => String(m.truckId) === String(trk.id));
+          const tIncs = s.incidents.filter(i => String(i.truckId) === String(trk.id));
+          let g = 0, exp = 0;
+          tTrips.forEach(t => { const m = this.calcTrip(t); g += m.gross; exp += m.totalExpense; });
+          const mCost = tMaints.reduce((a, x) => a + (Number(x.cost) || 0), 0);
+          const iCost = tIncs.reduce((a, x) => a + (Number(x.cost) || 0), 0);
+          const totalCost = exp + mCost + iCost;
+          incArr.push(g);
+          costArr.push(totalCost);
+          netArr.push(g - totalCost);
+        });
+
+        this.chartBar = new Chart(ctxB, {
+          type: 'bar',
+          data: {
+            labels: names.length ? names : ['Sin camiones registrados'],
+            datasets: [
+              { label: 'Ingresos Fletes', data: incArr.length ? incArr : [0], backgroundColor: '#0f172a', borderRadius: 4 },
+              { label: 'Gastos', data: costArr.length ? costArr : [0], backgroundColor: '#e11d48', borderRadius: 4 },
+              { label: 'Ganancia Neta', data: netArr.length ? netArr : [0], backgroundColor: '#059669', borderRadius: 4 }
+            ]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { position: 'bottom', labels: { color: textColor } } },
+            scales: {
+              x: { ticks: { color: textColor } },
+              y: { beginAtZero: true, ticks: { color: textColor } }
+            }
+          }
+        });
+      },
+
+      // PESTAÑA 8: Catálogos
+      renderCatalogsTab() {
+        const trips = this.getFilteredTrips();
+        const hList = document.getElementById('helpersList');
+        if (this.db.helpers.length === 0) {
+          hList.innerHTML = `<div class="text-xs text-slate-400 py-4 text-center">Sin ayudantes registrados.</div>`;
+        } else {
+          hList.innerHTML = this.db.helpers.map(h => {
+            const hTrips = trips.filter(t => (t.helperIds || []).map(String).includes(String(h.id)));
+            const earned = hTrips.reduce((sum, t) => sum + ((Number(t.helperPay) || 0) / ((t.helperIds || []).length || 1)), 0);
+            return `
+              <div class="p-3 rounded-lg border border-slate-200 dark:border-slate-700 flex items-center justify-between">
+                <div>
+                  <div class="font-semibold text-sm">${h.name}</div>
+                  <div class="text-xs text-slate-500">${h.phone || ''} · ${hTrips.length} viaje(s)</div>
+                </div>
+                <div class="flex items-center gap-3">
+                  <span class="font-mono font-bold text-sm">${this.formatRD(earned)}</span>
+                  <button type="button" onclick="App.deleteHelper('${h.id}')" class="text-slate-400 hover:text-rose-600"><i class="fa-solid fa-trash"></i></button>
+                </div>
+              </div>`;
+          }).join('');
+        }
+
+        const rList = document.getElementById('routesList');
+        if (this.db.routes.length === 0) {
+          rList.innerHTML = `<div class="text-xs text-slate-400 py-4 text-center">Sin rutas predefinidas.</div>`;
+        } else {
+          rList.innerHTML = this.db.routes.map(r => {
+            const count = trips.filter(t => t.route === r.name).length;
+            return `
+              <div class="p-3 rounded-lg border border-slate-200 dark:border-slate-700 flex items-center justify-between">
+                <div>
+                  <div class="font-semibold text-sm">${r.name}</div>
+                  <div class="text-xs text-slate-500">${count} viaje(s)</div>
+                </div>
+                <button type="button" onclick="App.deleteRoute('${r.id}')" class="text-slate-400 hover:text-rose-600"><i class="fa-solid fa-trash"></i></button>
+              </div>`;
+          }).join('');
+        }
+      },
+
+      // =====================================================================
+      // 2. MODALES DE HISTORIAL CORREGIDOS (RESPETANDO EL MES GLOBAL ACTIVO)
+      // =====================================================================
+      openDriverHistoryModal(driverId) {
+        const d = this.db.drivers.find(x => String(x.id) === String(driverId));
+        if (!d) return;
+
+        const periodLabel = this.formatMonthLabel(this.getSelectedMonth());
+        const dTrips = this.getFilteredTrips().filter(t => String(t.driverId) === String(driverId));
+
+        let totalFletes = 0, totalCobradoChofer = 0, totalRestanteGenerado = 0;
+
+        const rowsHtml = dTrips.map(t => {
+          const m = this.calcTrip(t);
+          totalFletes += m.gross;
+          totalCobradoChofer += m.drvPay;
+          totalRestanteGenerado += m.netOwner;
+
+          return `
+            <tr class="hover:bg-slate-50 dark:hover:bg-slate-700/40">
+              <td class="td font-mono font-semibold whitespace-nowrap">${t.date}</td>
+              <td class="td">
+                <div class="font-semibold text-slate-900 dark:text-white">${t.route}</div>
+                <span class="text-[11px] text-slate-400">${t.clientsCount} cliente(s) · Ayud: ${this.getHelpersNames(t.helperIds)}</span>
+              </td>
+              <td class="td">${this.getTruckName(t.truckId)}</td>
+              <td class="td text-right font-mono font-semibold whitespace-nowrap">${this.formatRD(m.gross)}</td>
+              <td class="td text-right font-mono text-sky-700 dark:text-sky-400 font-semibold whitespace-nowrap">${this.formatRD(m.drvPay)}</td>
+              <td class="td text-right font-mono font-bold text-emerald-600 dark:text-emerald-400 whitespace-nowrap">${this.formatRD(m.netOwner)}</td>
+            </tr>
+          `;
+        }).join('');
+
+        const footHtml = dTrips.length > 0 ? `
+          <tfoot class="bg-slate-100 dark:bg-slate-800/90 font-mono font-bold text-xs border-t-2 border-slate-300 dark:border-slate-600">
+            <tr>
+              <td class="py-3 px-3" colspan="3">TOTALES DEL PERIODO (${dTrips.length} viajes)</td>
+              <td class="py-3 px-3 text-right whitespace-nowrap">${this.formatRD(totalFletes)}</td>
+              <td class="py-3 px-3 text-right text-sky-700 dark:text-sky-400 whitespace-nowrap">${this.formatRD(totalCobradoChofer)}</td>
+              <td class="py-3 px-3 text-right text-emerald-700 dark:text-emerald-400 whitespace-nowrap">${this.formatRD(totalRestanteGenerado)}</td>
+            </tr>
+          </tfoot>
+        ` : '';
+
+        this.openModal(`Historial de Chofer: ${d.name} — ${periodLabel}`, `
+          <div class="space-y-4">
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
+              <div class="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700">
+                <span class="text-slate-400 uppercase font-semibold block">Total Fletes</span>
+                <span class="font-mono font-bold text-base text-slate-900 dark:text-white mt-0.5 block">${this.formatRD(totalFletes)}</span>
+              </div>
+              <div class="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700">
+                <span class="text-slate-400 uppercase font-semibold block">Total Cobrado por Chofer</span>
+                <span class="font-mono font-bold text-base text-sky-600 dark:text-sky-400 mt-0.5 block">${this.formatRD(totalCobradoChofer)}</span>
+              </div>
+              <div class="p-3.5 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800/60">
+                <span class="text-emerald-800 dark:text-emerald-300 uppercase font-bold block">Restante Generado</span>
+                <span class="font-mono font-bold text-base text-emerald-700 dark:text-emerald-400 mt-0.5 block">${this.formatRD(totalRestanteGenerado)}</span>
+              </div>
+            </div>
+
+            <div class="table-scroll">
+              <table class="w-full border-collapse">
+                <thead>
+                  <tr>
+                    <th class="th">Fecha</th>
+                    <th class="th">Ruta y Clientes</th>
+                    <th class="th">Camión</th>
+                    <th class="th text-right">Total Fletes</th>
+                    <th class="th text-right">Cobrado por Chofer</th>
+                    <th class="th text-right">Restante Generado</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  ${rowsHtml || '<tr><td colspan="6" class="py-8 text-center text-slate-400 text-xs">Sin viajes registrados para este chofer en el periodo seleccionado.</td></tr>'}
+                </tbody>
+                ${footHtml}
+              </table>
+            </div>
+          </div>
+        `, 'max-w-4xl');
+      },
+
+      openTruckHistoryModal(truckId) {
+        const trk = this.db.trucks.find(x => String(x.id) === String(truckId));
+        if (!trk) return;
+
+        const periodLabel = this.formatMonthLabel(this.getSelectedMonth());
+        const tTrips = this.getFilteredTrips().filter(t => String(t.truckId) === String(truckId));
+        const tMaints = this.getFilteredMaintenances().filter(m => String(m.truckId) === String(truckId));
+        const tIncs = this.getFilteredIncidents().filter(i => String(i.truckId) === String(truckId));
+
+        let totalFletes = 0, totalGastosViajes = 0, totalNetoViajes = 0;
+
+        const tripRowsHtml = tTrips.map(t => {
+          const m = this.calcTrip(t);
+          totalFletes += m.gross;
+          totalGastosViajes += m.totalExpense;
+          totalNetoViajes += m.netOwner;
+
+          return `
+            <tr class="hover:bg-slate-50 dark:hover:bg-slate-700/40">
+              <td class="td font-mono font-semibold whitespace-nowrap">${t.date}</td>
+              <td class="td"><b>${t.route}</b> (${t.clientsCount} cli.)</td>
+              <td class="td">${this.getDriverName(t.driverId)}</td>
+              <td class="td text-right font-mono">${this.formatRD(m.gross)}</td>
+              <td class="td text-right font-mono text-amber-600">-${this.formatRD(m.totalExpense)}</td>
+              <td class="td text-right font-mono font-bold text-emerald-600">${this.formatRD(m.netOwner)}</td>
+            </tr>
+          `;
+        }).join('');
+
+        const maintCost = tMaints.reduce((s, x) => s + (Number(x.cost) || 0), 0);
+        const incCost = tIncs.reduce((s, x) => s + (Number(x.cost) || 0), 0);
+        const totalTallerEIncidencias = maintCost + incCost;
+        const gananciaNetaCamion = totalFletes - totalGastosViajes - totalTallerEIncidencias;
+
+        const maintAndIncRows = [
+          ...tMaints.map(m => `
+            <tr>
+              <td class="td font-mono font-semibold whitespace-nowrap">${m.date}</td>
+              <td class="td"><span class="px-2 py-0.5 rounded text-[11px] font-bold bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-300">Taller</span></td>
+              <td class="td">${m.description}</td>
+              <td class="td text-right font-mono font-bold text-rose-600">-${this.formatRD(m.cost)}</td>
+            </tr>`),
+          ...tIncs.map(i => `
+            <tr>
+              <td class="td font-mono font-semibold whitespace-nowrap">${i.date}</td>
+              <td class="td"><span class="px-2 py-0.5 rounded text-[11px] font-bold bg-rose-100 text-rose-800 dark:bg-rose-900/40 dark:text-rose-300">Incidencia (${i.severity})</span></td>
+              <td class="td">${i.description}</td>
+              <td class="td text-right font-mono font-bold text-rose-600">-${this.formatRD(i.cost)}</td>
+            </tr>`)
+        ].join('');
+
+        this.openModal(`Historial de Camión: ${trk.name} (${trk.plate}) — ${periodLabel}`, `
+          <div class="space-y-5">
+            <!-- 4 Tarjetas de Resumen del Camión en el Periodo -->
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
+              <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700">
+                <span class="text-slate-400 uppercase font-semibold block">Total Fletes</span>
+                <span class="font-mono font-bold text-sm sm:text-base text-slate-900 dark:text-white mt-0.5 block">${this.formatRD(totalFletes)}</span>
+              </div>
+              <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700">
+                <span class="text-slate-400 uppercase font-semibold block">Total Gastos de Viajes</span>
+                <span class="font-mono font-bold text-sm sm:text-base text-amber-600 mt-0.5 block">-${this.formatRD(totalGastosViajes)}</span>
+              </div>
+              <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700">
+                <span class="text-slate-400 uppercase font-semibold block">Total Gastos Taller/Incidencias</span>
+                <span class="font-mono font-bold text-sm sm:text-base text-rose-600 mt-0.5 block">-${this.formatRD(totalTallerEIncidencias)}</span>
+              </div>
+              <div class="p-3 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800/60">
+                <span class="text-emerald-800 dark:text-emerald-300 uppercase font-bold block">Ganancia Neta</span>
+                <span class="font-mono font-bold text-sm sm:text-base ${gananciaNetaCamion >= 0 ? 'text-emerald-700 dark:text-emerald-400' : 'text-rose-600'} mt-0.5 block">${this.formatRD(gananciaNetaCamion)}</span>
+              </div>
+            </div>
+
+            <!-- Tabla 1: Viajes del Camión en ese mes -->
+            <div>
+              <h4 class="font-bold text-xs uppercase tracking-wider text-slate-500 mb-2">Viajes Realizados en este Periodo (${tTrips.length})</h4>
+              <div class="table-scroll">
+                <table class="w-full border-collapse">
+                  <thead>
+                    <tr>
+                      <th class="th">Fecha</th>
+                      <th class="th">Ruta</th>
+                      <th class="th">Chofer</th>
+                      <th class="th text-right">Flete</th>
+                      <th class="th text-right">Gastos Viaje</th>
+                      <th class="th text-right">Ganancia Neta Viaje</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    ${tripRowsHtml || '<tr><td colspan="6" class="py-6 text-center text-slate-400 text-xs">Sin viajes registrados en este periodo</td></tr>'}
+                  </tbody>
+                  ${tTrips.length > 0 ? `
+                    <tfoot class="bg-slate-100 dark:bg-slate-800/90 font-mono font-bold text-xs border-t-2 border-slate-300 dark:border-slate-600">
+                      <tr>
+                        <td class="py-2.5 px-3" colspan="3">SUBTOTAL VIAJES (${tTrips.length})</td>
+                        <td class="py-2.5 px-3 text-right">${this.formatRD(totalFletes)}</td>
+                        <td class="py-2.5 px-3 text-right text-amber-600">-${this.formatRD(totalGastosViajes)}</td>
+                        <td class="py-2.5 px-3 text-right text-emerald-600">${this.formatRD(totalNetoViajes)}</td>
+                      </tr>
+                    </tfoot>` : ''}
+                </table>
+              </div>
+            </div>
+
+            <!-- Tabla 2: Mantenimientos e Incidencias del Camión en ese mes -->
+            <div>
+              <h4 class="font-bold text-xs uppercase tracking-wider text-rose-600 mb-2">Mantenimientos de Taller e Incidencias en este Periodo (${tMaints.length + tIncs.length})</h4>
+              <div class="table-scroll">
+                <table class="w-full border-collapse">
+                  <thead>
+                    <tr>
+                      <th class="th">Fecha</th>
+                      <th class="th">Tipo</th>
+                      <th class="th">Descripción</th>
+                      <th class="th text-right">Costo (RD$)</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    ${maintAndIncRows || '<tr><td colspan="4" class="py-6 text-center text-slate-400 text-xs">Sin gastos de taller ni incidencias en este periodo</td></tr>'}
+                  </tbody>
+                  ${(tMaints.length + tIncs.length) > 0 ? `
+                    <tfoot class="bg-slate-100 dark:bg-slate-800/90 font-mono font-bold text-xs border-t-2 border-slate-300 dark:border-slate-600">
+                      <tr>
+                        <td class="py-2.5 px-3" colspan="3">SUBTOTAL TALLER E INCIDENCIAS</td>
+                        <td class="py-2.5 px-3 text-right text-rose-600">-${this.formatRD(totalTallerEIncidencias)}</td>
+                      </tr>
+                    </tfoot>` : ''}
+                </table>
+              </div>
+            </div>
+          </div>
+        `, 'max-w-4xl');
+      },
+
+      // =====================================================================
+      // MODALES DE REGISTRO Y EDICIÓN (CRUD)
+      // =====================================================================
+      openTripModal(tripId = null, fromScheduledId = null) {
+        const t = tripId
+          ? this.db.trips.find(x => String(x.id) === String(tripId))
+          : (fromScheduledId ? this.db.scheduledTrips.find(x => String(x.id) === String(fromScheduledId)) : null);
+
+        const today = this.offsetDateISO(0);
+        const routeOpts = this.db.routes.map(r => `<option value="${r.name}"></option>`).join('');
+        const selHelpers = t ? (t.helperIds || []).map(String) : [];
+
+        const truckFieldHtml = this.db.trucks.length > 0
+          ? `<select id="fTripTruck" required class="inp">${this.db.trucks.map(k => `<option value="${k.id}" ${t && String(t.truckId) === String(k.id) ? 'selected' : ''}>${k.name}</option>`).join('')}</select>`
+          : `<input type="text" id="fTripNewTruckName" required placeholder="Ej. Ficha 01 - Isuzu (Se creará)" class="inp" />`;
+
+        const driverFieldHtml = this.db.drivers.length > 0
+          ? `<select id="fTripDriver" required class="inp">${this.db.drivers.map(d => `<option value="${d.id}" ${t && String(t.driverId) === String(d.id) ? 'selected' : ''}>${d.name}</option>`).join('')}</select>`
+          : `<input type="text" id="fTripNewDriverName" required placeholder="Ej. Ramón Almonte (Se creará)" class="inp" />`;
+
+        const helpersChecks = this.db.helpers.length > 0
+          ? this.db.helpers.map(h => `
+              <label class="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg border border-slate-200 dark:border-slate-700 cursor-pointer text-xs font-medium">
+                <input type="checkbox" name="tripHelpers" value="${h.id}" ${selHelpers.includes(String(h.id)) ? 'checked' : ''} class="accent-slate-900 w-4 h-4 rounded" />
+                <span>${h.name}</span>
+              </label>`).join('')
+          : `<input type="text" id="fTripNewHelperName" placeholder="Nombre de ayudante (Opcional - se guardará)" class="inp" />`;
+
+        this.openModal(fromScheduledId ? 'Liquidar Viaje Anticipado' : (tripId ? 'Editar Viaje' : 'Registrar y Liquidar Viaje'), `
+          <form onsubmit="App.saveTrip(event, ${tripId ? `'${tripId}'` : 'null'}, ${fromScheduledId ? `'${fromScheduledId}'` : 'null'})" class="space-y-4">
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <div><label class="lbl">Fecha del Viaje</label><input type="date" id="fTripDate" value="${t ? t.date : today}" required class="inp font-mono" /></div>
+              <div class="sm:col-span-2">
+                <label class="lbl">Ruta Realizada</label>
+                <input type="text" id="fTripRoute" list="dlRoutes" value="${t && t.route ? t.route : ''}" required placeholder="Ej. Santiago ↔ Santo Domingo" class="inp" />
+                <datalist id="dlRoutes">${routeOpts}</datalist>
+              </div>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <div><label class="lbl">Cant. Clientes Atendidos</label><input type="number" min="1" id="fTripClients" value="${t && t.clientsCount ? t.clientsCount : 1}" required class="inp font-mono font-bold" /></div>
+              <div><label class="lbl">Camión</label>${truckFieldHtml}</div>
+              <div><label class="lbl">Chofer</label>${driverFieldHtml}</div>
+            </div>
+            <div><label class="lbl">Ayudante(s)</label><div class="flex flex-wrap gap-2">${helpersChecks}</div></div>
+            <div class="p-4 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 space-y-3">
+              <div>
+                <label class="lbl !text-emerald-600">Ganancia Bruta por Flete (RD$)</label>
+                <input type="number" step="0.01" min="0" id="fTripGross" oninput="App.updateLiveCalc()" value="${t && t.freightGross !== '' ? t.freightGross : ''}" required class="inp font-mono font-bold" />
+              </div>
+              <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                <div><label class="lbl">Combustible (RD$)</label><input type="number" step="0.01" min="0" id="fTripFuel" oninput="App.updateLiveCalc()" value="${t && t.fuelCost !== '' ? t.fuelCost : 0}" required class="inp font-mono" /></div>
+                <div><label class="lbl">Peajes (RD$)</label><input type="number" step="0.01" min="0" id="fTripTolls" oninput="App.updateLiveCalc()" value="${t && t.tollsCost !== '' ? t.tollsCost : 0}" required class="inp font-mono" /></div>
+                <div><label class="lbl">Pago Chofer (RD$)</label><input type="number" step="0.01" min="0" id="fTripDrvPay" oninput="App.updateLiveCalc()" value="${t && t.driverPay !== '' ? t.driverPay : 0}" required class="inp font-mono" /></div>
+                <div><label class="lbl">Pago Ayudante (RD$)</label><input type="number" step="0.01" min="0" id="fTripHlpPay" oninput="App.updateLiveCalc()" value="${t && t.helperPay !== '' ? t.helperPay : 0}" required class="inp font-mono" /></div>
+                <div class="col-span-2"><label class="lbl">Otros Gastos / Dieta (RD$)</label><input type="number" step="0.01" min="0" id="fTripOther" oninput="App.updateLiveCalc()" value="${t && t.otherCost !== '' ? t.otherCost : 0}" class="inp font-mono" /></div>
+              </div>
+            </div>
+            <div class="p-4 rounded-xl bg-slate-900 text-white flex items-center justify-between">
+              <div><span class="text-[10px] uppercase text-slate-400 block font-semibold">Total Gastos</span><span id="liveTripExp" class="text-base font-mono font-bold text-amber-400">RD$ 0.00</span></div>
+              <div class="text-right"><span class="text-[10px] uppercase text-emerald-400 block font-semibold">Ganancia Neta</span><span id="liveTripNet" class="text-xl font-mono font-bold text-emerald-400">RD$ 0.00</span></div>
+            </div>
+            <div><label class="lbl">Notas</label><input type="text" id="fTripNotes" value="${t ? (t.notes || '') : ''}" class="inp" /></div>
+            <div class="flex justify-end gap-2">
+              <button type="button" onclick="App.closeModal()" class="btn-outline">Cancelar</button>
+              <button type="submit" class="btn-emerald"><i class="fa-solid fa-check"></i> Guardar Viaje</button>
+            </div>
+          </form>
+        `);
+        this.updateLiveCalc();
+      },
+
+      updateLiveCalc() {
+        const g = Number(document.getElementById('fTripGross')?.value) || 0;
+        const exp = (Number(document.getElementById('fTripFuel')?.value) || 0) +
+                    (Number(document.getElementById('fTripTolls')?.value) || 0) +
+                    (Number(document.getElementById('fTripDrvPay')?.value) || 0) +
+                    (Number(document.getElementById('fTripHlpPay')?.value) || 0) +
+                    (Number(document.getElementById('fTripOther')?.value) || 0);
+        const net = g - exp;
+        const expEl = document.getElementById('liveTripExp');
+        const netEl = document.getElementById('liveTripNet');
+        if (expEl) expEl.textContent = this.formatRD(exp);
+        if (netEl) netEl.textContent = this.formatRD(net);
+      },
+
+      saveTrip(e, id = null, fromScheduledId = null) {
+        e.preventDefault();
+        let truckId = document.getElementById('fTripTruck')?.value;
+        const newTruckName = document.getElementById('fTripNewTruckName')?.value.trim();
+        if (!truckId && newTruckName) {
+          truckId = this.uid('trk');
+          this.db.trucks.push({ id: truckId, name: newTruckName, plate: 'S/P', model: 'General' });
+        }
+
+        let driverId = document.getElementById('fTripDriver')?.value;
+        const newDriverName = document.getElementById('fTripNewDriverName')?.value.trim();
+        if (!driverId && newDriverName) {
+          driverId = this.uid('drv');
+          this.db.drivers.push({ id: driverId, name: newDriverName, phone: '', note: '' });
+        }
+
+        let helperIds = [...document.querySelectorAll('input[name="tripHelpers"]:checked')].map(c => c.value);
+        const newHelperName = document.getElementById('fTripNewHelperName')?.value.trim();
+        if (newHelperName) {
+          const hId = this.uid('hlp');
+          this.db.helpers.push({ id: hId, name: newHelperName, phone: '' });
+          helperIds.push(hId);
+        }
+
+        const route = document.getElementById('fTripRoute').value.trim();
+        const dateVal = document.getElementById('fTripDate').value;
+
+        if (route && !this.db.routes.some(r => r.name.toLowerCase() === route.toLowerCase())) {
+          this.db.routes.push({ id: this.uid('rt'), name: route });
+        }
+
+        const payload = {
+          date: dateVal,
+          route,
+          clientsCount: Number(document.getElementById('fTripClients').value) || 1,
+          truckId,
+          driverId,
+          helperIds,
+          freightGross: Number(document.getElementById('fTripGross').value) || 0,
+          fuelCost: Number(document.getElementById('fTripFuel').value) || 0,
+          tollsCost: Number(document.getElementById('fTripTolls').value) || 0,
+          driverPay: Number(document.getElementById('fTripDrvPay').value) || 0,
+          helperPay: Number(document.getElementById('fTripHlpPay').value) || 0,
+          otherCost: Number(document.getElementById('fTripOther').value) || 0,
+          notes: document.getElementById('fTripNotes').value.trim()
+        };
+
+        if (id) Object.assign(this.db.trips.find(x => String(x.id) === String(id)), payload);
+        else this.db.trips.unshift({ id: this.uid('trp'), ...payload });
+
+        if (fromScheduledId) {
+          this.db.scheduledTrips = this.db.scheduledTrips.filter(s => String(s.id) !== String(fromScheduledId));
+        }
+
+        this.save();
+        this.syncFilterWithNewRecordDate(dateVal);
+        this.closeModal();
+        this.renderAll();
+        this.showToast('Viaje guardado correctamente');
+      },
+
+      deleteTrip(id) {
+        if (!confirm('¿Eliminar este viaje?')) return;
+        this.db.trips = this.db.trips.filter(x => String(x.id) !== String(id));
+        this.save();
+        this.renderAll();
+        this.showToast('Viaje eliminado');
+      },
+
+      openScheduledModal(schedId = null) {
+        const s = schedId ? this.db.scheduledTrips.find(x => String(x.id) === String(schedId)) : null;
+        const tomorrow = this.offsetDateISO(1);
+        const routeOpts = this.db.routes.map(r => `<option value="${r.name}"></option>`).join('');
+        const truckOpts = `<option value="">-- Por asignar (Opcional) --</option>` +
+          this.db.trucks.map(k => `<option value="${k.id}" ${s && String(s.truckId) === String(k.id) ? 'selected' : ''}>${k.name}</option>`).join('');
+        const driverOpts = `<option value="">-- Por asignar (Opcional) --</option>` +
+          this.db.drivers.map(d => `<option value="${d.id}" ${s && String(s.driverId) === String(d.id) ? 'selected' : ''}>${d.name}</option>`).join('');
+        const selHelpers = s ? (s.helperIds || []).map(String) : [];
+
+        const helpersChecks = this.db.helpers.map(h => `
+          <label class="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg border border-slate-200 dark:border-slate-700 cursor-pointer text-xs font-medium">
+            <input type="checkbox" name="schedHelpers" value="${h.id}" ${selHelpers.includes(String(h.id)) ? 'checked' : ''} class="accent-slate-900 w-4 h-4 rounded" />
+            <span>${h.name}</span>
+          </label>
+        `).join('');
+
+        this.openModal(s ? 'Editar Viaje Anticipado' : 'Agendar Viaje Anticipado con Recordatorio', `
+          <form onsubmit="App.saveScheduledTrip(event, ${s ? `'${s.id}'` : 'null'})" class="space-y-4">
+            <div class="p-4 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <div>
+                <label class="lbl">Fecha del Viaje *</label>
+                <input type="date" id="fSchDate" value="${s ? s.date : tomorrow}" required class="inp font-mono font-bold" />
+              </div>
+              <div>
+                <label class="lbl">Hora Inicio Recordatorio *</label>
+                <input type="time" id="fSchReminderTime" value="${s ? (s.reminderTime || '05:00') : '05:00'}" required class="inp font-mono font-bold" />
+              </div>
+              <div>
+                <label class="lbl">Hora de Salida *</label>
+                <input type="time" id="fSchDepartureTime" value="${s ? (s.departureTime || '06:30') : '06:30'}" required class="inp font-mono font-bold" />
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <div class="sm:col-span-2">
+                <label class="lbl">Ruta (Opcional)</label>
+                <input type="text" id="fSchRoute" list="dlSchRoutes" value="${s ? (s.route || '') : ''}" placeholder="Ej. Santiago ↔ Santo Domingo" class="inp" />
+                <datalist id="dlSchRoutes">${routeOpts}</datalist>
+              </div>
+              <div>
+                <label class="lbl">Cant. Clientes (Opcional)</label>
+                <input type="number" min="1" id="fSchClients" value="${s && s.clientsCount ? s.clientsCount : ''}" placeholder="Opcional" class="inp font-mono" />
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div><label class="lbl">Camión (Opcional)</label><select id="fSchTruck" class="inp">${truckOpts}</select></div>
+              <div><label class="lbl">Chofer (Opcional)</label><select id="fSchDriver" class="inp">${driverOpts}</select></div>
+            </div>
+
+            <div><label class="lbl">Ayudante(s) (Opcional)</label><div class="flex flex-wrap gap-2">${helpersChecks || '<span class="text-xs text-slate-400">Sin ayudantes creados</span>'}</div></div>
+
+            <div class="p-4 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 space-y-3">
+              <span class="text-xs font-bold uppercase text-slate-400 block">Montos de Cobro y Pagos (100% Opcionales)</span>
+              <div>
+                <label class="lbl">Flete a Cobrar (RD$ — Opcional)</label>
+                <input type="number" step="0.01" min="0" id="fTripGross" oninput="App.updateLiveCalc()" value="${s && s.freightGross !== '' ? s.freightGross : ''}" placeholder="Opcional" class="inp font-mono" />
+              </div>
+              <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                <div><label class="lbl">Combustible (Opcional)</label><input type="number" step="0.01" min="0" id="fTripFuel" oninput="App.updateLiveCalc()" value="${s && s.fuelCost !== '' ? s.fuelCost : ''}" class="inp font-mono" /></div>
+                <div><label class="lbl">Peajes (Opcional)</label><input type="number" step="0.01" min="0" id="fTripTolls" oninput="App.updateLiveCalc()" value="${s && s.tollsCost !== '' ? s.tollsCost : ''}" class="inp font-mono" /></div>
+                <div><label class="lbl">Pago Chofer (Opcional)</label><input type="number" step="0.01" min="0" id="fTripDrvPay" oninput="App.updateLiveCalc()" value="${s && s.driverPay !== '' ? s.driverPay : ''}" class="inp font-mono" /></div>
+                <div><label class="lbl">Pago Ayud. (Opcional)</label><input type="number" step="0.01" min="0" id="fTripHlpPay" oninput="App.updateLiveCalc()" value="${s && s.helperPay !== '' ? s.helperPay : ''}" class="inp font-mono" /></div>
+                <div class="col-span-2"><label class="lbl">Otros / Avance (Opcional)</label><input type="number" step="0.01" min="0" id="fTripOther" oninput="App.updateLiveCalc()" value="${s && s.otherCost !== '' ? s.otherCost : ''}" class="inp font-mono" /></div>
+              </div>
+              <div class="flex justify-between text-xs pt-2 border-t border-slate-200 dark:border-slate-700">
+                <span>Gastos Previstos: <b id="liveTripExp" class="font-mono">RD$ 0.00</b></span>
+                <span>Ganancia Neta: <b id="liveTripNet" class="font-mono text-emerald-600">RD$ 0.00</b></span>
+              </div>
+            </div>
+
+            <div><label class="lbl">Nota del Recordatorio (Opcional)</label><input type="text" id="fSchNotes" value="${s ? (s.notes || '') : ''}" class="inp" /></div>
+
+            <div class="flex justify-end gap-2">
+              <button type="button" onclick="App.closeModal()" class="btn-outline">Cancelar</button>
+              <button type="submit" class="btn-primary">Guardar en Agenda</button>
+            </div>
+          </form>
+        `);
+        this.updateLiveCalc();
+      },
+
+      saveScheduledTrip(e, id = null) {
+        e.preventDefault();
+        const helperIds = [...document.querySelectorAll('input[name="schedHelpers"]:checked')].map(c => c.value);
+        const route = document.getElementById('fSchRoute').value.trim();
+        const dateVal = document.getElementById('fSchDate').value;
+
+        if (route && !this.db.routes.some(r => r.name.toLowerCase() === route.toLowerCase())) {
+          this.db.routes.push({ id: this.uid('rt'), name: route });
+        }
+
+        const g = document.getElementById('fTripGross').value;
+        const f = document.getElementById('fTripFuel').value;
+        const tl = document.getElementById('fTripTolls').value;
+        const d = document.getElementById('fTripDrvPay').value;
+        const h = document.getElementById('fTripHlpPay').value;
+        const o = document.getElementById('fTripOther').value;
+        const c = document.getElementById('fSchClients').value;
+
+        const payload = {
+          date: dateVal,
+          reminderTime: document.getElementById('fSchReminderTime').value,
+          departureTime: document.getElementById('fSchDepartureTime').value,
+          route: route || '',
+          clientsCount: c !== '' ? Number(c) : '',
+          truckId: document.getElementById('fSchTruck').value || '',
+          driverId: document.getElementById('fSchDriver').value || '',
+          helperIds,
+          freightGross: g !== '' ? Number(g) : '',
+          fuelCost: f !== '' ? Number(f) : '',
+          tollsCost: tl !== '' ? Number(tl) : '',
+          driverPay: d !== '' ? Number(d) : '',
+          helperPay: h !== '' ? Number(h) : '',
+          otherCost: o !== '' ? Number(o) : '',
+          notes: document.getElementById('fSchNotes').value.trim()
+        };
+
+        if (id) Object.assign(this.db.scheduledTrips.find(x => String(x.id) === String(id)), payload);
+        else this.db.scheduledTrips.push({ id: this.uid('sch'), ...payload });
+
+        this.save();
+        this.syncFilterWithNewRecordDate(dateVal);
+        this.closeModal();
+        this.switchTab('scheduled');
+        this.renderAll();
+        this.showToast('Viaje anticipado guardado en Agenda');
+      },
+
+      liquidateScheduledTrip(schedId) {
+        this.openTripModal(null, schedId);
+      },
+
+      deleteScheduledTrip(id) {
+        if (!confirm('¿Eliminar este viaje anticipado?')) return;
+        this.db.scheduledTrips = this.db.scheduledTrips.filter(x => String(x.id) !== String(id));
+        this.save();
+        this.renderAll();
+      },
+
+      openIncidentModal() {
+        const today = this.offsetDateISO(0);
+        const truckField = this.db.trucks.length > 0
+          ? `<select id="fIncTruck" required class="inp">${this.db.trucks.map(t => `<option value="${t.id}">${t.name}</option>`).join('')}</select>`
+          : `<input type="text" id="fIncNewTruck" required placeholder="Nombre del camión" class="inp" />`;
+        const driverField = this.db.drivers.length > 0
+          ? `<select id="fIncDriver" required class="inp">${this.db.drivers.map(d => `<option value="${d.id}">${d.name}</option>`).join('')}</select>`
+          : `<input type="text" id="fIncNewDriver" required placeholder="Nombre del chofer" class="inp" />`;
+
+        this.openModal('Registrar Incidencia en Ruta', `
+          <form onsubmit="App.saveIncident(event)" class="space-y-4">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div><label class="lbl">Fecha</label><input type="date" id="fIncDate" value="${today}" required class="inp font-mono" /></div>
+              <div>
+                <label class="lbl">Gravedad</label>
+                <select id="fIncSeverity" required class="inp">
+                  <option value="Baja">Baja</option>
+                  <option value="Media" selected>Media</option>
+                  <option value="Alta">Alta</option>
+                </select>
+              </div>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div><label class="lbl">Camión Involucrado</label>${truckField}</div>
+              <div><label class="lbl">Chofer</label>${driverField}</div>
+            </div>
+            <div><label class="lbl">Descripción de la Incidencia</label><input id="fIncDesc" required placeholder="Ej. Avería en ruta, neumático, choque leve..." class="inp" /></div>
+            <div><label class="lbl">Costo Asociado (RD$)</label><input type="number" step="0.01" min="0" id="fIncCost" value="0" required class="inp font-mono font-bold text-rose-600" /></div>
+            <div class="flex justify-end gap-2">
+              <button type="button" onclick="App.closeModal()" class="btn-outline">Cancelar</button>
+              <button type="submit" class="btn-rose">Guardar Incidencia</button>
+            </div>
+          </form>
+        `, 'max-w-lg');
+      },
+
+      saveIncident(e) {
+        e.preventDefault();
+        let truckId = document.getElementById('fIncTruck')?.value;
+        const newTrk = document.getElementById('fIncNewTruck')?.value.trim();
+        if (!truckId && newTrk) {
+          truckId = this.uid('trk');
+          this.db.trucks.push({ id: truckId, name: newTrk, plate: 'S/P', model: 'General' });
+        }
+
+        let driverId = document.getElementById('fIncDriver')?.value;
+        const newDrv = document.getElementById('fIncNewDriver')?.value.trim();
+        if (!driverId && newDrv) {
+          driverId = this.uid('drv');
+          this.db.drivers.push({ id: driverId, name: newDrv, phone: '', note: '' });
+        }
+
+        const dateVal = document.getElementById('fIncDate').value;
+
+        this.db.incidents.unshift({
+          id: this.uid('inc'),
+          date: dateVal,
+          severity: document.getElementById('fIncSeverity').value,
+          truckId,
+          driverId,
+          description: document.getElementById('fIncDesc').value.trim(),
+          cost: Number(document.getElementById('fIncCost').value) || 0
+        });
+        this.save();
+        this.syncFilterWithNewRecordDate(dateVal);
+        this.closeModal();
+        this.switchTab('incidents');
+        this.renderAll();
+        this.showToast('Incidencia registrada');
+      },
+
+      deleteIncident(id) {
+        if (!confirm('¿Eliminar esta incidencia?')) return;
+        this.db.incidents = this.db.incidents.filter(x => String(x.id) !== String(id));
+        this.save();
+        this.renderAll();
+      },
+
+      openDriverModal(id = null) {
+        const d = id ? this.db.drivers.find(x => String(x.id) === String(id)) : null;
+        this.openModal(d ? 'Editar Chofer' : 'Nuevo Chofer', `
+          <form onsubmit="App.saveDriver(event, ${d ? `'${d.id}'` : 'null'})" class="space-y-4">
+            <div><label class="lbl">Nombre Completo</label><input id="fDrvName" value="${d ? d.name : ''}" required class="inp" /></div>
+            <div><label class="lbl">Teléfono / Cédula</label><input id="fDrvPhone" value="${d ? d.phone : ''}" class="inp" /></div>
+            <div><label class="lbl">Nota</label><input id="fDrvNote" value="${d ? (d.note || '') : ''}" class="inp" /></div>
+            <button type="submit" class="w-full btn-primary">Guardar Chofer</button>
+          </form>`, 'max-w-md');
+      },
+      saveDriver(e, id = null) {
+        e.preventDefault();
+        const data = { name: document.getElementById('fDrvName').value.trim(), phone: document.getElementById('fDrvPhone').value.trim(), note: document.getElementById('fDrvNote').value.trim() };
+        if (id) Object.assign(this.db.drivers.find(x => String(x.id) === String(id)), data);
+        else this.db.drivers.push({ id: this.uid('drv'), ...data });
+        this.save(); this.closeModal(); this.renderAll();
+        this.showToast('Chofer guardado');
+      },
+      deleteDriver(id) {
+        if (!confirm('¿Eliminar chofer?')) return;
+        this.db.drivers = this.db.drivers.filter(x => String(x.id) !== String(id));
+        this.save(); this.renderAll();
+      },
+
+      openTruckModal(id = null) {
+        const t = id ? this.db.trucks.find(x => String(x.id) === String(id)) : null;
+        this.openModal(t ? 'Editar Camión' : 'Nuevo Camión', `
+          <form onsubmit="App.saveTruck(event, ${t ? `'${t.id}'` : 'null'})" class="space-y-4">
+            <div><label class="lbl">Ficha / Nombre</label><input id="fTrkName" value="${t ? t.name : ''}" required class="inp" /></div>
+            <div><label class="lbl">Placa</label><input id="fTrkPlate" value="${t ? t.plate : ''}" required class="inp" /></div>
+            <div><label class="lbl">Marca y Modelo</label><input id="fTrkModel" value="${t ? t.model : ''}" required class="inp" /></div>
+            <button type="submit" class="w-full btn-primary">Guardar Camión</button>
+          </form>`, 'max-w-md');
+      },
+      saveTruck(e, id = null) {
+        e.preventDefault();
+        const data = { name: document.getElementById('fTrkName').value.trim(), plate: document.getElementById('fTrkPlate').value.trim(), model: document.getElementById('fTrkModel').value.trim() };
+        if (id) Object.assign(this.db.trucks.find(x => String(x.id) === String(id)), data);
+        else this.db.trucks.push({ id: this.uid('trk'), ...data });
+        this.save(); this.closeModal(); this.renderAll();
+        this.showToast('Camión guardado');
+      },
+      deleteTruck(id) {
+        if (!confirm('¿Eliminar camión?')) return;
+        this.db.trucks = this.db.trucks.filter(x => String(x.id) !== String(id));
+        this.save(); this.renderAll();
+      },
+
+      openMaintenanceModal() {
+        const today = this.offsetDateISO(0);
+        const truckField = this.db.trucks.length > 0
+          ? `<select id="fMntTruck" required class="inp">${this.db.trucks.map(t => `<option value="${t.id}">${t.name}</option>`).join('')}</select>`
+          : `<input type="text" id="fMntNewTruck" required placeholder="Nombre del camión" class="inp" />`;
+
+        this.openModal('Registrar Gasto de Taller (Mantenimiento)', `
+          <form onsubmit="App.saveMaintenance(event)" class="space-y-4">
+            <div class="grid grid-cols-2 gap-3">
+              <div><label class="lbl">Fecha</label><input type="date" id="fMntDate" value="${today}" required class="inp font-mono" /></div>
+              <div><label class="lbl">Camión</label>${truckField}</div>
+            </div>
+            <div><label class="lbl">Descripción del Mantenimiento / Repuesto</label><input id="fMntDesc" required class="inp" /></div>
+            <div><label class="lbl">Costo (RD$)</label><input type="number" step="0.01" min="1" id="fMntCost" required class="inp font-mono font-bold text-rose-600" /></div>
+            <button type="submit" class="w-full btn-primary">Guardar Mantenimiento</button>
+          </form>`, 'max-w-md');
+      },
+      saveMaintenance(e) {
+        e.preventDefault();
+        let truckId = document.getElementById('fMntTruck')?.value;
+        const newTrk = document.getElementById('fMntNewTruck')?.value.trim();
+        if (!truckId && newTrk) {
+          truckId = this.uid('trk');
+          this.db.trucks.push({ id: truckId, name: newTrk, plate: 'S/P', model: 'General' });
+        }
+
+        const dateVal = document.getElementById('fMntDate').value;
+
+        this.db.maintenances.unshift({
+          id: this.uid('mnt'),
+          date: dateVal,
+          truckId,
+          description: document.getElementById('fMntDesc').value.trim(),
+          cost: Number(document.getElementById('fMntCost').value) || 0
+        });
+        this.save();
+        this.syncFilterWithNewRecordDate(dateVal);
+        this.closeModal();
+        this.renderAll();
+        this.showToast('Mantenimiento registrado');
+      },
+      deleteMaintenance(id) {
+        if (!confirm('¿Eliminar mantenimiento?')) return;
+        this.db.maintenances = this.db.maintenances.filter(x => String(x.id) !== String(id));
+        this.save(); this.renderAll();
+      },
+
+      openHelperModal() {
+        this.openModal('Nuevo Ayudante', `
+          <form onsubmit="App.saveHelper(event)" class="space-y-4">
+            <div><label class="lbl">Nombre</label><input id="fHlpName" required class="inp" /></div>
+            <div><label class="lbl">Teléfono</label><input id="fHlpPhone" class="inp" /></div>
+            <button type="submit" class="w-full btn-primary">Guardar Ayudante</button>
+          </form>`, 'max-w-md');
+      },
+      saveHelper(e) {
+        e.preventDefault();
+        this.db.helpers.push({ id: this.uid('hlp'), name: document.getElementById('fHlpName').value.trim(), phone: document.getElementById('fHlpPhone').value.trim() });
+        this.save(); this.closeModal(); this.renderAll();
+        this.showToast('Ayudante guardado');
+      },
+      deleteHelper(id) {
+        this.db.helpers = this.db.helpers.filter(x => String(x.id) !== String(id));
+        this.save(); this.renderAll();
+      },
+
+      openRouteModal() {
+        this.openModal('Nueva Ruta', `
+          <form onsubmit="App.saveRoute(event)" class="space-y-4">
+            <div><label class="lbl">Nombre de la Ruta</label><input id="fRtName" required class="inp" /></div>
+            <button type="submit" class="w-full btn-primary">Guardar Ruta</button>
+          </form>`, 'max-w-md');
+      },
+      saveRoute(e) {
+        e.preventDefault();
+        this.db.routes.push({ id: this.uid('rt'), name: document.getElementById('fRtName').value.trim() });
+        this.save(); this.closeModal(); this.renderAll();
+        this.showToast('Ruta guardada');
+      },
+      deleteRoute(id) {
+        this.db.routes = this.db.routes.filter(x => String(x.id) !== String(id));
+        this.save(); this.renderAll();
+      },
+
+      // =====================================================================
+      // POPUP DE SELECCIÓN DE PERIODO PARA REPORTES (PDF Y EXCEL .XLSX)
+      // =====================================================================
+      openExportPeriodModal(formatType) {
+        const months = this.getAvailableMonths();
+        const currentSelected = this.getSelectedMonth();
+        const optionsHtml = `<option value="ALL" ${currentSelected === 'ALL' ? 'selected' : ''}>Todos los meses (Histórico)</option>` +
+          months.map(m => `<option value="${m}" ${currentSelected === m ? 'selected' : ''}>${this.formatMonthLabel(m)}</option>`).join('');
+
+        const isPDF = formatType === 'PDF';
+
+        this.openModal(isPDF ? 'Generar Reporte Corporativo PDF' : 'Generar Libro de Excel (.XLSX)', `
+          <form onsubmit="App.confirmExportByPeriod(event, '${formatType}')" class="space-y-5">
+            <div>
+              <label class="block text-sm font-bold text-slate-900 dark:text-white mb-2">
+                ¿De qué periodo deseas generar el reporte?
+              </label>
+              <select id="exportModalPeriodSelect" class="inp font-bold">
+                ${optionsHtml}
+              </select>
+              <p class="text-xs text-slate-500 dark:text-slate-400 mt-2">
+                Se incluirán únicamente los viajes, gastos de taller e incidencias que pertenezcan al periodo elegido.
+              </p>
+            </div>
+            <div class="flex justify-end gap-2 pt-2 border-t border-slate-100 dark:border-slate-700">
+              <button type="button" onclick="App.closeModal()" class="btn-outline">Cancelar</button>
+              <button type="submit" class="${isPDF ? 'btn-primary' : 'btn-emerald'}">
+                <i class="fa-solid ${isPDF ? 'fa-file-pdf' : 'fa-file-excel'}"></i>
+                <span>Generar</span>
+              </button>
+            </div>
+          </form>
+        `, 'max-w-md');
+      },
+
+      confirmExportByPeriod(e, formatType) {
+        e.preventDefault();
+        const chosenPeriod = document.getElementById('exportModalPeriodSelect').value || 'ALL';
+        this.closeModal();
+        if (formatType === 'PDF') {
+          this.generateCorporatePDF(chosenPeriod);
+        } else {
+          this.exportExcelXLSX(chosenPeriod);
+        }
+      },
+
+      // =====================================================================
+      // EXPORTACIÓN PDF CORPORATIVO DINÁMICO (CON OVERFLOW LINEBREAK)
+      // =====================================================================
+      generateCorporatePDF(periodCode = 'ALL') {
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF('landscape', 'pt', 'a4');
+        const s = this.getPeriodSummary(periodCode);
+        const periodLabel = this.formatMonthLabel(periodCode);
+
+        doc.setFillColor(15, 23, 42);
+        doc.rect(0, 0, 842, 72, 'F');
+
+        doc.setFillColor(5, 150, 105);
+        doc.roundedRect(36, 18, 36, 36, 6, 6, 'F');
+        doc.setTextColor(255, 255, 255);
+        doc.setFontSize(13);
+        doc.setFont('helvetica', 'bold');
+        doc.text('MF', 45, 41);
+
+        doc.setFontSize(17);
+        doc.text('MiFlota RD — Reporte Financiero Corporativo', 84, 34);
+        doc.setFontSize(10);
+        doc.setFont('helvetica', 'normal');
+        doc.setTextColor(148, 163, 184);
+        doc.text(`Periodo: ${periodLabel}   |   Fecha de emisión: ${new Date().toLocaleDateString('es-DO')}`, 84, 52);
+
+        const kpiY = 88;
+        const kpis = [
+          { label: 'INGRESOS FLETES', val: this.formatRD(s.gross), rgb: [15, 23, 42] },
+          { label: 'GASTOS VIAJES', val: this.formatRD(s.tripExp), rgb: [180, 83, 9] },
+          { label: 'TALLER E INCIDENCIAS', val: this.formatRD(s.maintTotal + s.incidentTotal), rgb: [190, 18, 60] },
+          { label: 'GANANCIA NETA', val: this.formatRD(s.finalOwnerNet), rgb: [5, 150, 105] }
+        ];
+
+        kpis.forEach((k, idx) => {
+          const x = 36 + idx * 195;
+          doc.setFillColor(248, 250, 252);
+          doc.setDrawColor(203, 213, 225);
+          doc.roundedRect(x, kpiY, 182, 50, 6, 6, 'FD');
+          doc.setFontSize(8);
+          doc.setFont('helvetica', 'bold');
+          doc.setTextColor(100, 116, 139);
+          doc.text(k.label, x + 12, kpiY + 18);
+          doc.setFontSize(12);
+          doc.setTextColor(...k.rgb);
+          doc.text(k.val, x + 12, kpiY + 36);
+        });
+
+        doc.setFontSize(11);
+        doc.setTextColor(15, 23, 42);
+        doc.text(`1. Desglose de Viajes Realizados (${s.trips.length})`, 36, 158);
+
+        const tripBody = s.trips.map(t => {
+          const m = this.calcTrip(t);
+          return [
+            t.date,
+            t.route,
+            String(t.clientsCount),
+            this.getTruckName(t.truckId),
+            this.getDriverName(t.driverId),
+            this.formatRD(m.gross),
+            this.formatRD(m.fuel),
+            this.formatRD(m.tolls),
+            this.formatRD(m.drvPay),
+            this.formatRD(m.hlpPay),
+            this.formatRD(m.other),
+            this.formatRD(m.totalExpense),
+            this.formatRD(m.netOwner)
+          ];
+        });
+
+        doc.autoTable({
+          startY: 165,
+          margin: { left: 36, right: 36 },
+          head: [['Fecha', 'Ruta', 'Cli.', 'Camión', 'Chofer', 'Flete Bruto', 'Comb.', 'Peajes', 'Chofer', 'Ayud.', 'Otros', 'Gasto Total', 'Ganancia Neta']],
+          body: tripBody.length ? tripBody : [['-', 'Sin viajes registrados en este periodo', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', 'RD$ 0.00']],
+          theme: 'grid',
+          styles: { overflow: 'linebreak', cellPadding: 4, fontSize: 7.5, valign: 'middle' },
+          headStyles: { fillColor: [15, 23, 42], textColor: [255, 255, 255], fontSize: 7.5, fontStyle: 'bold' },
+          alternateRowStyles: { fillColor: [248, 250, 252] },
+          columnStyles: {
+            0: { cellWidth: 50 },
+            1: { cellWidth: 115 },
+            2: { cellWidth: 26, halign: 'center' },
+            3: { cellWidth: 68 },
+            4: { cellWidth: 68 },
+            5: { halign: 'right' },
+            6: { halign: 'right' },
+            7: { halign: 'right' },
+            8: { halign: 'right' },
+            9: { halign: 'right' },
+            10: { halign: 'right' },
+            11: { halign: 'right', textColor: [190, 18, 60] },
+            12: { halign: 'right', fontStyle: 'bold', textColor: [5, 150, 105] }
+          }
+        });
+
+        const nextY = doc.lastAutoTable.finalY + 20;
+        doc.setFontSize(11);
+        doc.setTextColor(15, 23, 42);
+        doc.text(`2. Mantenimientos de Taller (${s.maints.length}) e Incidencias (${s.incidents.length})`, 36, nextY);
+
+        const combinedBody = [
+          ...s.maints.map(m => [m.date, 'Mantenimiento Taller', this.getTruckName(m.truckId), m.description, this.formatRD(m.cost)]),
+          ...s.incidents.map(i => [i.date, `Incidencia (${i.severity})`, this.getTruckName(i.truckId), i.description, this.formatRD(i.cost)])
+        ];
+
+        doc.autoTable({
+          startY: nextY + 7,
+          margin: { left: 36, right: 36 },
+          head: [['Fecha', 'Categoría', 'Camión', 'Descripción', 'Costo (RD$)']],
+          body: combinedBody.length ? combinedBody : [['-', '-', '-', 'Sin registros en este periodo', 'RD$ 0.00']],
+          theme: 'grid',
+          styles: { overflow: 'linebreak', cellPadding: 4, fontSize: 8, valign: 'middle' },
+          headStyles: { fillColor: [51, 65, 85], textColor: [255, 255, 255], fontSize: 8, fontStyle: 'bold' },
+          alternateRowStyles: { fillColor: [248, 250, 252] },
+          columnStyles: {
+            0: { cellWidth: 65 },
+            1: { cellWidth: 110 },
+            2: { cellWidth: 110 },
+            4: { cellWidth: 95, halign: 'right', fontStyle: 'bold', textColor: [190, 18, 60] }
+          }
+        });
+
+        doc.save(`MiFlota_RD_${periodCode}.pdf`);
+        this.showToast('Reporte PDF Corporativo descargado');
+      },
+
+      // =====================================================================
+      // EXPORTACIÓN A EXCEL REAL (.XLSX) CON AUTOAJUSTE DE COLUMNAS (SHEETJS)
+      // =====================================================================
+      exportExcelXLSX(periodCode = 'ALL') {
+        const s = this.getPeriodSummary(periodCode);
+        const periodLabel = this.formatMonthLabel(periodCode);
+
+        const rows = [
+          ['MIFLOTA RD — REPORTE FINANCIERO Y OPERATIVO'],
+          ['Periodo Filtrado:', periodLabel],
+          ['Fecha de Generación:', new Date().toLocaleDateString('es-DO')],
+          [],
+          ['RESUMEN FINANCIERO DEL PERIODO'],
+          ['Ingresos por Fletes', this.formatRD(s.gross)],
+          ['Gastos Operativos de Viajes', this.formatRD(s.tripExp)],
+          ['Gastos de Taller (Mantenimiento)', this.formatRD(s.maintTotal)],
+          ['Gastos de Incidencias en Ruta', this.formatRD(s.incidentTotal)],
+          ['Ganancia Neta', this.formatRD(s.finalOwnerNet)],
+          [],
+          ['HISTORIAL DETALLADO DE VIAJES REALIZADOS'],
+          ['Fecha', 'Ruta', 'Cant. Clientes', 'Camión', 'Chofer', 'Ayudante(s)', 'Flete Bruto (RD$)', 'Combustible (RD$)', 'Peajes (RD$)', 'Pago Chofer (RD$)', 'Pago Ayudante (RD$)', 'Otros (RD$)', 'Gasto Total (RD$)', 'Ganancia Neta (RD$)', 'Notas']
+        ];
+
+        s.trips.forEach(t => {
+          const m = this.calcTrip(t);
+          rows.push([
+            t.date,
+            t.route,
+            Number(t.clientsCount) || 0,
+            this.getTruckName(t.truckId),
+            this.getDriverName(t.driverId),
+            this.getHelpersNames(t.helperIds),
+            this.formatRD(m.gross),
+            this.formatRD(m.fuel),
+            this.formatRD(m.tolls),
+            this.formatRD(m.drvPay),
+            this.formatRD(m.hlpPay),
+            this.formatRD(m.other),
+            this.formatRD(m.totalExpense),
+            this.formatRD(m.netOwner),
+            t.notes || ''
+          ]);
+        });
+
+        rows.push(
+          [],
+          ['MANTENIMIENTOS DE TALLER E INCIDENCIAS EN RUTA'],
+          ['Fecha', 'Categoría', 'Camión', 'Chofer / Responsable', 'Descripción Detallada', 'Costo (RD$)']
+        );
+
+        s.maints.forEach(m => {
+          rows.push([m.date, 'Mantenimiento Taller', this.getTruckName(m.truckId), '-', m.description, this.formatRD(m.cost)]);
+        });
+
+        s.incidents.forEach(i => {
+          rows.push([i.date, `Incidencia (${i.severity})`, this.getTruckName(i.truckId), this.getDriverName(i.driverId), i.description, this.formatRD(i.cost)]);
+        });
+
+        const wb = XLSX.utils.book_new();
+        const ws = XLSX.utils.aoa_to_sheet(rows);
+
+        const colWidths = [];
+        rows.forEach(row => {
+          row.forEach((cellVal, colIdx) => {
+            const len = String(cellVal ?? '').length;
+            colWidths[colIdx] = Math.max(colWidths[colIdx] || 14, len + 5);
+          });
+        });
+        ws['!cols'] = colWidths.map(w => ({ wch: Math.min(w, 48) }));
+
+        XLSX.utils.book_append_sheet(wb, ws, 'Reporte MiFlota RD');
+        XLSX.writeFile(wb, `MiFlota_RD_${periodCode}.xlsx`);
+        this.showToast('Libro de Excel (.xlsx) descargado');
+      },
+
+      // =====================================================================
+      // RESPALDO Y SEGURIDAD (.JSON)
+      // =====================================================================
+      exportBackupJSON() {
+        const blob = new Blob([JSON.stringify(this.db, null, 2)], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `Backup_MiFlota_RD_${this.offsetDateISO(0)}.json`;
+        document.body.appendChild(a); a.click(); document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        this.showToast('Copia de seguridad (.json) descargada');
+      },
+
+      restoreBackupJSON(event) {
+        const file = event.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          try {
+            const parsed = JSON.parse(e.target.result);
+            if (!parsed || typeof parsed !== 'object') throw new Error('Invalido');
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(parsed));
+            this.showToast('Copia restaurada. Recargando...');
+            setTimeout(() => window.location.reload(), 800);
+          } catch (err) {
+            this.showToast('El archivo JSON seleccionado no es válido', true);
+          }
+        };
+        reader.readAsText(file);
+      },
+
+      clearAllData() {
+        if (!confirm('¿Estás seguro de vaciar absolutamente todo el sistema? Esta acción no se puede deshacer.')) return;
+        this.db = this.getEmptyDatabase();
+        this.save();
+        this.populateMonthFilter('ALL');
+        this.renderAll();
+        this.showToast('El sistema ha sido vaciado por completo');
+      }
+    };
+
+    window.App = App;
+    window.addEventListener('DOMContentLoaded', () => App.init());
+  </script>
+<script>
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('/sw.js')
+      .then(() => console.log('Service Worker registrado con éxito.'))
+      .catch((err) => console.log('Error al registrar el Service Worker', err));
+  }
+</script>
+  <!-- BARRA DE NAVEGACIÓN INFERIOR (MOBILE-FIRST) -->
+  <div class="sm:hidden fixed bottom-0 left-0 right-0 z-50 bg-slate-900/95 backdrop-blur border-t border-slate-800 flex justify-around items-center py-2 px-1 text-white shadow-2xl">
+    <button type="button" onclick="App.switchTab('trips')" id="bnavBtn_trips" class="flex flex-col items-center text-emerald-400 font-bold text-[10px] gap-0.5">
+      <i class="fa-solid fa-table-list text-base"></i>
+      <span>Viajes</span>
+    </button>
+    <button type="button" onclick="App.switchTab('scheduled')" id="bnavBtn_scheduled" class="flex flex-col items-center text-slate-400 font-medium text-[10px] gap-0.5">
+      <i class="fa-regular fa-calendar-check text-base"></i>
+      <span>Agenda</span>
+    </button>
+    <button type="button" onclick="App.switchTab('trucks')" id="bnavBtn_trucks" class="flex flex-col items-center text-slate-400 font-medium text-[10px] gap-0.5">
+      <i class="fa-solid fa-truck text-base"></i>
+      <span>Flota</span>
+    </button>
+    <button type="button" onclick="App.switchTab('incidents')" id="bnavBtn_incidents" class="flex flex-col items-center text-slate-400 font-medium text-[10px] gap-0.5">
+      <i class="fa-solid fa-triangle-exclamation text-base"></i>
+      <span>Incidencias</span>
+    </button>
+    <button type="button" onclick="App.switchTab('analytics')" id="bnavBtn_analytics" class="flex flex-col items-center text-slate-400 font-medium text-[10px] gap-0.5">
+      <i class="fa-solid fa-chart-pie text-base"></i>
+      <span>Reportes</span>
+    </button>
+  </div>
 </body>
 </html>
