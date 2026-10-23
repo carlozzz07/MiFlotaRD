@@ -1,6 +1,6 @@
 import { Haptics } from '@capacitor/haptics';
 import { Auth } from './auth.js';
-import { UI } from './ui.js';
+import { UI, whatsappLink } from './ui.js';
 import {
   addRecord,
   createEmptyDatabase,
@@ -82,6 +82,7 @@ const SUPABASE_URL = 'https://pofpqcvejdrlxindicpc.supabase.co';
       activeTab: 'trips',
       chartDoughnut: null,
       chartBar: null,
+      incidentLocation: null,
 
       uid(prefix = 'id') {
         return `${prefix}_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 6)}`;
@@ -160,6 +161,18 @@ const SUPABASE_URL = 'https://pofpqcvejdrlxindicpc.supabase.co';
       },
 
       currentUser: null,
+
+      toggleAuthPassword() {
+        const input = document.getElementById('authPassword');
+        const button = document.getElementById('authPasswordToggle');
+        const icon = document.getElementById('authPasswordToggleIcon');
+        if (!input || !button || !icon) return;
+        const isVisible = input.type === 'text';
+        input.type = isVisible ? 'password' : 'text';
+        button.setAttribute('aria-pressed', String(!isVisible));
+        button.setAttribute('aria-label', isVisible ? 'Mostrar contraseña' : 'Ocultar contraseña');
+        icon.className = isVisible ? 'fa-regular fa-eye' : 'fa-regular fa-eye-slash';
+      },
 
       async init() {
         this.initTheme();
@@ -425,11 +438,12 @@ const SUPABASE_URL = 'https://pofpqcvejdrlxindicpc.supabase.co';
         const periodLabel = this.formatMonthLabel(this.getSelectedMonth());
         const dTrips = this.getFilteredTrips().filter(t => String(t.driverId) === String(driverId));
 
-        let totalFletes = 0, totalCobradoChofer = 0, totalRestanteGenerado = 0;
+        let totalFletes = 0, totalCombustible = 0, totalCobradoChofer = 0, totalRestanteGenerado = 0;
 
         const rowsHtml = dTrips.map(t => {
           const m = this.calcTrip(t);
           totalFletes += m.gross;
+          totalCombustible += m.fuel;
           totalCobradoChofer += m.drvPay;
           totalRestanteGenerado += m.netOwner;
 
@@ -442,18 +456,24 @@ const SUPABASE_URL = 'https://pofpqcvejdrlxindicpc.supabase.co';
               </td>
               <td class="td">${this.getTruckName(t.truckId)}</td>
               <td class="td text-right font-mono font-semibold whitespace-nowrap">${this.formatRD(m.gross)}</td>
-              <td class="td text-right font-mono text-sky-700 dark:text-sky-400 font-semibold whitespace-nowrap">${this.formatRD(m.drvPay)}</td>
+              <td class="td text-right font-mono font-semibold whitespace-nowrap">${this.formatRD(m.fuel)}</td>
+              <td class="td text-right font-mono font-semibold whitespace-nowrap">${this.formatRD(m.drvPay)}</td>
               <td class="td text-right font-mono font-bold text-emerald-600 dark:text-emerald-400 whitespace-nowrap">${this.formatRD(m.netOwner)}</td>
             </tr>
           `;
         }).join('');
+        const settlementUrl = whatsappLink(
+          d.phone,
+          `Resumen de liquidación del periodo. Viajes realizados: ${dTrips.length}. Total Fletes: ${this.formatRD(totalFletes)}. Combustible: ${this.formatRD(totalCombustible)}. Total Cobrado por Chofer: ${this.formatRD(totalCobradoChofer)}. Restante Generado: ${this.formatRD(totalRestanteGenerado)}.`
+        );
 
         const footHtml = dTrips.length > 0 ? `
           <tfoot class="bg-slate-100 dark:bg-slate-800/90 font-mono font-bold text-xs border-t-2 border-slate-300 dark:border-slate-600">
             <tr>
               <td class="py-3 px-3" colspan="3">TOTALES DEL PERIODO (${dTrips.length} viajes)</td>
               <td class="py-3 px-3 text-right whitespace-nowrap">${this.formatRD(totalFletes)}</td>
-              <td class="py-3 px-3 text-right text-sky-700 dark:text-sky-400 whitespace-nowrap">${this.formatRD(totalCobradoChofer)}</td>
+              <td class="py-3 px-3 text-right whitespace-nowrap">${this.formatRD(totalCombustible)}</td>
+              <td class="py-3 px-3 text-right whitespace-nowrap">${this.formatRD(totalCobradoChofer)}</td>
               <td class="py-3 px-3 text-right text-emerald-700 dark:text-emerald-400 whitespace-nowrap">${this.formatRD(totalRestanteGenerado)}</td>
             </tr>
           </tfoot>
@@ -461,22 +481,26 @@ const SUPABASE_URL = 'https://pofpqcvejdrlxindicpc.supabase.co';
 
         this.openModal(`Historial de Chofer: ${d.name} — ${periodLabel}`, `
           <div class="space-y-4">
-            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
-              <div class="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700">
+            <div class="grid grid-cols-1 sm:grid-cols-4 gap-3 text-xs">
+              <div class="p-3.5 rounded-md bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700">
                 <span class="text-slate-400 uppercase font-semibold block">Total Fletes</span>
                 <span class="font-mono font-bold text-base text-slate-900 dark:text-white mt-0.5 block">${this.formatRD(totalFletes)}</span>
               </div>
-              <div class="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700">
+              <div class="p-3.5 rounded-md bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700">
                 <span class="text-slate-400 uppercase font-semibold block">Total Cobrado por Chofer</span>
                 <span class="font-mono font-bold text-base text-sky-600 dark:text-sky-400 mt-0.5 block">${this.formatRD(totalCobradoChofer)}</span>
               </div>
-              <div class="p-3.5 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800/60">
+              <div class="p-3.5 rounded-md bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700">
+                <span class="text-slate-400 uppercase font-semibold block">Combustible</span>
+                <span class="font-mono font-bold text-base text-slate-900 dark:text-white mt-0.5 block">${this.formatRD(totalCombustible)}</span>
+              </div>
+              <div class="p-3.5 rounded-md bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800/60">
                 <span class="text-emerald-800 dark:text-emerald-300 uppercase font-bold block">Restante Generado</span>
                 <span class="font-mono font-bold text-base text-emerald-700 dark:text-emerald-400 mt-0.5 block">${this.formatRD(totalRestanteGenerado)}</span>
               </div>
             </div>
 
-            <div class="overflow-x-auto border border-slate-200 dark:border-slate-700 rounded-lg">
+            <div class="overflow-x-auto border border-slate-300 dark:border-slate-700 rounded-md">
               <table class="w-full border-collapse">
                 <thead>
                   <tr>
@@ -484,15 +508,21 @@ const SUPABASE_URL = 'https://pofpqcvejdrlxindicpc.supabase.co';
                     <th class="th">Ruta y Clientes</th>
                     <th class="th">Camión</th>
                     <th class="th text-right">Total Fletes</th>
+                    <th class="th text-right">Combustible</th>
                     <th class="th text-right">Cobrado por Chofer</th>
                     <th class="th text-right">Restante Generado</th>
                   </tr>
                 </thead>
                 <tbody>
-                  ${rowsHtml || '<tr><td colspan="6" class="py-8 text-center text-slate-400 text-xs">Sin viajes registrados para este chofer en el periodo seleccionado.</td></tr>'}
+                  ${rowsHtml || '<tr><td colspan="7" class="py-8 text-center text-slate-400 text-xs">Sin viajes registrados para este chofer en el periodo seleccionado.</td></tr>'}
                 </tbody>
                 ${footHtml}
               </table>
+            </div>
+            <div class="flex justify-end">
+              ${settlementUrl
+                ? `<a href="${settlementUrl}" target="_blank" rel="noopener noreferrer" class="btn-whatsapp"><i class="fa-brands fa-whatsapp"></i><span>Enviar Resumen WA</span></a>`
+                : '<span class="text-xs text-slate-500">Registre un teléfono para compartir este resumen por WhatsApp.</span>'}
             </div>
           </div>
         `, 'max-w-4xl');
@@ -553,19 +583,19 @@ const SUPABASE_URL = 'https://pofpqcvejdrlxindicpc.supabase.co';
           <div class="space-y-5">
             <!-- 4 Tarjetas de Resumen del Camión en el Periodo -->
             <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
-              <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700">
+              <div class="p-3 rounded-md bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700">
                 <span class="text-slate-400 uppercase font-semibold block">Total Fletes</span>
                 <span class="font-mono font-bold text-sm sm:text-base text-slate-900 dark:text-white mt-0.5 block">${this.formatRD(totalFletes)}</span>
               </div>
-              <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700">
+              <div class="p-3 rounded-md bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700">
                 <span class="text-slate-400 uppercase font-semibold block">Total Gastos de Viajes</span>
                 <span class="font-mono font-bold text-sm sm:text-base text-amber-600 mt-0.5 block">-${this.formatRD(totalGastosViajes)}</span>
               </div>
-              <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700">
+              <div class="p-3 rounded-md bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700">
                 <span class="text-slate-400 uppercase font-semibold block">Total Gastos Taller/Incidencias</span>
                 <span class="font-mono font-bold text-sm sm:text-base text-rose-600 mt-0.5 block">-${this.formatRD(totalTallerEIncidencias)}</span>
               </div>
-              <div class="p-3 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800/60">
+              <div class="p-3 rounded-md bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800/60">
                 <span class="text-emerald-800 dark:text-emerald-300 uppercase font-bold block">Ganancia Neta</span>
                 <span class="font-mono font-bold text-sm sm:text-base ${gananciaNetaCamion >= 0 ? 'text-emerald-700 dark:text-emerald-400' : 'text-rose-600'} mt-0.5 block">${this.formatRD(gananciaNetaCamion)}</span>
               </div>
@@ -574,7 +604,7 @@ const SUPABASE_URL = 'https://pofpqcvejdrlxindicpc.supabase.co';
             <!-- Tabla 1: Viajes del Camión en ese mes -->
             <div>
               <h4 class="font-bold text-xs uppercase tracking-wider text-slate-500 mb-2">Viajes Realizados en este Periodo (${tTrips.length})</h4>
-              <div class="overflow-x-auto border border-slate-200 dark:border-slate-700 rounded-lg">
+              <div class="overflow-x-auto border border-slate-300 dark:border-slate-700 rounded-md">
                 <table class="w-full border-collapse">
                   <thead>
                     <tr>
@@ -605,7 +635,7 @@ const SUPABASE_URL = 'https://pofpqcvejdrlxindicpc.supabase.co';
             <!-- Tabla 2: Mantenimientos e Incidencias del Camión en ese mes -->
             <div>
               <h4 class="font-bold text-xs uppercase tracking-wider text-rose-600 mb-2">Mantenimientos de Taller e Incidencias en este Periodo (${tMaints.length + tIncs.length})</h4>
-              <div class="overflow-x-auto border border-slate-200 dark:border-slate-700 rounded-lg">
+              <div class="overflow-x-auto border border-slate-300 dark:border-slate-700 rounded-md">
                 <table class="w-full border-collapse">
                   <thead>
                     <tr>
@@ -644,12 +674,22 @@ const SUPABASE_URL = 'https://pofpqcvejdrlxindicpc.supabase.co';
         const routeOpts = this.db.routes.map(r => `<option value="${r.name}"></option>`).join('');
         const selHelpers = t ? (t.helperIds || []).map(String) : [];
 
-        const availableTrucks = this.db.trucks.filter((truck) => truck.status !== 'Fuera de Servicio');
-        const truckFieldHtml = availableTrucks.length
-          ? `<select id="fTripTruck" required class="inp"><option value="">Selecciona un camión</option>${availableTrucks.map(k => `<option value="${k.id}" ${t && String(t.truckId) === String(k.id) ? 'selected' : ''}>${k.name} · ${k.plate}</option>`).join('')}</select>`
-          : this.db.trucks.length === 0
-            ? `<button type="button" onclick="App.closeModal(); App.openTruckModal()" class="btn-rose w-full">Primero registra un camión</button>`
-            : `<button type="button" onclick="App.closeModal(); App.switchTab('trucks')" class="btn-rose w-full">No hay camiones disponibles; revisa la flota</button>`;
+        const availableTrucks = this.db.trucks.filter((truck) => truck.status === 'Disponible');
+        if (availableTrucks.length === 0) {
+          this.openModal('No hay camiones disponibles', `
+            <div class="space-y-4">
+              <div class="rounded-md border border-slate-300 bg-slate-50 p-4 dark:border-slate-700 dark:bg-slate-950">
+                <p class="text-sm font-semibold text-slate-900 dark:text-white">No es posible registrar un viaje</p>
+                <p class="mt-1 text-sm text-slate-600 dark:text-slate-400">Registre un camión o cambie el estado de uno existente a “Disponible” para continuar.</p>
+              </div>
+              <div class="flex justify-end">
+                <button type="button" onclick="App.closeModal(); App.switchTab('trucks')" class="btn-primary">Ir a Camiones</button>
+              </div>
+            </div>
+          `, 'max-w-md');
+          return;
+        }
+        const truckFieldHtml = `<select id="fTripTruck" required class="inp"><option value="">Selecciona un camión</option>${availableTrucks.map(k => `<option value="${k.id}" ${t && String(t.truckId) === String(k.id) ? 'selected' : ''}>${k.name} · ${k.plate}</option>`).join('')}</select>`;
 
         const driverFieldHtml = this.db.drivers.length > 0
           ? `<select id="fTripDriver" required class="inp">${this.db.drivers.map(d => `<option value="${d.id}" ${t && String(t.driverId) === String(d.id) ? 'selected' : ''}>${d.name}</option>`).join('')}</select>`
@@ -657,7 +697,7 @@ const SUPABASE_URL = 'https://pofpqcvejdrlxindicpc.supabase.co';
 
         const helpersChecks = this.db.helpers.length > 0
           ? this.db.helpers.map(h => `
-              <label class="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg border border-slate-200 dark:border-slate-700 cursor-pointer text-xs font-medium">
+              <label class="inline-flex items-center gap-2 px-3 py-1.5 rounded-md border border-slate-300 dark:border-slate-700 cursor-pointer text-xs font-medium">
                 <input type="checkbox" name="tripHelpers" value="${h.id}" ${selHelpers.includes(String(h.id)) ? 'checked' : ''} class="accent-slate-900 w-4 h-4 rounded" />
                 <span>${h.name}</span>
               </label>`).join('')
@@ -679,9 +719,9 @@ const SUPABASE_URL = 'https://pofpqcvejdrlxindicpc.supabase.co';
               <div><label class="lbl">Chofer</label>${driverFieldHtml}</div>
             </div>
             <div><label class="lbl">Ayudante(s)</label><div class="flex flex-wrap gap-2">${helpersChecks}</div></div>
-            <div class="p-4 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 space-y-3">
+            <div class="p-4 rounded-md bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 space-y-3">
               <div>
-                <label class="lbl !text-emerald-600">Ganancia Bruta por Flete (RD$)</label>
+                <label class="lbl !text-slate-600 dark:!text-slate-300">Ganancia Bruta por Flete (RD$)</label>
                 <input type="text" inputmode="decimal" id="fTripGross" oninput="App.updateLiveCalc()" value="${formatMoneyInput(t && t.freightGross !== '' ? t.freightGross : '')}" required class="inp font-mono font-bold financial-input" />
               </div>
               <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
@@ -692,14 +732,14 @@ const SUPABASE_URL = 'https://pofpqcvejdrlxindicpc.supabase.co';
                 <div class="col-span-2"><label class="lbl">Otros Gastos / Dieta (RD$)</label><input type="text" inputmode="decimal" id="fTripOther" oninput="App.updateLiveCalc()" value="${formatMoneyInput(t && t.otherCost !== '' ? t.otherCost : 0)}" class="inp font-mono financial-input" /></div>
               </div>
             </div>
-            <div class="p-4 rounded-xl bg-slate-900 text-white flex items-center justify-between">
+            <div class="p-4 rounded-md bg-slate-900 text-white flex items-center justify-between">
               <div><span class="text-[10px] uppercase text-slate-400 block font-semibold">Total Gastos</span><span id="liveTripExp" class="text-base font-mono font-bold text-amber-400">RD$ 0.00</span></div>
               <div class="text-right"><span class="text-[10px] uppercase text-emerald-400 block font-semibold">Ganancia Neta</span><span id="liveTripNet" class="text-xl font-mono font-bold text-emerald-400">RD$ 0.00</span></div>
             </div>
             <div><label class="lbl">Notas</label><input type="text" id="fTripNotes" value="${t ? (t.notes || '') : ''}" class="inp" /></div>
             <div class="flex justify-end gap-2">
               <button type="button" onclick="App.closeModal()" class="btn-outline">Cancelar</button>
-              <button type="submit" class="btn-emerald"><i class="fa-solid fa-check"></i> Guardar Viaje</button>
+              <button type="submit" class="btn-primary"><i class="fa-solid fa-check"></i> Guardar Viaje</button>
             </div>
           </form>
         `);
@@ -712,7 +752,7 @@ const SUPABASE_URL = 'https://pofpqcvejdrlxindicpc.supabase.co';
         e.preventDefault();
         let truckId = document.getElementById('fTripTruck')?.value;
         const selectedTruck = this.db.trucks.find((truck) => String(truck.id) === String(truckId));
-        if (!selectedTruck || selectedTruck.status === 'Fuera de Servicio') {
+        if (!selectedTruck || selectedTruck.status !== 'Disponible') {
           this.showToast('Selecciona un camión disponible para registrar el viaje.', true);
           return;
         }
@@ -742,7 +782,7 @@ const SUPABASE_URL = 'https://pofpqcvejdrlxindicpc.supabase.co';
         const payload = {
           date: dateVal,
           route,
-          clientsCount: Number(document.getElementById('fTripClients').value) || 1,
+          clientsCount: Math.max(1, Number(document.getElementById('fTripClients').value) || 1),
           truckId,
           driverId,
           helperIds,
@@ -770,6 +810,25 @@ const SUPABASE_URL = 'https://pofpqcvejdrlxindicpc.supabase.co';
         await notifySuccess();
       },
 
+      async captureIncidentLocation() {
+        const status = document.getElementById('fIncGpsStatus');
+        if (status) status.textContent = 'Obteniendo ubicación...';
+        const location = await getCurrentPosition();
+        if (!location) {
+          this.incidentLocation = null;
+          if (status) status.textContent = 'No se pudo obtener la ubicación';
+          this.showToast('No fue posible capturar la ubicación GPS.', true);
+          return;
+        }
+        const latitudeInput = document.getElementById('fIncLatitude');
+        const longitudeInput = document.getElementById('fIncLongitude');
+        if (!latitudeInput || !longitudeInput) return;
+        this.incidentLocation = location;
+        latitudeInput.value = String(location.latitude);
+        longitudeInput.value = String(location.longitude);
+        if (status) status.textContent = `${location.latitude.toFixed(6)}, ${location.longitude.toFixed(6)}`;
+      },
+
       deleteTrip(id) {
         if (!confirm('¿Eliminar este viaje?')) return;
         deleteRecord(this.db, 'trips', id);
@@ -789,7 +848,7 @@ const SUPABASE_URL = 'https://pofpqcvejdrlxindicpc.supabase.co';
         const selHelpers = s ? (s.helperIds || []).map(String) : [];
 
         const helpersChecks = this.db.helpers.map(h => `
-          <label class="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg border border-slate-200 dark:border-slate-700 cursor-pointer text-xs font-medium">
+          <label class="inline-flex items-center gap-2 px-3 py-1.5 rounded-md border border-slate-300 dark:border-slate-700 cursor-pointer text-xs font-medium">
             <input type="checkbox" name="schedHelpers" value="${h.id}" ${selHelpers.includes(String(h.id)) ? 'checked' : ''} class="accent-slate-900 w-4 h-4 rounded" />
             <span>${h.name}</span>
           </label>
@@ -797,7 +856,7 @@ const SUPABASE_URL = 'https://pofpqcvejdrlxindicpc.supabase.co';
 
         this.openModal(s ? 'Editar Viaje Anticipado' : 'Agendar Viaje Anticipado con Recordatorio', `
           <form onsubmit="App.saveScheduledTrip(event, ${s ? `'${s.id}'` : 'null'})" class="space-y-4">
-            <div class="p-4 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <div class="p-4 rounded-md bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 grid grid-cols-1 sm:grid-cols-3 gap-3">
               <div>
                 <label class="lbl">Fecha del Viaje *</label>
                 <input type="date" id="fSchDate" value="${s ? s.date : tomorrow}" required class="inp font-mono font-bold" />
@@ -831,7 +890,7 @@ const SUPABASE_URL = 'https://pofpqcvejdrlxindicpc.supabase.co';
 
             <div><label class="lbl">Ayudante(s) (Opcional)</label><div class="flex flex-wrap gap-2">${helpersChecks || '<span class="text-xs text-slate-400">Sin ayudantes creados</span>'}</div></div>
 
-            <div class="p-4 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 space-y-3">
+            <div class="p-4 rounded-md bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 space-y-3">
               <span class="text-xs font-bold uppercase text-slate-400 block">Montos de Cobro y Pagos (100% Opcionales)</span>
               <div>
                 <label class="lbl">Flete a Cobrar (RD$ — Opcional)</label>
@@ -844,7 +903,7 @@ const SUPABASE_URL = 'https://pofpqcvejdrlxindicpc.supabase.co';
                 <div><label class="lbl">Pago Ayud. (Opcional)</label><input type="text" inputmode="decimal" id="fTripHlpPay" oninput="App.updateLiveCalc()" value="${formatMoneyInput(s && s.helperPay !== '' ? s.helperPay : '')}" class="inp font-mono financial-input" /></div>
                 <div class="col-span-2"><label class="lbl">Otros / Avance (Opcional)</label><input type="text" inputmode="decimal" id="fTripOther" oninput="App.updateLiveCalc()" value="${formatMoneyInput(s && s.otherCost !== '' ? s.otherCost : '')}" class="inp font-mono financial-input" /></div>
               </div>
-              <div class="flex justify-between text-xs pt-2 border-t border-slate-200 dark:border-slate-700">
+              <div class="flex justify-between text-xs pt-2 border-t border-slate-300 dark:border-slate-700">
                 <span>Gastos Previstos: <b id="liveTripExp" class="font-mono">RD$ 0.00</b></span>
                 <span>Ganancia Neta: <b id="liveTripNet" class="font-mono text-emerald-600">RD$ 0.00</b></span>
               </div>
@@ -920,6 +979,7 @@ const SUPABASE_URL = 'https://pofpqcvejdrlxindicpc.supabase.co';
       },
 
       openIncidentModal() {
+        this.incidentLocation = null;
         const today = this.offsetDateISO(0);
         const truckField = this.db.trucks.length > 0
           ? `<select id="fIncTruck" required class="inp">${this.db.trucks.map(t => `<option value="${t.id}">${t.name}</option>`).join('')}</select>`
@@ -947,10 +1007,19 @@ const SUPABASE_URL = 'https://pofpqcvejdrlxindicpc.supabase.co';
             </div>
             <div><label class="lbl">Descripción de la Incidencia</label><input id="fIncDesc" required placeholder="Ej. Avería en ruta, neumático, choque leve..." class="inp" /></div>
             <div><label class="lbl">Costo Asociado (RD$)</label><input type="text" inputmode="decimal" id="fIncCost" value="0.00" required class="inp font-mono font-bold text-rose-600 financial-input" /></div>
+            <div class="space-y-2">
+              <label class="lbl">Ubicación de la Incidencia</label>
+              <input type="hidden" id="fIncLatitude" />
+              <input type="hidden" id="fIncLongitude" />
+              <div class="flex flex-wrap items-center gap-2">
+                <button type="button" onclick="App.captureIncidentLocation()" class="btn-outline"><i class="fa-solid fa-location-crosshairs"></i>Capturar Ubicación GPS</button>
+                <span id="fIncGpsStatus" class="text-xs text-slate-500">Ubicación no capturada</span>
+              </div>
+            </div>
             <div><label class="lbl">Foto del incidente (opcional)</label><input type="file" id="fIncPhoto" accept="image/*" capture="environment" class="inp" /></div>
             <div class="flex justify-end gap-2">
               <button type="button" onclick="App.closeModal()" class="btn-outline">Cancelar</button>
-              <button type="submit" class="btn-rose">Guardar Incidencia</button>
+              <button type="submit" class="btn-primary">Guardar Incidencia</button>
             </div>
           </form>
         `, 'max-w-lg');
@@ -982,7 +1051,7 @@ const SUPABASE_URL = 'https://pofpqcvejdrlxindicpc.supabase.co';
           this.showToast('No se pudo leer la foto. Intenta seleccionar otra imagen.', true);
           return;
         }
-        const location = await getCurrentPosition();
+        const location = this.incidentLocation || await getCurrentPosition();
 
         addRecord(this.db, 'incidents', {
           id: this.uid('inc'),
@@ -994,6 +1063,7 @@ const SUPABASE_URL = 'https://pofpqcvejdrlxindicpc.supabase.co';
           cost: parseMoney(document.getElementById('fIncCost').value),
           latitude: location?.latitude ?? null,
           longitude: location?.longitude ?? null,
+          location: location ? `${location.latitude}, ${location.longitude}` : '',
           receiptImage: photo
         }, true);
         await this.save();
@@ -1046,8 +1116,8 @@ const SUPABASE_URL = 'https://pofpqcvejdrlxindicpc.supabase.co';
             <div>
               <label class="lbl">Estado de la flota</label>
               <select id="fTrkStatus" class="inp">
-                <option value="Disponible" ${!t || t.status !== 'Fuera de Servicio' ? 'selected' : ''}>Disponible</option>
-                <option value="Fuera de Servicio" ${t?.status === 'Fuera de Servicio' ? 'selected' : ''}>Fuera de Servicio</option>
+                <option value="Disponible" ${!t || (t.status !== 'En Taller / Fuera de Servicio' && t.status !== 'Fuera de Servicio') ? 'selected' : ''}>Disponible</option>
+                <option value="En Taller / Fuera de Servicio" ${t?.status === 'En Taller / Fuera de Servicio' || t?.status === 'Fuera de Servicio' ? 'selected' : ''}>En Taller / Fuera de Servicio</option>
               </select>
             </div>
             <button type="submit" class="w-full btn-primary">Guardar Camión</button>
@@ -1059,7 +1129,9 @@ const SUPABASE_URL = 'https://pofpqcvejdrlxindicpc.supabase.co';
           name: document.getElementById('fTrkName').value.trim(),
           plate: document.getElementById('fTrkPlate').value.trim(),
           model: document.getElementById('fTrkModel').value.trim(),
-          status: document.getElementById('fTrkStatus').value
+          status: document.getElementById('fTrkStatus').value === 'Disponible'
+            ? 'Disponible'
+            : 'En Taller / Fuera de Servicio'
         };
         if (id) updateRecord(this.db, 'trucks', id, data);
         else addRecord(this.db, 'trucks', { id: this.uid('trk'), ...data });
@@ -1198,7 +1270,7 @@ const SUPABASE_URL = 'https://pofpqcvejdrlxindicpc.supabase.co';
             </div>
             <div class="flex justify-end gap-2 pt-2 border-t border-slate-100 dark:border-slate-700">
               <button type="button" onclick="App.closeModal()" class="btn-outline">Cancelar</button>
-              <button type="submit" class="${isPDF ? 'btn-primary' : 'btn-emerald'}">
+              <button type="submit" class="${isPDF ? 'btn-primary' : 'btn-primary'}">
                 <i class="fa-solid ${isPDF ? 'fa-file-pdf' : 'fa-file-excel'}"></i>
                 <span>Generar</span>
               </button>

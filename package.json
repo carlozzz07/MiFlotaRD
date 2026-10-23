@@ -5,11 +5,11 @@
   "main": "app.bundle.js",
   "scripts": {
     "build:css": "tailwindcss -i ./input.css -o ./styles.css --minify",
-    "build:js": "esbuild ./js/app.js --bundle --format=esm --platform=browser --outfile=./app.bundle.js",
-    "build": "npm run build:css && npm run build:js",
+    "build:js": "node ./scripts/build-js.mjs",
+    "build": "npm run build:css && npm run build:js && npm run copy:web",
     "copy:web": "node ./scripts/copy-web.mjs",
-    "obfuscate": "javascript-obfuscator js --output www/js --compact true && javascript-obfuscator www/app.bundle.js --output www/app.bundle.js --compact true --string-array true",
-    "cap:sync": "npm run build && npm run copy:web && npm run obfuscate && cap sync",
+    "obfuscate": "npm run build:js",
+    "cap:sync": "npm run build && cap sync",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],

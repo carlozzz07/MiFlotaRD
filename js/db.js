@@ -11,6 +11,34 @@ const COLLECTIONS = [
   'incidents'
 ];
 
+const FINANCIAL_FIELDS = {
+  trips: ['freightGross', 'fuelCost', 'tollsCost', 'driverPay', 'helperPay', 'otherCost', 'clientsCount'],
+  scheduledTrips: ['freightGross', 'fuelCost', 'tollsCost', 'driverPay', 'helperPay', 'otherCost', 'clientsCount'],
+  maintenances: ['cost'],
+  incidents: ['cost']
+};
+
+function normalizeNonNegative(value) {
+  if (value === '' || value === null || value === undefined) return value;
+  const parsed = Number(String(value).replace(/,/g, ''));
+  return Number.isFinite(parsed) ? Math.max(0, parsed) : 0;
+}
+
+function normalizeRecord(collectionName, record) {
+  const normalized = record && typeof record === 'object' ? { ...record } : {};
+  for (const field of FINANCIAL_FIELDS[collectionName] || []) {
+    if (field in normalized) normalized[field] = normalizeNonNegative(normalized[field]);
+  }
+
+  if (collectionName === 'trucks') {
+    normalized.status = normalized.status === 'En Taller / Fuera de Servicio' ||
+      normalized.status === 'Fuera de Servicio'
+      ? 'En Taller / Fuera de Servicio'
+      : 'Disponible';
+  }
+  return normalized;
+}
+
 export function createEmptyDatabase() {
   return Object.fromEntries(COLLECTIONS.map((collection) => [collection, []]));
 }
@@ -24,16 +52,17 @@ function getCollection(database, collectionName) {
 
 export function addRecord(database, collectionName, record, prepend = false) {
   const collection = getCollection(database, collectionName);
-  if (prepend) collection.unshift(record);
-  else collection.push(record);
-  return record;
+  const normalized = normalizeRecord(collectionName, record);
+  if (prepend) collection.unshift(normalized);
+  else collection.push(normalized);
+  return normalized;
 }
 
 export function updateRecord(database, collectionName, id, changes) {
   const collection = getCollection(database, collectionName);
   const index = collection.findIndex((record) => String(record.id) === String(id));
   if (index === -1) throw new Error(`No existe el registro ${id} en ${collectionName}.`);
-  collection[index] = { ...collection[index], ...changes };
+  collection[index] = normalizeRecord(collectionName, { ...collection[index], ...changes });
   return collection[index];
 }
 
@@ -50,13 +79,10 @@ export function normalizeDatabase(value) {
   const database = createEmptyDatabase();
 
   for (const collection of COLLECTIONS) {
-    database[collection] = Array.isArray(source[collection]) ? source[collection] : [];
+    database[collection] = Array.isArray(source[collection])
+      ? source[collection].map((record) => normalizeRecord(collection, record))
+      : [];
   }
-
-  database.trucks = database.trucks.map((truck) => ({
-    ...truck,
-    status: truck.status === 'Fuera de Servicio' ? truck.status : 'Disponible'
-  }));
 
   return database;
 }

@@ -41,36 +41,68 @@
 </head>
 <body class="min-h-screen flex flex-col">
 <!-- PANTALLA DE BLOQUEO Y LOGIN CORPORATIVO (SUPABASE AUTH) -->
-  <div id="authGateOverlay" class="fixed inset-0 z-[10000] bg-slate-900 flex items-center justify-center p-4">
-    <div class="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-2xl w-full max-w-md p-6 sm:p-8">
-      <div class="flex flex-col items-center text-center mb-6">
-        <div class="w-14 h-14 rounded-2xl bg-emerald-600/15 border border-emerald-500/30 flex items-center justify-center text-emerald-500 mb-3">
-          <i class="fa-solid fa-truck-moving text-2xl"></i>
+  <div id="authGateOverlay" class="fixed inset-0 z-[10000] bg-slate-50 dark:bg-slate-950">
+    <div class="grid min-h-screen grid-cols-1 lg:grid-cols-12">
+      <section class="hidden flex-col justify-between border-r border-slate-800 bg-slate-900 p-12 text-white lg:col-span-7 lg:flex">
+        <div class="flex items-center gap-3">
+          <span class="flex h-10 w-10 items-center justify-center rounded border border-slate-700 bg-slate-800 text-slate-200">
+            <i class="fa-solid fa-truck-moving text-lg"></i>
+          </span>
+          <div>
+            <p class="font-bold tracking-tight">MiFlota RD</p>
+            <p class="text-xs text-slate-400">ERP de Control Logístico y Financiero</p>
+          </div>
         </div>
-        <h1 class="font-extrabold text-xl text-slate-900 dark:text-white">MiFlota RD</h1>
-        <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Acceso Privado al Sistema Contable</p>
-      </div>
+        <div class="max-w-2xl">
+          <p class="mb-4 text-xs font-semibold uppercase tracking-[0.18em] text-blue-300">Plataforma operativa empresarial</p>
+          <h1 class="text-3xl font-semibold leading-tight xl:text-4xl">Gestión de Flota Pesada, Liquidación de Fletes, Control de Mantenimiento y Auditoría Contable en Tiempo Real</h1>
+          <p class="mt-5 max-w-xl text-sm leading-6 text-slate-400">Información operativa y financiera centralizada para tomar decisiones con precisión y mantener cada operación bajo control.</p>
+        </div>
+        <div class="flex flex-wrap items-center justify-between gap-4 border-t border-slate-800 pt-5 text-xs text-slate-400">
+          <div class="flex flex-wrap gap-x-5 gap-y-2">
+            <span><i class="fa-solid fa-lock mr-2 text-slate-300"></i>Conexión Cifrada TLS</span>
+            <span><i class="fa-solid fa-cloud-arrow-up mr-2 text-slate-300"></i>Sincronización Cloud Activa</span>
+          </div>
+          <span>© MiFlota RD · Uso corporativo</span>
+        </div>
+      </section>
 
-      <form onsubmit="App.loginWithSupabase(event)" class="space-y-4">
-        <div>
-          <label class="lbl">Correo Electrónico</label>
-          <input type="email" id="authEmail" required placeholder="tu@correo.com" class="inp" />
+      <section class="flex items-center justify-center bg-slate-50 p-6 dark:bg-slate-950 sm:p-12 lg:col-span-5">
+        <div class="w-full max-w-sm">
+          <div class="mb-8">
+            <p class="text-xs font-semibold uppercase tracking-wider text-blue-900 dark:text-blue-400">Acceso seguro</p>
+            <h2 class="mt-2 text-2xl font-bold text-slate-900 dark:text-white">Iniciar Sesión Operativa</h2>
+            <p class="mt-2 text-sm text-slate-600 dark:text-slate-400">Ingrese sus credenciales corporativas de acceso</p>
+          </div>
+
+          <form onsubmit="App.loginWithSupabase(event)" class="space-y-5">
+            <div>
+              <label for="authEmail" class="lbl">Correo Electrónico</label>
+              <input type="email" id="authEmail" required autocomplete="username" placeholder="nombre@empresa.com" class="inp" />
+            </div>
+            <div>
+              <label for="authPassword" class="lbl">Contraseña</label>
+              <div class="relative">
+                <input type="password" id="authPassword" required autocomplete="current-password" placeholder="Ingrese su contraseña" class="inp pr-11" />
+                <button type="button" id="authPasswordToggle" onclick="App.toggleAuthPassword()" class="absolute inset-y-0 right-0 flex w-10 items-center justify-center rounded text-slate-500 hover:text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-900 dark:hover:text-white dark:focus:ring-blue-500" aria-label="Mostrar contraseña" aria-pressed="false">
+                  <i id="authPasswordToggleIcon" class="fa-regular fa-eye"></i>
+                </button>
+              </div>
+            </div>
+            <p id="authErrorMsg" class="hidden rounded border border-rose-200 bg-rose-50 p-2.5 text-xs font-semibold text-rose-700 dark:border-rose-900 dark:bg-rose-950/40 dark:text-rose-300"></p>
+            <button type="submit" id="authSubmitBtn" class="h-10 w-full rounded bg-blue-900 px-4 text-sm font-semibold text-white transition hover:bg-blue-800 disabled:cursor-not-allowed disabled:opacity-60 dark:bg-blue-600 dark:hover:bg-blue-500">
+              <i class="fa-solid fa-lock-open mr-2"></i>
+              <span>Iniciar Sesión</span>
+            </button>
+          </form>
+          <p class="mt-8 border-t border-slate-300 pt-4 text-xs text-slate-500 dark:border-slate-800 dark:text-slate-500 lg:hidden">MiFlota RD — ERP de Control Logístico y Financiero</p>
         </div>
-        <div>
-          <label class="lbl">Contraseña</label>
-          <input type="password" id="authPassword" required placeholder="••••••••" class="inp" />
-        </div>
-        <p id="authErrorMsg" class="hidden text-xs font-semibold text-rose-600 bg-rose-50 dark:bg-rose-950/40 p-2.5 rounded-lg border border-rose-200 dark:border-rose-800"></p>
-        <button type="submit" id="authSubmitBtn" class="btn-emerald w-full !py-2.5 text-sm shadow-md">
-          <i class="fa-solid fa-lock-open"></i>
-          <span>Iniciar Sesión Segura</span>
-        </button>
-      </form>
+      </section>
     </div>
   </div>
 
   <!-- NOTIFICACIÓN TOAST -->
-  <div id="toast" class="fixed bottom-5 right-5 z-[9999] hidden max-w-sm bg-slate-900 dark:bg-white text-white dark:text-slate-900 px-4 py-3 rounded-xl shadow-lg border border-slate-700 dark:border-slate-200 flex items-center gap-3">
+  <div id="toast" class="fixed bottom-5 right-5 z-[9999] hidden max-w-sm bg-slate-900 dark:bg-white text-white dark:text-slate-900 px-4 py-3 rounded-md shadow-none border border-slate-700 dark:border-slate-300 flex items-center gap-3">
     <i id="toastIcon" class="fa-solid fa-circle-check text-emerald-400 dark:text-emerald-600 text-base"></i>
     <span id="toastMsg" class="text-xs sm:text-sm font-medium">Acción completada</span>
   </div>
@@ -80,7 +112,7 @@
     <div id="modalContainer" class="modal-shell max-w-2xl">
       <div class="bg-slate-900 dark:bg-slate-950 text-white px-5 py-3.5 flex items-center justify-between shrink-0">
         <h3 id="modalTitle" class="font-semibold text-sm sm:text-base">Formulario</h3>
-        <button type="button" onclick="App.closeModal()" class="text-slate-400 hover:text-white transition w-8 h-8 rounded-lg flex items-center justify-center">
+        <button type="button" onclick="App.closeModal()" class="text-slate-400 hover:text-white transition w-8 h-8 rounded-md flex items-center justify-center">
           <i class="fa-solid fa-xmark text-base"></i>
         </button>
       </div>
@@ -94,12 +126,12 @@
   <!-- ===================================================================== -->
   <!-- CABECERA PRINCIPAL FIJA CON FILTRO DE MES GLOBAL Y PERMANENTE         -->
   <!-- ===================================================================== -->
-  <header class="bg-white dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 sticky top-0 z-40">
+  <header class="bg-white dark:bg-slate-800 border-b border-slate-300 dark:border-slate-700 sticky top-0 z-40">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 py-3 flex flex-wrap items-center justify-between gap-3">
       
       <!-- Izquierda: Solo Logo Camión Verde + "MiFlota RD" -->
       <div class="flex items-center gap-3">
-        <div class="w-10 h-10 rounded-xl bg-emerald-600/15 border border-emerald-500/30 flex items-center justify-center text-emerald-600 dark:text-emerald-400 shrink-0">
+        <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-md border border-slate-300 bg-slate-100 text-slate-700 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200">
           <i class="fa-solid fa-truck-moving text-lg"></i>
         </div>
         <span class="font-extrabold text-lg sm:text-xl tracking-tight text-slate-900 dark:text-white">MiFlota RD</span>
@@ -109,26 +141,26 @@
       <div class="flex flex-wrap items-center gap-2.5">
         
         <!-- 1. FILTRO DE MES GLOBAL Y PERSISTENTE (SIEMPRE VISIBLE EN TODAS LAS PESTAÑAS) -->
-        <div class="flex items-center gap-2 bg-slate-900 dark:bg-slate-950 text-white px-3.5 py-1.5 rounded-xl border border-slate-800 shadow-sm">
-          <i class="fa-regular fa-calendar-days text-emerald-400 text-xs"></i>
+        <div class="flex items-center gap-2 bg-slate-900 dark:bg-slate-950 text-white px-3.5 py-1.5 rounded-md border border-slate-800 shadow-none">
+          <i class="fa-regular fa-calendar-days text-slate-300 text-xs"></i>
           <span class="text-[11px] font-bold uppercase tracking-wider text-slate-300 hidden sm:inline">MES Y AÑO:</span>
-          <select id="monthFilter" onchange="App.renderAll()" class="bg-slate-800 text-white text-xs sm:text-sm font-extrabold rounded-lg px-2.5 py-1 border border-white/15 focus:outline-none cursor-pointer"></select>
+          <select id="monthFilter" onchange="App.renderAll()" class="h-9 rounded border border-white/15 bg-slate-800 px-3 py-1.5 text-sm font-semibold text-white focus:outline-none cursor-pointer"></select>
         </div>
 
         <!-- Botón Único "+ Agregar Nuevo..." con Dropdown -->
         <div class="relative" id="addNewDropdownWrapper">
-          <button type="button" onclick="App.toggleAddMenu(event)" class="btn-emerald shadow-sm !py-2">
+          <button type="button" onclick="App.toggleAddMenu(event)" class="btn-primary shadow-none !py-2">
             <i class="fa-solid fa-plus"></i>
             <span>+ Agregar Nuevo...</span>
             <i id="addMenuChevron" class="fa-solid fa-chevron-down text-[11px] ml-0.5 transition-transform duration-150"></i>
           </button>
 
           <!-- Menú Desplegable -->
-          <div id="addNewDropdownMenu" class="hidden absolute right-0 mt-2 w-64 bg-white dark:bg-slate-800 rounded-xl shadow-xl border border-slate-200 dark:border-slate-700 py-2 z-50">
+          <div id="addNewDropdownMenu" class="hidden absolute right-0 mt-2 w-64 bg-white dark:bg-slate-800 rounded-md shadow-none border border-slate-300 dark:border-slate-700 py-2 z-50">
             <div class="px-3.5 py-1.5 text-[10px] font-bold uppercase tracking-wider text-slate-400">Seleccionar Registro</div>
             
             <button type="button" onclick="App.closeAddMenu(); App.openTripModal()" class="w-full text-left px-4 py-2.5 text-xs sm:text-sm font-medium text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700/70 flex items-center gap-3 transition">
-              <span class="w-7 h-7 rounded-lg bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0">
+              <span class="w-7 h-7 rounded-md bg-slate-100 text-slate-600 dark:bg-slate-700 dark:text-slate-300 flex items-center justify-center shrink-0">
                 <i class="fa-solid fa-route"></i>
               </span>
               <div>
@@ -138,7 +170,7 @@
             </button>
 
             <button type="button" onclick="App.closeAddMenu(); App.openScheduledModal()" class="w-full text-left px-4 py-2.5 text-xs sm:text-sm font-medium text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700/70 flex items-center gap-3 transition">
-              <span class="w-7 h-7 rounded-lg bg-indigo-500/15 text-indigo-600 dark:text-indigo-400 flex items-center justify-center shrink-0">
+              <span class="w-7 h-7 rounded-md bg-slate-100 text-slate-600 dark:bg-slate-700 dark:text-slate-300 flex items-center justify-center shrink-0">
                 <i class="fa-regular fa-bell"></i>
               </span>
               <div>
@@ -148,7 +180,7 @@
             </button>
 
             <button type="button" onclick="App.closeAddMenu(); App.openIncidentModal()" class="w-full text-left px-4 py-2.5 text-xs sm:text-sm font-medium text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700/70 flex items-center gap-3 transition">
-              <span class="w-7 h-7 rounded-lg bg-rose-500/15 text-rose-600 dark:text-rose-400 flex items-center justify-center shrink-0">
+              <span class="w-7 h-7 rounded-md bg-slate-100 text-slate-600 dark:bg-slate-700 dark:text-slate-300 flex items-center justify-center shrink-0">
                 <i class="fa-solid fa-triangle-exclamation"></i>
               </span>
               <div>
@@ -158,7 +190,7 @@
             </button>
 
             <button type="button" onclick="App.closeAddMenu(); App.openMaintenanceModal()" class="w-full text-left px-4 py-2.5 text-xs sm:text-sm font-medium text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700/70 flex items-center gap-3 transition">
-              <span class="w-7 h-7 rounded-lg bg-amber-500/15 text-amber-600 dark:text-amber-400 flex items-center justify-center shrink-0">
+              <span class="w-7 h-7 rounded-md bg-slate-100 text-slate-600 dark:bg-slate-700 dark:text-slate-300 flex items-center justify-center shrink-0">
                 <i class="fa-solid fa-screwdriver-wrench"></i>
               </span>
               <div>
@@ -170,14 +202,14 @@
         </div>
 
         <!-- Botón Modo Claro / Oscuro -->
-        <button type="button" onclick="App.toggleTheme()" class="btn-outline !p-2 rounded-xl" title="Cambiar Modo Claro / Oscuro">
+        <button type="button" onclick="App.toggleTheme()" class="btn-outline !p-2 rounded" title="Cambiar Modo Claro / Oscuro">
           <i id="themeIcon" class="fa-solid fa-moon text-sm"></i>
         </button>
 <!-- Estado de Sincronización y Botón Cerrar Sesión -->
-        <span id="cloudSyncBadge" class="hidden sm:inline-flex items-center gap-1.5 text-[11px] font-semibold px-2.5 py-1 rounded-lg bg-emerald-50 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800">
+        <span id="cloudSyncBadge" class="hidden sm:inline-flex items-center gap-1.5 text-[11px] font-semibold px-2.5 py-1 rounded-md bg-emerald-50 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800">
           <i class="fa-solid fa-cloud-check"></i> Nube Activa
         </span>
-        <button type="button" onclick="App.logoutSupabase()" class="btn-outline !p-2 rounded-xl text-rose-600 hover:bg-rose-50" title="Cerrar Sesión">
+        <button type="button" onclick="App.logoutSupabase()" class="btn-outline !p-2 rounded text-slate-600" title="Cerrar Sesión">
           <i class="fa-solid fa-right-from-bracket text-sm"></i>
         </button>
       </div>
@@ -217,7 +249,7 @@
             <span>Analítica Visual</span>
           </button>
           <button type="button" onclick="App.switchTab('reports')" id="tabBtn_reports" class="tab-btn">
-            <i class="fa-solid fa-file-export text-xs text-emerald-600 dark:text-emerald-400"></i>
+            <i class="fa-solid fa-file-export text-xs text-slate-500 dark:text-slate-400"></i>
             <span>Reportes y Exportación</span>
           </button>
           <button type="button" onclick="App.switchTab('catalogs')" id="tabBtn_catalogs" class="tab-btn">
@@ -249,10 +281,10 @@
       <!-- KPIS FINANCIEROS DEL PERIODO SELECCIONADO -->
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <!-- KPI 1: Ganancia Neta -->
-        <div class="card p-5 border-l-4 border-l-emerald-600">
+        <div class="card p-5">
           <div class="flex items-center justify-between mb-1.5">
             <span class="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">Ganancia Neta</span>
-            <i class="fa-solid fa-sack-dollar text-emerald-600 dark:text-emerald-400"></i>
+            <i class="fa-solid fa-sack-dollar text-slate-500 dark:text-slate-400"></i>
           </div>
           <div id="kpiOwnerNet" class="text-2xl font-mono font-bold text-slate-900 dark:text-white">RD$ 0.00</div>
           <p id="kpiMarginPercent" class="text-xs text-slate-500 dark:text-slate-400 mt-1">Fletes − (Viajes + Taller + Incidencias)</p>
@@ -275,7 +307,7 @@
         <div class="card p-5">
           <div class="flex items-center justify-between mb-1.5">
             <span class="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">Gastos Viajes</span>
-            <i class="fa-solid fa-gas-pump text-amber-600 dark:text-amber-400"></i>
+            <i class="fa-solid fa-gas-pump text-slate-500 dark:text-slate-400"></i>
           </div>
           <div id="kpiTripExpensesTotal" class="text-2xl font-mono font-bold text-slate-900 dark:text-white">RD$ 0.00</div>
           <p id="kpiTripExpensesBreakdown" class="text-[11px] text-slate-500 dark:text-slate-400 mt-1 truncate">
@@ -287,7 +319,7 @@
         <div class="card p-5">
           <div class="flex items-center justify-between mb-1.5">
             <span class="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">Gastos Taller e Incidencias</span>
-            <i class="fa-solid fa-screwdriver-wrench text-rose-600 dark:text-rose-400"></i>
+            <i class="fa-solid fa-screwdriver-wrench text-slate-500 dark:text-slate-400"></i>
           </div>
           <div id="kpiMaintAndIncTotal" class="text-2xl font-mono font-bold text-rose-600 dark:text-rose-400">RD$ 0.00</div>
           <p id="kpiMaintAndIncBreakdown" class="text-[11px] text-slate-500 dark:text-slate-400 mt-1">
@@ -304,16 +336,17 @@
             <p id="periodSummaryLabel" class="text-xs text-slate-500 dark:text-slate-400"></p>
           </div>
           <div class="flex flex-wrap items-center gap-2">
-            <select id="tripFilterDriver" onchange="App.renderTripsTab()" class="inp !w-auto !py-1.5 text-xs">
+            <input type="search" id="tripSearchInput" oninput="App.renderTripsTab()" placeholder="Buscar por ruta, camión o nota..." class="inp !w-full sm:!w-64" aria-label="Buscar viajes" />
+            <select id="tripFilterDriver" onchange="App.renderTripsTab()" class="inp !w-auto">
               <option value="ALL">Todos los choferes</option>
             </select>
-            <select id="tripFilterTruck" onchange="App.renderTripsTab()" class="inp !w-auto !py-1.5 text-xs">
+            <select id="tripFilterTruck" onchange="App.renderTripsTab()" class="inp !w-auto">
               <option value="ALL">Todos los camiones</option>
             </select>
           </div>
         </div>
 
-        <div class="overflow-x-auto border border-slate-200 dark:border-slate-700 rounded-lg">
+        <div class="overflow-x-auto border border-slate-300 dark:border-slate-700 rounded-md">
           <table class="w-full border-collapse">
             <thead>
               <tr>
@@ -328,12 +361,12 @@
                 <th class="th text-right">Ayudante</th>
                 <th class="th text-right">Otros</th>
                 <th class="th text-right">Gasto Total</th>
-                <th class="th text-right bg-emerald-50 dark:bg-emerald-950/40 text-emerald-800 dark:text-emerald-300">Ganancia Neta</th>
+                <th class="th text-right">Ganancia Neta</th>
                 <th class="th text-center">Acciones</th>
               </tr>
             </thead>
             <tbody id="tableTripsBody"></tbody>
-            <tfoot id="tableTripsFoot" class="bg-slate-50 dark:bg-slate-800/90 font-mono font-bold text-xs border-t-2 border-slate-200 dark:border-slate-700"></tfoot>
+            <tfoot id="tableTripsFoot" class="bg-slate-50 dark:bg-slate-800/90 font-mono font-bold text-xs border-t-2 border-slate-300 dark:border-slate-700"></tfoot>
           </table>
         </div>
       </div>
@@ -386,7 +419,7 @@
           <h3 class="font-bold text-sm sm:text-base text-slate-900 dark:text-white">Registro de Mantenimientos de Taller (Periodo Seleccionado)</h3>
           <button type="button" onclick="App.openMaintenanceModal()" class="btn-outline !py-1.5">+ Agregar Mantenimiento</button>
         </div>
-        <div class="overflow-x-auto border border-slate-200 dark:border-slate-700 rounded-lg">
+        <div class="overflow-x-auto border border-slate-300 dark:border-slate-700 rounded-md">
           <table class="w-full border-collapse">
             <thead>
               <tr>
@@ -414,12 +447,12 @@
             Registro de choques, averías o multas del periodo seleccionado. El costo en RD$ se descuenta automáticamente de la Ganancia Neta del camión afectado.
           </p>
         </div>
-        <button type="button" onclick="App.openIncidentModal()" class="btn-rose">
+        <button type="button" onclick="App.openIncidentModal()" class="btn-primary">
           <i class="fa-solid fa-plus"></i> + Registrar Incidencia
         </button>
       </div>
 
-      <div class="overflow-x-auto border border-slate-200 dark:border-slate-700 rounded-lg">
+      <div class="overflow-x-auto border border-slate-300 dark:border-slate-700 rounded-md">
         <table class="w-full border-collapse">
           <thead>
             <tr>
@@ -484,8 +517,8 @@
     <!-- =================================================================== -->
     <section id="tabPanel_reports" class="hidden space-y-6">
       <div class="card p-6">
-        <div class="pb-5 border-b border-slate-200 dark:border-slate-700">
-          <span class="text-[11px] font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400 block">Centro de Documentos Contables</span>
+        <div class="pb-5 border-b border-slate-300 dark:border-slate-700">
+          <span class="text-[11px] font-bold uppercase tracking-wider text-blue-900 dark:text-blue-400 block">Centro de Documentos Contables</span>
           <h2 class="text-lg sm:text-xl font-extrabold text-slate-900 dark:text-white mt-0.5">Reportes y Exportación</h2>
           <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">
             Resumen actual para <b id="reportPeriodTitle" class="text-slate-900 dark:text-white">Todos los meses</b>. Al hacer clic en descargar, podrás confirmar o elegir el mes exacto a exportar.
@@ -494,19 +527,19 @@
 
         <!-- Resumen del Periodo Seleccionado -->
         <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 my-6">
-          <div class="p-4 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700">
+          <div class="p-4 rounded-md bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700">
             <span class="text-[11px] font-semibold uppercase text-slate-400 block">Viajes del Periodo</span>
             <span id="repTripsCount" class="text-lg font-mono font-bold text-slate-900 dark:text-white mt-1 block">0 viajes</span>
           </div>
-          <div class="p-4 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700">
+          <div class="p-4 rounded-md bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700">
             <span class="text-[11px] font-semibold uppercase text-slate-400 block">Ingresos Fletes</span>
             <span id="repGross" class="text-lg font-mono font-bold text-slate-900 dark:text-white mt-1 block">RD$ 0.00</span>
           </div>
-          <div class="p-4 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700">
+          <div class="p-4 rounded-md bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700">
             <span class="text-[11px] font-semibold uppercase text-slate-400 block">Gastos y Taller</span>
             <span id="repTotalExpenses" class="text-lg font-mono font-bold text-rose-600 mt-1 block">RD$ 0.00</span>
           </div>
-          <div class="p-4 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800/60">
+          <div class="p-4 rounded-md bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800/60">
             <span class="text-[11px] font-bold uppercase text-emerald-800 dark:text-emerald-300 block">Ganancia Neta</span>
             <span id="repNet" class="text-lg font-mono font-bold text-emerald-700 dark:text-emerald-400 mt-1 block">RD$ 0.00</span>
           </div>
@@ -515,9 +548,9 @@
         <!-- Tarjetas de Exportación con Popup de Selección de Periodo -->
         <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
           <!-- Tarjeta 1: Reporte Corporativo PDF -->
-          <div class="p-6 rounded-2xl border-2 border-slate-200 dark:border-slate-700 hover:border-slate-900 dark:hover:border-slate-400 transition flex flex-col justify-between bg-slate-50/50 dark:bg-slate-900/40">
+          <div class="p-6 rounded-md border border-slate-300 dark:border-slate-700 hover:border-slate-500 dark:hover:border-slate-500 transition flex flex-col justify-between bg-white dark:bg-slate-900">
             <div class="flex items-start gap-4">
-              <div class="w-14 h-14 rounded-2xl bg-rose-600/10 border border-rose-500/20 text-rose-600 dark:text-rose-400 flex items-center justify-center text-2xl shrink-0">
+              <div class="flex h-14 w-14 shrink-0 items-center justify-center rounded-md border border-slate-300 bg-slate-100 text-slate-600 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300 text-2xl">
                 <i class="fa-solid fa-file-pdf"></i>
               </div>
               <div>
@@ -527,7 +560,7 @@
                 </p>
               </div>
             </div>
-            <div class="mt-6 pt-4 border-t border-slate-200 dark:border-slate-700 flex justify-end">
+            <div class="mt-6 pt-4 border-t border-slate-300 dark:border-slate-700 flex justify-end">
               <button type="button" onclick="App.openExportPeriodModal('PDF')" class="btn-primary w-full sm:w-auto !py-2.5 !px-5">
                 <i class="fa-solid fa-file-pdf"></i>
                 <span>Descargar PDF...</span>
@@ -536,9 +569,9 @@
           </div>
 
           <!-- Tarjeta 2: Excel Real (.xlsx con SheetJS) -->
-          <div class="p-6 rounded-2xl border-2 border-slate-200 dark:border-slate-700 hover:border-emerald-600 dark:hover:border-emerald-400 transition flex flex-col justify-between bg-slate-50/50 dark:bg-slate-900/40">
+          <div class="p-6 rounded-md border border-slate-300 dark:border-slate-700 hover:border-slate-500 dark:hover:border-slate-500 transition flex flex-col justify-between bg-white dark:bg-slate-900">
             <div class="flex items-start gap-4">
-              <div class="w-14 h-14 rounded-2xl bg-emerald-600/10 border border-emerald-500/20 text-emerald-600 dark:text-emerald-400 flex items-center justify-center text-2xl shrink-0">
+              <div class="flex h-14 w-14 shrink-0 items-center justify-center rounded-md border border-slate-300 bg-slate-100 text-slate-600 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300 text-2xl">
                 <i class="fa-solid fa-file-excel"></i>
               </div>
               <div>
@@ -548,8 +581,8 @@
                 </p>
               </div>
             </div>
-            <div class="mt-6 pt-4 border-t border-slate-200 dark:border-slate-700 flex justify-end">
-              <button type="button" onclick="App.openExportPeriodModal('EXCEL')" class="btn-emerald w-full sm:w-auto !py-2.5 !px-5">
+            <div class="mt-6 pt-4 border-t border-slate-300 dark:border-slate-700 flex justify-end">
+              <button type="button" onclick="App.openExportPeriodModal('EXCEL')" class="btn-primary w-full sm:w-auto !py-2.5 !px-5">
                 <i class="fa-solid fa-file-excel"></i>
                 <span>Descargar Excel (.xlsx)...</span>
               </button>
@@ -590,20 +623,20 @@
     <!-- PESTAÑA 9: PESTAÑA DEDICADA DE RESPALDO Y SEGURIDAD                 -->
     <!-- =================================================================== -->
     <section id="tabPanel_security" class="hidden space-y-6">
-      <div class="card p-6 border-l-4 border-l-emerald-600">
+      <div class="card p-6">
         <div class="flex items-start gap-4">
-          <div class="w-12 h-12 rounded-2xl bg-emerald-600/10 border border-emerald-500/20 text-emerald-600 dark:text-emerald-400 flex items-center justify-center text-xl shrink-0">
+          <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-md border border-slate-300 bg-slate-100 text-slate-600 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300 text-xl">
             <i class="fa-solid fa-shield-halved"></i>
           </div>
           <div class="flex-1">
-            <span class="text-[11px] font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400 block">Protección de Información Local</span>
+            <span class="text-[11px] font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400 block">Protección de Información Local</span>
             <h2 class="text-lg font-extrabold text-slate-900 dark:text-white mt-0.5">Copia de Seguridad y Restauración (.JSON)</h2>
             <p class="text-xs text-slate-500 dark:text-slate-400 mt-1 max-w-2xl leading-relaxed">
               Toda la información de <b>MiFlota RD</b> se almacena localmente en este navegador. Descargue periódicamente una copia de seguridad (`.json`) para resguardar sus registros contables o trasladarlos a otro equipo.
             </p>
 
             <div class="flex flex-wrap items-center gap-3 mt-5 pt-4 border-t border-slate-100 dark:border-slate-700">
-              <button type="button" onclick="App.exportBackupJSON()" class="btn-emerald">
+              <button type="button" onclick="App.exportBackupJSON()" class="btn-primary">
                 <i class="fa-solid fa-download"></i>
                 <span>Descargar Copia de Seguridad (.JSON)</span>
               </button>
@@ -617,10 +650,10 @@
       </div>
 
       <!-- Zona Delicada: Vaciar Sistema -->
-      <div class="card p-6 border-2 border-rose-500/40 bg-rose-50/30 dark:bg-rose-950/15">
+      <div class="card p-6 bg-white dark:bg-slate-900">
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div class="flex items-start gap-4">
-            <div class="w-12 h-12 rounded-2xl bg-rose-600/15 text-rose-600 dark:text-rose-400 flex items-center justify-center text-xl shrink-0">
+            <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-md border border-slate-300 bg-slate-100 text-slate-600 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300 text-xl">
               <i class="fa-solid fa-triangle-exclamation"></i>
             </div>
             <div>
@@ -631,7 +664,7 @@
               </p>
             </div>
           </div>
-          <button type="button" onclick="App.clearAllData()" class="btn-rose shrink-0 self-end sm:self-center !py-2.5 !px-4">
+          <button type="button" onclick="App.clearAllData()" class="btn-outline shrink-0 self-end sm:self-center !py-2.5 !px-4">
             <i class="fa-solid fa-trash-can"></i>
             <span>Vaciar Todo el Sistema</span>
           </button>
@@ -641,7 +674,7 @@
 
   </main>
 
-  <footer class="mt-auto py-4 text-center text-xs text-slate-400 border-t border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900">
+  <footer class="mt-auto py-4 text-center text-xs text-slate-400 border-t border-slate-300 dark:border-slate-800 bg-white dark:bg-slate-900">
     MiFlota RD · Almacenamiento Local (`localStorage`)
   </footer>
 

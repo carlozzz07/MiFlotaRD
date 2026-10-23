@@ -29,9 +29,25 @@ export function formatMoneyInput(value, fixed = false) {
 }
 
 export function bindFinancialInputs(root = document) {
+  root.addEventListener('keydown', (event) => {
+    const input = event.target;
+    if (!(input instanceof HTMLInputElement) || !(input.matches('.financial-input, input[type="number"]'))) return;
+    if (event.key === '-' || (input.type === 'number' && ['+', 'e', 'E'].includes(event.key))) {
+      event.preventDefault();
+    }
+  });
+
   root.addEventListener('input', (event) => {
     const input = event.target;
-    if (!(input instanceof HTMLInputElement) || !input.matches('.financial-input')) return;
+    if (!(input instanceof HTMLInputElement)) return;
+
+    if (input.type === 'number') {
+      if (input.value !== '' && Number(input.value) < 0) {
+        input.value = String(Math.max(Number(input.min) || 0, 0));
+      }
+      return;
+    }
+    if (!input.matches('.financial-input')) return;
 
     const caret = input.selectionStart ?? input.value.length;
     const digitsBeforeCaret = input.value.slice(0, caret).replace(/[^\d]/g, '').length;
@@ -87,8 +103,9 @@ export function closeModal() {
 }
 
 export function truckStatusBadge(status) {
-  const available = status !== 'Fuera de Servicio';
-  return `<span class="${available ? 'badge-available' : 'badge-out-of-service'}">${available ? 'Disponible' : 'Fuera de Servicio'}</span>`;
+  const available = status !== 'En Taller / Fuera de Servicio' && status !== 'Fuera de Servicio';
+  const label = available ? 'Disponible' : 'En Taller / Fuera de Servicio';
+  return `<span class="${available ? 'badge-available' : 'badge-out-of-service'}">${label}</span>`;
 }
 
 export function whatsappLink(phone, message) {
@@ -151,13 +168,13 @@ renderRemindersBanner() {
                 : `<span class="px-2 py-0.5 rounded text-[10px] font-bold uppercase bg-rose-600 text-white">PENDIENTE</span>`);
 
           return `
-            <div class="p-3 rounded-lg bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div class="p-3 rounded-md bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
               <div class="text-xs">
                 <div class="flex flex-wrap items-center gap-2">
                   ${badge}
                   <span class="font-mono font-bold">${s.date}</span>
                   <span class="text-amber-700 dark:text-amber-400 font-semibold"><i class="fa-regular fa-bell mr-1"></i>Recordar: ${this.formatTime12h(s.reminderTime || '06:00')}</span>
-                  <span class="text-emerald-700 dark:text-emerald-400 font-semibold"><i class="fa-solid fa-truck-fast mr-1"></i>Salida: ${this.formatTime12h(s.departureTime || '08:00')}</span>
+                  <span class="text-slate-600 dark:text-slate-300 font-semibold"><i class="fa-solid fa-truck-fast mr-1"></i>Salida: ${this.formatTime12h(s.departureTime || '08:00')}</span>
                   <span class="font-bold text-slate-900 dark:text-white">${s.route || 'Ruta por definir'}</span>
                 </div>
                 <div class="text-slate-500 dark:text-slate-400 mt-1">
@@ -166,7 +183,7 @@ renderRemindersBanner() {
                 </div>
               </div>
               <div class="flex items-center gap-2 shrink-0 self-end sm:self-center">
-                <button type="button" onclick="App.liquidateScheduledTrip('${s.id}')" class="btn-emerald !py-1.5 !px-3 text-xs">
+                <button type="button" onclick="App.liquidateScheduledTrip('${s.id}')" class="btn-primary !py-1.5 !px-3 text-xs">
                   <i class="fa-solid fa-check"></i> Liquidar
                 </button>
                 <button type="button" onclick="App.openScheduledModal('${s.id}')" class="btn-outline !py-1.5 !px-2.5 text-xs">
@@ -178,7 +195,7 @@ renderRemindersBanner() {
         }).join('');
 
         container.innerHTML = `
-          <div class="card p-4 border-l-4 border-l-amber-500">
+          <div class="card p-4 ">
             <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
               <div class="flex items-center gap-2">
                 <i class="fa-solid fa-bell text-amber-500"></i>
@@ -186,7 +203,7 @@ renderRemindersBanner() {
                   Recordatorio de Viajes Anticipados (Hoy / Mañana)
                 </h3>
               </div>
-              <button type="button" onclick="App.switchTab('scheduled')" class="text-xs font-semibold text-emerald-600 dark:text-emerald-400 hover:underline">
+              <button type="button" onclick="App.switchTab('scheduled')" class="text-xs font-semibold text-blue-900 dark:text-blue-400 hover:underline">
                 Ver toda la Agenda (${allSched.length}) →
               </button>
             </div>
@@ -255,9 +272,12 @@ renderAll() {
 renderTripsTab() {
         const fDrv = document.getElementById('tripFilterDriver').value || 'ALL';
         const fTrk = document.getElementById('tripFilterTruck').value || 'ALL';
+        const search = document.getElementById('tripSearchInput')?.value.trim().toLocaleLowerCase() || '';
         const trips = this.getFilteredTrips().filter(t =>
           (fDrv === 'ALL' || String(t.driverId) === String(fDrv)) &&
-          (fTrk === 'ALL' || String(t.truckId) === String(fTrk))
+          (fTrk === 'ALL' || String(t.truckId) === String(fTrk)) &&
+          (!search || [t.route, this.getTruckName(t.truckId), t.notes]
+            .some(value => String(value || '').toLocaleLowerCase().includes(search)))
         );
 
         const tbody = document.getElementById('tableTripsBody');
@@ -268,7 +288,7 @@ renderTripsTab() {
             <tr>
               <td colspan="13" class="py-12 text-center text-slate-400 text-xs">
                 <i class="fa-solid fa-route text-2xl mb-2 block text-slate-300 dark:text-slate-600"></i>
-                No hay viajes registrados en este periodo. Haz clic en <b>"+ Agregar Nuevo..."</b> arriba para registrar un viaje.
+                ${search ? 'No hay viajes que coincidan con la búsqueda y los filtros.' : 'No hay viajes registrados en este periodo. Haz clic en <b>"+ Agregar Nuevo..."</b> arriba para registrar un viaje.'}
               </td>
             </tr>`;
           tfoot.innerHTML = '';
@@ -339,7 +359,7 @@ renderScheduledTab() {
 
         if (list.length === 0) {
           container.innerHTML = `
-            <div class="col-span-full py-10 text-center border border-dashed border-slate-300 dark:border-slate-700 rounded-xl">
+            <div class="col-span-full py-10 text-center border border-dashed border-slate-300 dark:border-slate-700 rounded-md">
               <p class="text-sm font-semibold text-slate-600 dark:text-slate-300">No hay viajes anticipados programados en este periodo</p>
               <button type="button" onclick="App.openScheduledModal()" class="btn-primary mt-3">+ Agendar Viaje Anticipado</button>
             </div>`;
@@ -364,14 +384,14 @@ renderScheduledTab() {
                   <span class="font-mono text-xs font-bold text-slate-700 dark:text-slate-300">${s.date}</span>
                 </div>
 
-                <div class="grid grid-cols-2 gap-2 p-2.5 rounded-lg bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-xs mb-3">
+                <div class="grid grid-cols-2 gap-2 p-2.5 rounded-md bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 text-xs mb-3">
                   <div>
                     <span class="text-[10px] uppercase text-slate-400 block font-semibold">Recordar desde</span>
                     <span class="font-mono font-bold text-amber-600 dark:text-amber-400">${this.formatTime12h(s.reminderTime || '06:00')}</span>
                   </div>
-                  <div class="border-l border-slate-200 dark:border-slate-700 pl-2.5">
+                  <div class="border-l border-slate-300 dark:border-slate-700 pl-2.5">
                     <span class="text-[10px] uppercase text-slate-400 block font-semibold">Hora de Salida</span>
-                    <span class="font-mono font-bold text-emerald-600 dark:text-emerald-400">${this.formatTime12h(s.departureTime || '08:00')}</span>
+                    <span class="font-mono font-bold text-slate-700 dark:text-slate-300">${this.formatTime12h(s.departureTime || '08:00')}</span>
                   </div>
                 </div>
 
@@ -384,7 +404,7 @@ renderScheduledTab() {
                   <div><b>Ayudante(s):</b> ${this.getHelpersNames(s.helperIds)}</div>
                 </div>
 
-                <div class="mt-3 p-2.5 rounded-lg bg-slate-50 dark:bg-slate-900 text-xs">
+                <div class="mt-3 p-2.5 rounded-md bg-slate-50 dark:bg-slate-900 text-xs">
                   ${m.hasAnyFinancial
                     ? `<div class="flex justify-between"><span>Flete: <b>${this.formatRD(m.gross)}</b></span><span class="text-emerald-600 font-bold">Ganancia Neta: ${this.formatRD(m.netOwner)}</span></div>`
                     : `<span class="text-slate-400 italic">Cobro y pagos opcionales (definir al liquidar)</span>`}
@@ -394,7 +414,7 @@ renderScheduledTab() {
               </div>
 
               <div class="pt-3 mt-3 border-t border-slate-100 dark:border-slate-700 flex items-center justify-between gap-2">
-                <button type="button" onclick="App.liquidateScheduledTrip('${s.id}')" class="btn-emerald !py-1.5 flex-1">
+                <button type="button" onclick="App.liquidateScheduledTrip('${s.id}')" class="btn-primary !py-1.5 flex-1">
                   <i class="fa-solid fa-check"></i> Liquidar
                 </button>
                 <button type="button" onclick="App.openScheduledModal('${s.id}')" class="btn-outline !py-1.5"><i class="fa-solid fa-pen"></i></button>
@@ -413,7 +433,7 @@ renderTrucksTab() {
 
         if (this.db.trucks.length === 0) {
           grid.innerHTML = `
-            <div class="col-span-full py-10 text-center border border-dashed border-slate-300 dark:border-slate-700 rounded-xl">
+            <div class="col-span-full py-10 text-center border border-dashed border-slate-300 dark:border-slate-700 rounded-md">
               <p class="text-sm font-semibold text-slate-600 dark:text-slate-300">No hay camiones registrados en la flota</p>
               <button type="button" onclick="App.openTruckModal()" class="btn-primary mt-3">+ Crear Primer Camión</button>
             </div>`;
@@ -442,32 +462,32 @@ renderTrucksTab() {
                       <p class="text-xs text-slate-500">${trk.model}</p>
                       <div class="mt-2">${truckStatusBadge(trk.status)}</div>
                     </div>
-                    <div class="px-3.5 py-2.5 rounded-xl bg-slate-900 dark:bg-white text-white dark:text-slate-900 text-center min-w-[88px] shrink-0">
+                    <div class="px-3.5 py-2.5 rounded-md bg-slate-900 dark:bg-white text-white dark:text-slate-900 text-center min-w-[88px] shrink-0">
                       <span class="text-2xl font-mono font-extrabold leading-none block">${tTrips.length}</span>
                       <span class="text-[9px] font-bold uppercase tracking-wider block mt-1">Viajes</span>
                     </div>
                   </div>
 
                   <div class="grid grid-cols-2 gap-2.5 my-4 text-xs">
-                    <div class="p-2.5 rounded-lg bg-slate-50 dark:bg-slate-900">
+                    <div class="p-2.5 rounded-md bg-slate-50 dark:bg-slate-900">
                       <span class="text-slate-400 block">Total Fletes</span>
                       <span class="font-mono font-bold text-slate-900 dark:text-white">${this.formatRD(gross)}</span>
                     </div>
-                    <div class="p-2.5 rounded-lg bg-slate-50 dark:bg-slate-900">
+                    <div class="p-2.5 rounded-md bg-slate-50 dark:bg-slate-900">
                       <span class="text-slate-400 block">Gastos Viajes</span>
                       <span class="font-mono font-bold text-amber-600">-${this.formatRD(tripExp)}</span>
                     </div>
-                    <div class="p-2.5 rounded-lg bg-slate-50 dark:bg-slate-900">
+                    <div class="p-2.5 rounded-md bg-slate-50 dark:bg-slate-900">
                       <span class="text-slate-400 block">Taller (${tMaints.length})</span>
                       <span class="font-mono font-bold text-rose-600">-${this.formatRD(maintCost)}</span>
                     </div>
-                    <div class="p-2.5 rounded-lg bg-slate-50 dark:bg-slate-900">
+                    <div class="p-2.5 rounded-md bg-slate-50 dark:bg-slate-900">
                       <span class="text-slate-400 block">Incidencias (${tIncs.length})</span>
                       <span class="font-mono font-bold text-rose-600">-${this.formatRD(incCost)}</span>
                     </div>
                   </div>
 
-                  <div class="p-3 rounded-lg bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800/60 flex items-center justify-between">
+                  <div class="p-3 rounded-md bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800/60 flex items-center justify-between">
                     <span class="text-xs font-bold text-emerald-800 dark:text-emerald-300">Ganancia Neta</span>
                     <span class="font-mono font-bold text-sm ${realNet >= 0 ? 'text-emerald-700 dark:text-emerald-400' : 'text-rose-600'}">${this.formatRD(realNet)}</span>
                   </div>
@@ -534,7 +554,7 @@ renderDriversTab() {
 
         if (this.db.drivers.length === 0) {
           grid.innerHTML = `
-            <div class="col-span-full py-10 text-center border border-dashed border-slate-300 dark:border-slate-700 rounded-xl">
+            <div class="col-span-full py-10 text-center border border-dashed border-slate-300 dark:border-slate-700 rounded-md">
               <p class="text-sm font-semibold text-slate-600 dark:text-slate-300">No hay choferes registrados</p>
               <button type="button" onclick="App.openDriverModal()" class="btn-primary mt-3">+ Crear Primer Chofer</button>
             </div>`;
@@ -550,7 +570,7 @@ renderDriversTab() {
           });
           const settlementUrl = whatsappLink(
             drv.phone,
-            `Liquidación de viajes. Fletes: ${this.formatRD(gross)}, Combustible: ${this.formatRD(fuel)}, Restante Generado: ${this.formatRD(net)}`
+            `Resumen de liquidación del periodo. Viajes realizados: ${dTrips.length}. Total Fletes: ${this.formatRD(gross)}. Combustible: ${this.formatRD(fuel)}. Total Cobrado por Chofer: ${this.formatRD(drvPaid)}. Restante Generado: ${this.formatRD(net)}.`
           );
 
           return `
@@ -561,22 +581,22 @@ renderDriversTab() {
                     <h3 class="font-bold text-base text-slate-900 dark:text-white">${drv.name}</h3>
                     <p class="text-xs text-slate-500">${drv.phone || ''} ${drv.note ? '· ' + drv.note : ''}</p>
                   </div>
-                  <span class="px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-700 font-mono font-bold text-xs">${dTrips.length} viajes</span>
+                  <span class="px-2.5 py-1 rounded-md bg-slate-100 dark:bg-slate-700 font-mono font-bold text-xs">${dTrips.length} viajes</span>
                 </div>
                 <div class="grid grid-cols-2 gap-2.5 my-4 text-xs">
-                  <div class="p-2.5 rounded-lg bg-slate-50 dark:bg-slate-900">
+                  <div class="p-2.5 rounded-md bg-slate-50 dark:bg-slate-900">
                     <span class="text-slate-400 block">Total Fletes</span>
                     <span class="font-mono font-bold">${this.formatRD(gross)}</span>
                   </div>
-                  <div class="p-2.5 rounded-lg bg-slate-50 dark:bg-slate-900">
+                  <div class="p-2.5 rounded-md bg-slate-50 dark:bg-slate-900">
                     <span class="text-slate-400 block">Combustible</span>
-                    <span class="font-mono font-bold text-amber-600">${this.formatRD(fuel)}</span>
+                    <span class="font-mono font-bold">${this.formatRD(fuel)}</span>
                   </div>
-                  <div class="p-2.5 rounded-lg bg-slate-50 dark:bg-slate-900">
-                    <span class="text-slate-400 block">Cobró Chofer</span>
+                  <div class="p-2.5 rounded-md bg-slate-50 dark:bg-slate-900">
+                    <span class="text-slate-500 block">Total Cobrado por Chofer</span>
                     <span class="font-mono font-bold">${this.formatRD(drvPaid)}</span>
                   </div>
-                  <div class="p-2.5 rounded-lg bg-emerald-50 dark:bg-emerald-950/40">
+                  <div class="p-2.5 rounded-md bg-emerald-50 dark:bg-emerald-950/40">
                     <span class="text-emerald-700 dark:text-emerald-300 block font-semibold">Restante Generado</span>
                     <span class="font-mono font-bold text-emerald-700 dark:text-emerald-400">${this.formatRD(net)}</span>
                   </div>
@@ -584,7 +604,7 @@ renderDriversTab() {
               </div>
               <div class="pt-3 border-t border-slate-100 dark:border-slate-700 flex items-center justify-between gap-2">
                 ${settlementUrl
-                  ? `<a href="${settlementUrl}" target="_blank" rel="noopener noreferrer" class="btn-whatsapp" aria-label="Enviar liquidación por WhatsApp"><i class="fa-brands fa-whatsapp"></i></a>`
+                  ? `<a href="${settlementUrl}" target="_blank" rel="noopener noreferrer" class="btn-whatsapp flex-1"><i class="fa-brands fa-whatsapp"></i><span>Enviar Resumen WA</span></a>`
                   : '<span class="text-[11px] text-slate-400">Sin teléfono</span>'}
                 <button type="button" onclick="App.openDriverHistoryModal('${drv.id}')" class="btn-primary !py-1.5 flex-1">Ver Historial</button>
                 <button type="button" onclick="App.openDriverModal('${drv.id}')" class="btn-outline !py-1.5"><i class="fa-solid fa-pen"></i></button>
@@ -680,7 +700,7 @@ renderCatalogsTab() {
             const hTrips = trips.filter(t => (t.helperIds || []).map(String).includes(String(h.id)));
             const earned = hTrips.reduce((sum, t) => sum + ((Number(t.helperPay) || 0) / ((t.helperIds || []).length || 1)), 0);
             return `
-              <div class="p-3 rounded-lg border border-slate-200 dark:border-slate-700 flex items-center justify-between">
+              <div class="p-3 rounded-md border border-slate-300 dark:border-slate-700 flex items-center justify-between">
                 <div>
                   <div class="font-semibold text-sm">${h.name}</div>
                   <div class="text-xs text-slate-500">${h.phone || ''} · ${hTrips.length} viaje(s)</div>
@@ -700,7 +720,7 @@ renderCatalogsTab() {
           rList.innerHTML = this.db.routes.map(r => {
             const count = trips.filter(t => t.route === r.name).length;
             return `
-              <div class="p-3 rounded-lg border border-slate-200 dark:border-slate-700 flex items-center justify-between">
+              <div class="p-3 rounded-md border border-slate-300 dark:border-slate-700 flex items-center justify-between">
                 <div>
                   <div class="font-semibold text-sm">${r.name}</div>
                   <div class="text-xs text-slate-500">${count} viaje(s)</div>
