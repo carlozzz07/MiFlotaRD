@@ -1,15 +1,21 @@
 {
   "name": "miflotard-main",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "version": "2.0.0",
+  "description": "MiFlota RD PWA",
+  "main": "app.bundle.js",
   "scripts": {
+    "build:css": "tailwindcss -i ./input.css -o ./styles.css --minify",
+    "build:js": "esbuild ./js/app.js --bundle --format=esm --platform=browser --outfile=./app.bundle.js",
+    "build": "npm run build:css && npm run build:js",
+    "copy:web": "node ./scripts/copy-web.mjs",
+    "obfuscate": "javascript-obfuscator js --output www/js --compact true && javascript-obfuscator www/app.bundle.js --output www/app.bundle.js --compact true --string-array true",
+    "cap:sync": "npm run build && npm run copy:web && npm run obfuscate && cap sync",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "type": "commonjs",
+  "type": "module",
   "dependencies": {
     "@capacitor/android": "^8.5.3",
     "@capacitor/haptics": "^8.0.2",
@@ -18,6 +24,10 @@
     "@capacitor/status-bar": "^8.0.4"
   },
   "devDependencies": {
-    "@capacitor/cli": "^8.5.3"
+    "@capacitor/cli": "^8.5.3",
+    "esbuild": "^0.25.5",
+    "javascript-obfuscator": "^4.1.1",
+    "@tailwindcss/cli": "^4.3.3",
+    "tailwindcss": "^4.3.3"
   }
 }

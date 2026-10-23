@@ -2,7 +2,7 @@ self.addEventListener('install', (e) => {
   self.skipWaiting();
   e.waitUntil(
     caches.open('miflota-store-v3').then((cache) => {
-      return cache.addAll(['/', '/index.html']);
+      return cache.addAll(['/', '/index.html', '/styles.css', '/app.bundle.js']);
     })
   );
 });
