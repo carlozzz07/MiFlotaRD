@@ -356,7 +356,10 @@ const SUPABASE_URL = 'https://pofpqcvejdrlxindicpc.supabase.co';
 
       async loginWithSupabase(e) {
         e.preventDefault();
-        const email = document.getElementById('authEmail').value.trim();
+        const usernameOrEmail = document.getElementById('authEmail').value.trim();
+        const email = usernameOrEmail.includes('@')
+          ? usernameOrEmail
+          : `${usernameOrEmail}@miflotard.app`;
         const password = document.getElementById('authPassword').value;
         const errEl = document.getElementById('authErrorMsg');
         const btn = document.getElementById('authSubmitBtn');
@@ -366,7 +369,9 @@ const SUPABASE_URL = 'https://pofpqcvejdrlxindicpc.supabase.co';
         btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Verificando...';
 
         try {
-          const user = await Auth.signIn(supabaseClient, email, password);
+          const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
+          if (error) throw error;
+          const user = data.user;
           await this.unlockAndLoadCloudData(user);
           this.showToast('Sesión iniciada y datos sincronizados');
         } catch (error) {
