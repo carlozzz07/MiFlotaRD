@@ -166,7 +166,7 @@ const SUPABASE_URL = 'https://pofpqcvejdrlxindicpc.supabase.co';
 
       // Base de datos inicial 100% en blanco
       getEmptyDatabase() {
-        return { ...createEmptyDatabase(), profile: { companyName: '' } };
+        return { ...createEmptyDatabase(), profile: { companyName: '', passwordChanged: false } };
       },
 
       _addMenuPlaceholder: null,
@@ -384,9 +384,12 @@ const SUPABASE_URL = 'https://pofpqcvejdrlxindicpc.supabase.co';
       async unlockAndLoadCloudData(user) {
         this.currentUser = user;
 
-        const { database, cloudError } = await loadDatabase(user, databaseAuth);
+        const { database, cloudError, isNewDatabase } = await loadDatabase(user, databaseAuth);
         this.db = database;
-        if (!this.db.profile) this.db.profile = { companyName: '' };
+        if (!this.db.profile) this.db.profile = { companyName: '', passwordChanged: !isNewDatabase };
+        if (typeof this.db.profile.passwordChanged !== 'boolean') {
+          this.db.profile.passwordChanged = !isNewDatabase;
+        }
         if (cloudError) {
           console.error('No se pudo cargar la nube; se usarán los datos locales.', cloudError);
           this.showToast('No se pudo conectar a la nube; datos locales cargados', true);
@@ -398,9 +401,45 @@ const SUPABASE_URL = 'https://pofpqcvejdrlxindicpc.supabase.co';
         this.renderAll();
         document.getElementById('authGateOverlay').classList.add('hidden');
         document.body.classList.remove('auth-locked');
+        if (this.db.profile.passwordChanged === false) {
+          document.getElementById('forcePasswordModal').classList.remove('hidden');
+          document.getElementById('forcePasswordModal').classList.add('flex');
+          return;
+        }
 
         const userName = user.email ? user.email.split('@')[0] : 'Administrador';
         this.showToast(`¡Bienvenido de nuevo, ${userName}!`);
+      },
+
+      async forceUpdatePassword(e) {
+        e.preventDefault();
+        const passwordInput = document.getElementById('forcePasswordInput');
+        const errorElement = document.getElementById('forcePasswordError');
+        const submitButton = document.getElementById('forcePasswordSubmitBtn');
+        const newPassword = passwordInput.value;
+
+        errorElement.classList.add('hidden');
+        errorElement.textContent = '';
+        submitButton.disabled = true;
+        submitButton.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i><span>Actualizando...</span>';
+
+        try {
+          const { error } = await supabaseClient.auth.updateUser({ password: newPassword });
+          if (error) throw error;
+
+          this.db.profile.passwordChanged = true;
+          await this.save();
+          document.getElementById('forcePasswordModal').classList.add('hidden');
+          document.getElementById('forcePasswordModal').classList.remove('flex');
+          this.showToast('Contraseña actualizada con éxito');
+        } catch (error) {
+          console.error('No se pudo actualizar la contraseña de Supabase.', error);
+          errorElement.textContent = error.message || 'No fue posible actualizar la contraseña. Inténtalo de nuevo.';
+          errorElement.classList.remove('hidden');
+        } finally {
+          submitButton.disabled = false;
+          submitButton.innerHTML = '<i class="fa-solid fa-lock"></i><span>Guardar y Continuar</span>';
+        }
       },
 
       async logoutSupabase() {

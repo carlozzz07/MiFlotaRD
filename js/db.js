@@ -42,7 +42,7 @@ function normalizeRecord(collectionName, record) {
 export function createEmptyDatabase() {
   return {
     ...Object.fromEntries(COLLECTIONS.map((collection) => [collection, []])),
-    profile: { companyName: '' }
+    profile: { companyName: '', passwordChanged: false }
   };
 }
 
@@ -90,6 +90,9 @@ export function normalizeDatabase(value) {
   database.profile = source.profile && typeof source.profile === 'object'
     ? { companyName: String(source.profile.companyName || '') }
     : { companyName: '' };
+  if (typeof source.profile?.passwordChanged === 'boolean') {
+    database.profile.passwordChanged = source.profile.passwordChanged;
+  }
   return database;
 }
 
@@ -109,11 +112,20 @@ export async function loadDatabase(user, auth) {
     if (cloudDatabase && Object.keys(cloudDatabase).length > 0) {
       const database = normalizeDatabase(cloudDatabase);
       saveLocalDatabase(database);
-      return { database, cloudError: null };
+      return { database, cloudError: null, isNewDatabase: false };
     }
-    return { database: loadLocalDatabase(), cloudError: null };
+    const localDatabaseExists = localStorage.getItem(STORAGE_KEY) !== null;
+    if (localDatabaseExists) {
+      return { database: loadLocalDatabase(), cloudError: null, isNewDatabase: false };
+    }
+    return { database: createEmptyDatabase(), cloudError: null, isNewDatabase: true };
   } catch (cloudError) {
-    return { database: loadLocalDatabase(), cloudError };
+    const localDatabaseExists = localStorage.getItem(STORAGE_KEY) !== null;
+    return {
+      database: localDatabaseExists ? loadLocalDatabase() : createEmptyDatabase(),
+      cloudError,
+      isNewDatabase: !localDatabaseExists
+    };
   }
 }
 
