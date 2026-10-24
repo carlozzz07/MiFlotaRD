@@ -477,14 +477,43 @@ const SUPABASE_URL = 'https://pofpqcvejdrlxindicpc.supabase.co';
         });
       },
 
-      async saveProfile() {
+      async saveProfile(e) {
+        e?.preventDefault();
         const profileNameInput = document.getElementById('fProfileName');
         if (!profileNameInput) return;
-        this.db.profile = this.db.profile || { companyName: '' };
+        this.db.profile = this.db.profile || { companyName: '', passwordChanged: true };
         this.db.profile.companyName = profileNameInput.value.trim();
         await this.save();
         this.showToast('Perfil de la flota guardado correctamente');
         this.renderAll();
+      },
+
+      async updatePassword(e) {
+        e.preventDefault();
+        const passwordInput = document.getElementById('fUpdatePassword');
+        const errorElement = document.getElementById('updatePasswordError');
+        const submitButton = document.getElementById('updatePasswordSubmitBtn');
+        const newPassword = passwordInput.value;
+
+        errorElement.classList.add('hidden');
+        errorElement.textContent = '';
+        submitButton.disabled = true;
+        submitButton.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i><span>Actualizando...</span>';
+
+        try {
+          const { error } = await supabaseClient.auth.updateUser({ password: newPassword });
+          if (error) throw error;
+
+          passwordInput.value = '';
+          this.showToast('Contraseña actualizada con éxito');
+        } catch (error) {
+          console.error('No se pudo actualizar la contraseña de la cuenta.', error);
+          errorElement.textContent = error.message || 'No fue posible actualizar la contraseña. Inténtalo de nuevo.';
+          errorElement.classList.remove('hidden');
+        } finally {
+          submitButton.disabled = false;
+          submitButton.innerHTML = '<i class="fa-solid fa-key"></i><span>Actualizar Contraseña</span>';
+        }
       },
       
 

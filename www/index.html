@@ -638,17 +638,31 @@
     <!-- =================================================================== -->
     <section id="tabPanel_security" class="hidden space-y-6">
       <div class="card p-6">
-        <h2 class="text-lg font-extrabold text-slate-900 dark:text-white">Perfil y Configuración</h2>
+        <h2 class="text-lg font-extrabold text-slate-900 dark:text-white">Perfil de la Flota</h2>
         <div class="mt-5 max-w-xl space-y-4">
           <div>
             <label for="fProfileName" class="mb-1.5 block text-sm font-semibold text-slate-700 dark:text-slate-200">Nombre de la Empresa o Flota</label>
             <input id="fProfileName" type="text" maxlength="120" class="h-11 w-full rounded border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-slate-700 dark:bg-slate-950 dark:text-white dark:placeholder:text-slate-500" placeholder="Ej. Transportes Juan" />
           </div>
-          <button type="button" onclick="App.saveProfile()" class="btn-primary">
+          <button type="button" onclick="App.saveProfile(event)" class="btn-primary">
             <i class="fa-solid fa-floppy-disk"></i>
             <span>Guardar Perfil</span>
           </button>
         </div>
+      </div>
+      <div class="card p-6">
+        <h2 class="text-lg font-extrabold text-slate-900 dark:text-white">Seguridad de la Cuenta</h2>
+        <form class="mt-5 max-w-xl space-y-4" onsubmit="App.updatePassword(event)">
+          <div>
+            <label for="fUpdatePassword" class="mb-1.5 block text-sm font-semibold text-slate-700 dark:text-slate-200">Nueva Contraseña</label>
+            <input id="fUpdatePassword" type="password" required minlength="6" autocomplete="new-password" class="h-11 w-full rounded border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-slate-700 dark:bg-slate-950 dark:text-white dark:placeholder:text-slate-500" placeholder="Mínimo 6 caracteres" />
+          </div>
+          <p id="updatePasswordError" class="hidden rounded border border-rose-300 bg-rose-50 p-3 text-sm font-medium text-rose-700 dark:border-rose-900 dark:bg-rose-950/40 dark:text-rose-300" role="alert"></p>
+          <button id="updatePasswordSubmitBtn" type="submit" class="btn-primary">
+            <i class="fa-solid fa-key"></i>
+            <span>Actualizar Contraseña</span>
+          </button>
+        </form>
       </div>
     </section>
 
