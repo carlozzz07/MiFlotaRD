@@ -7,7 +7,6 @@ import {
   deleteRecord,
   loadDatabase,
   saveDatabase,
-  STORAGE_KEY,
   updateRecord
 } from './db.js';
 import { bindFinancialInputs, formatMoneyInput, parseMoney } from './ui.js';
@@ -167,7 +166,7 @@ const SUPABASE_URL = 'https://pofpqcvejdrlxindicpc.supabase.co';
 
       // Base de datos inicial 100% en blanco
       getEmptyDatabase() {
-        return createEmptyDatabase();
+        return { ...createEmptyDatabase(), profile: { companyName: '' } };
       },
 
       _addMenuPlaceholder: null,
@@ -387,6 +386,7 @@ const SUPABASE_URL = 'https://pofpqcvejdrlxindicpc.supabase.co';
 
         const { database, cloudError } = await loadDatabase(user, databaseAuth);
         this.db = database;
+        if (!this.db.profile) this.db.profile = { companyName: '' };
         if (cloudError) {
           console.error('No se pudo cargar la nube; se usarán los datos locales.', cloudError);
           this.showToast('No se pudo conectar a la nube; datos locales cargados', true);
@@ -421,6 +421,16 @@ const SUPABASE_URL = 'https://pofpqcvejdrlxindicpc.supabase.co';
               ? '<i class="fa-solid fa-cloud-check"></i> Sincronizado'
               : '<i class="fa-solid fa-triangle-exclamation text-rose-500"></i> Solo Local';
         });
+      },
+
+      async saveProfile() {
+        const profileNameInput = document.getElementById('fProfileName');
+        if (!profileNameInput) return;
+        this.db.profile = this.db.profile || { companyName: '' };
+        this.db.profile.companyName = profileNameInput.value.trim();
+        await this.save();
+        this.showToast('Perfil de la flota guardado correctamente');
+        this.renderAll();
       },
       
 
@@ -1670,46 +1680,6 @@ const SUPABASE_URL = 'https://pofpqcvejdrlxindicpc.supabase.co';
         this.showToast('Libro de Excel (.xlsx) descargado');
       },
 
-      // =====================================================================
-      // RESPALDO Y SEGURIDAD (.JSON)
-      // =====================================================================
-      exportBackupJSON() {
-        const blob = new Blob([JSON.stringify(this.db, null, 2)], { type: 'application/json' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `Backup_MiFlota_RD_${this.offsetDateISO(0)}.json`;
-        document.body.appendChild(a); a.click(); document.body.removeChild(a);
-        URL.revokeObjectURL(url);
-        this.showToast('Copia de seguridad (.json) descargada');
-      },
-
-      restoreBackupJSON(event) {
-        const file = event.target.files[0];
-        if (!file) return;
-        const reader = new FileReader();
-        reader.onload = (e) => {
-          try {
-            const parsed = JSON.parse(e.target.result);
-            if (!parsed || typeof parsed !== 'object') throw new Error('Invalido');
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(parsed));
-            this.showToast('Copia restaurada. Recargando...');
-            setTimeout(() => window.location.reload(), 800);
-          } catch (err) {
-            this.showToast('El archivo JSON seleccionado no es válido', true);
-          }
-        };
-        reader.readAsText(file);
-      },
-
-      clearAllData() {
-        if (!confirm('¿Estás seguro de vaciar absolutamente todo el sistema? Esta acción no se puede deshacer.')) return;
-        this.db = this.getEmptyDatabase();
-        this.save();
-        this.populateMonthFilter('ALL');
-        this.renderAll();
-        this.showToast('El sistema ha sido vaciado por completo');
-      }
     };
 
     Object.assign(App, UI);

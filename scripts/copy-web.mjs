@@ -12,8 +12,16 @@ const rootAssets = [
   'nuevologoCompleto512.jpg'
 ];
 
+const androidAssetsDir = path.join('android', 'app', 'src', 'main', 'assets', 'public');
+
 await mkdir('www', { recursive: true });
+await mkdir(androidAssetsDir, { recursive: true });
 
 for (const file of rootAssets) {
-  await copyFile(file, path.join('www', file));
+  try {
+    await copyFile(file, path.join('www', file));
+    await copyFile(file, path.join(androidAssetsDir, file));
+  } catch (err) {
+    console.warn(`Aviso: No se pudo copiar ${file}:`, err.message);
+  }
 }

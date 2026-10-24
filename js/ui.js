@@ -222,6 +222,18 @@ renderRemindersBanner() {
 renderAll() {
         const s = this.getPeriodSummary();
         const periodLabel = this.formatMonthLabel(this.getSelectedMonth());
+        const companyName = this.db.profile?.companyName?.trim() || '';
+        const profileNameInput = document.getElementById('fProfileName');
+        const headerCompanyName = document.getElementById('headerCompanyName');
+        const operationsCompanyName = document.getElementById('operationsCompanyName');
+        const operationsUserEmail = document.getElementById('operationsUserEmail');
+        if (profileNameInput) profileNameInput.value = companyName;
+        if (headerCompanyName) {
+          headerCompanyName.textContent = companyName ? `| ${companyName}` : '';
+          headerCompanyName.classList.toggle('hidden', !companyName);
+        }
+        if (operationsCompanyName) operationsCompanyName.textContent = companyName || 'Flota sin nombre';
+        if (operationsUserEmail) operationsUserEmail.textContent = this.currentUser?.email || '';
         this.renderRemindersBanner();
 
         document.getElementById('periodSummaryLabel').innerHTML =

@@ -1,6 +1,6 @@
 self.addEventListener('install', (e) => {
   e.waitUntil(
-    caches.open('miflota-store-v4').then((cache) => {
+    caches.open('miflota-store-v5').then((cache) => {
       return cache.addAll([
         '/',
         '/index.html',

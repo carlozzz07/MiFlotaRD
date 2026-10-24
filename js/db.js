@@ -40,7 +40,10 @@ function normalizeRecord(collectionName, record) {
 }
 
 export function createEmptyDatabase() {
-  return Object.fromEntries(COLLECTIONS.map((collection) => [collection, []]));
+  return {
+    ...Object.fromEntries(COLLECTIONS.map((collection) => [collection, []])),
+    profile: { companyName: '' }
+  };
 }
 
 function getCollection(database, collectionName) {
@@ -84,6 +87,9 @@ export function normalizeDatabase(value) {
       : [];
   }
 
+  database.profile = source.profile && typeof source.profile === 'object'
+    ? { companyName: String(source.profile.companyName || '') }
+    : { companyName: '' };
   return database;
 }
 
