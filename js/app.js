@@ -373,7 +373,6 @@ const SUPABASE_URL = 'https://pofpqcvejdrlxindicpc.supabase.co';
           if (error) throw error;
           const user = data.user;
           await this.unlockAndLoadCloudData(user);
-          this.showToast('Sesión iniciada y datos sincronizados');
         } catch (error) {
           console.error('No se pudo iniciar sesión en Supabase.', error);
           errEl.textContent = error?.status === 400
@@ -407,43 +406,54 @@ const SUPABASE_URL = 'https://pofpqcvejdrlxindicpc.supabase.co';
         document.getElementById('authGateOverlay').classList.add('hidden');
         document.body.classList.remove('auth-locked');
         if (this.db.profile.passwordChanged === false) {
-          document.getElementById('forcePasswordModal').classList.remove('hidden');
-          document.getElementById('forcePasswordModal').classList.add('flex');
+          document.getElementById('fSetupCompanyName').value = this.db.profile.companyName || '';
+          document.body.style.overflow = 'hidden';
+          document.getElementById('forceSetupModal').classList.remove('hidden');
+          document.getElementById('forceSetupModal').classList.add('flex');
           return;
         }
 
-        const userName = user.email ? user.email.split('@')[0] : 'Administrador';
-        this.showToast(`¡Bienvenido de nuevo, ${userName}!`);
+        document.body.style.overflow = '';
+        this.showToast(`Bienvenido de nuevo, ${this.db.profile.companyName || 'Usuario'}`);
       },
 
-      async forceUpdatePassword(e) {
+      async handleInitialSetup(e) {
         e.preventDefault();
-        const passwordInput = document.getElementById('forcePasswordInput');
-        const errorElement = document.getElementById('forcePasswordError');
-        const submitButton = document.getElementById('forcePasswordSubmitBtn');
+        const companyNameInput = document.getElementById('fSetupCompanyName');
+        const passwordInput = document.getElementById('fSetupPassword');
+        const errorElement = document.getElementById('initialSetupError');
+        const submitButton = document.getElementById('initialSetupSubmitBtn');
+        const newCompanyName = companyNameInput.value.trim();
         const newPassword = passwordInput.value;
 
         errorElement.classList.add('hidden');
         errorElement.textContent = '';
         submitButton.disabled = true;
-        submitButton.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i><span>Actualizando...</span>';
+        submitButton.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i><span>Guardando...</span>';
 
         try {
+          if (!newCompanyName) {
+            throw new Error('Ingresa el nombre de tu empresa o flota.');
+          }
           const { error } = await supabaseClient.auth.updateUser({ password: newPassword });
           if (error) throw error;
 
+          this.db.profile.companyName = newCompanyName;
           this.db.profile.passwordChanged = true;
           await this.save();
-          document.getElementById('forcePasswordModal').classList.add('hidden');
-          document.getElementById('forcePasswordModal').classList.remove('flex');
-          this.showToast('Contraseña actualizada con éxito');
+          const modal = document.getElementById('forceSetupModal');
+          modal.classList.add('hidden');
+          modal.classList.remove('flex');
+          document.body.style.overflow = '';
+          this.renderAll();
+          this.showToast('Configuración completada con éxito');
         } catch (error) {
-          console.error('No se pudo actualizar la contraseña de Supabase.', error);
-          errorElement.textContent = error.message || 'No fue posible actualizar la contraseña. Inténtalo de nuevo.';
+          console.error('No se pudo completar la configuración inicial de la flota.', error);
+          errorElement.textContent = error.message || 'No fue posible guardar la configuración. Inténtalo de nuevo.';
           errorElement.classList.remove('hidden');
         } finally {
           submitButton.disabled = false;
-          submitButton.innerHTML = '<i class="fa-solid fa-lock"></i><span>Guardar y Continuar</span>';
+          submitButton.innerHTML = '<i class="fa-solid fa-lock"></i><span>Guardar y Entrar al Sistema</span>';
         }
       },
 

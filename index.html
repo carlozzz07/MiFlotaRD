@@ -78,22 +78,26 @@
     </div>
   </div>
 
-  <div id="forcePasswordModal" class="fixed inset-0 z-[99999] hidden items-center justify-center bg-slate-900/90 p-4 backdrop-blur-md">
+  <div id="forceSetupModal" class="fixed inset-0 z-[99999] hidden items-center justify-center bg-slate-900/95 p-4 backdrop-blur-xl">
     <div class="w-full max-w-md rounded-xl border border-slate-700 bg-slate-950 p-6 text-white shadow-2xl sm:p-8">
       <div class="mb-5 flex h-12 w-12 items-center justify-center rounded-lg bg-emerald-500/10 text-emerald-400">
-        <i class="fa-solid fa-shield-halved text-xl"></i>
+        <i class="fa-solid fa-building-shield text-xl"></i>
       </div>
-      <p class="mb-2 text-xs font-bold uppercase tracking-wider text-emerald-400">Seguridad de la cuenta</p>
-      <h2 class="text-2xl font-extrabold tracking-tight">Actualización de Seguridad</h2>
-      <p class="mt-3 text-sm leading-relaxed text-slate-300">Por ser tu primer inicio de sesión, debes establecer una contraseña privada para tu flota.</p>
-      <form class="mt-6 space-y-4" onsubmit="App.forceUpdatePassword(event)">
+      <p class="mb-2 text-xs font-bold uppercase tracking-wider text-emerald-400">Configuración de la cuenta</p>
+      <h2 class="text-2xl font-extrabold tracking-tight">Configuración Inicial de tu Flota</h2>
+      <p class="mt-3 text-sm leading-relaxed text-slate-300">Por ser tu primer ingreso, debes establecer el nombre de tu empresa y una contraseña privada.</p>
+      <form class="mt-6 space-y-4" onsubmit="App.handleInitialSetup(event)">
         <div>
-          <label for="forcePasswordInput" class="mb-1.5 block text-sm font-semibold text-slate-200">Nueva contraseña</label>
-          <input id="forcePasswordInput" type="password" required minlength="6" autocomplete="new-password" class="h-11 w-full rounded border border-slate-700 bg-slate-900 px-3 py-2 text-sm text-white placeholder:text-slate-500 focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500" placeholder="Mínimo 6 caracteres" />
+          <label for="fSetupCompanyName" class="mb-1.5 block text-sm font-semibold text-slate-200">Nombre de la Empresa</label>
+          <input id="fSetupCompanyName" type="text" required maxlength="120" autocomplete="organization" class="h-11 w-full rounded border border-slate-700 bg-slate-900 px-3 py-2 text-sm text-white placeholder:text-slate-500 focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500" placeholder="Ej. Transportes Juan" />
         </div>
-        <p id="forcePasswordError" class="hidden rounded border border-rose-800 bg-rose-950/50 p-3 text-sm font-medium text-rose-200" role="alert"></p>
-        <button id="forcePasswordSubmitBtn" type="submit" class="inline-flex h-11 w-full items-center justify-center gap-2 rounded bg-emerald-600 px-4 text-sm font-bold text-white transition hover:bg-emerald-500 disabled:cursor-not-allowed disabled:opacity-60">
-          <i class="fa-solid fa-lock"></i><span>Guardar y Continuar</span>
+        <div>
+          <label for="fSetupPassword" class="mb-1.5 block text-sm font-semibold text-slate-200">Nueva Contraseña</label>
+          <input id="fSetupPassword" type="password" required minlength="6" autocomplete="new-password" class="h-11 w-full rounded border border-slate-700 bg-slate-900 px-3 py-2 text-sm text-white placeholder:text-slate-500 focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500" placeholder="Mínimo 6 caracteres" />
+        </div>
+        <p id="initialSetupError" class="hidden rounded border border-rose-800 bg-rose-950/50 p-3 text-sm font-medium text-rose-200" role="alert"></p>
+        <button id="initialSetupSubmitBtn" type="submit" class="inline-flex h-11 w-full items-center justify-center gap-2 rounded bg-emerald-600 px-4 text-sm font-bold text-white transition hover:bg-emerald-500 disabled:cursor-not-allowed disabled:opacity-60">
+          <i class="fa-solid fa-lock"></i><span>Guardar y Entrar al Sistema</span>
         </button>
       </form>
     </div>
@@ -634,7 +638,7 @@
     <!-- =================================================================== -->
     <section id="tabPanel_security" class="hidden space-y-6">
       <div class="card p-6">
-        <h2 class="text-lg font-extrabold text-slate-900 dark:text-white">Perfil de la Flota</h2>
+        <h2 class="text-lg font-extrabold text-slate-900 dark:text-white">Perfil y Configuración</h2>
         <div class="mt-5 max-w-xl space-y-4">
           <div>
             <label for="fProfileName" class="mb-1.5 block text-sm font-semibold text-slate-700 dark:text-slate-200">Nombre de la Empresa o Flota</label>
