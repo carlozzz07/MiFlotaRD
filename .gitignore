@@ -2,3 +2,4 @@ node_modules/
 android/
 .DS_Store
 dist/
+electron-build/

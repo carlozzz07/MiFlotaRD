@@ -7,7 +7,8 @@
     "build:css": "tailwindcss -i ./input.css -o ./styles.css --minify",
     "build:js": "node ./scripts/build-js.mjs",
     "build:web": "npm run build:css && npm run build:js && npm run copy:web",
-    "build": "electron-builder --win",
+    "build": "npm run build:electron",
+    "build:electron": "node scripts/obfuscate-electron.mjs && electron-builder --win",
     "start": "electron .",
     "copy:web": "node ./scripts/copy-web.mjs",
     "obfuscate": "npm run build:js",
@@ -43,12 +44,18 @@
     "files": [
       "main.js",
       "index.html",
-      "app.bundle.js",
       "styles.css",
       "manifest.json",
       "miflota-icon-192.png",
       "miflota-icon-512.png",
-      "nuevologoCompleto512.jpg"
+      "nuevologoCompleto512.jpg",
+      {
+        "from": "electron-build",
+        "to": ".",
+        "filter": [
+          "app.bundle.js"
+        ]
+      }
     ],
     "win": {
       "target": "nsis",
