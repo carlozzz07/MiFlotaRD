@@ -1,3 +1,5 @@
 {
+  "installCommand": "npm ci --include=dev",
+  "buildCommand": "npm run build:web && node vercel-build.js",
   "outputDirectory": "www"
 }
