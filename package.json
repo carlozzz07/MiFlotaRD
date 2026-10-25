@@ -2,14 +2,16 @@
   "name": "miflotard-main",
   "version": "2.0.0",
   "description": "MiFlota RD PWA",
-  "main": "app.bundle.js",
+  "main": "main.js",
   "scripts": {
     "build:css": "tailwindcss -i ./input.css -o ./styles.css --minify",
     "build:js": "node ./scripts/build-js.mjs",
-    "build": "npm run build:css && npm run build:js && npm run copy:web",
+    "build:web": "npm run build:css && npm run build:js && npm run copy:web",
+    "build": "electron-builder --win",
+    "start": "electron .",
     "copy:web": "node ./scripts/copy-web.mjs",
     "obfuscate": "npm run build:js",
-    "cap:sync": "npm run build && cap sync",
+    "cap:sync": "npm run build:web && cap sync",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
@@ -28,6 +30,33 @@
     "esbuild": "^0.25.5",
     "javascript-obfuscator": "^4.1.1",
     "@tailwindcss/cli": "^4.3.3",
-    "tailwindcss": "^4.3.3"
+    "tailwindcss": "^4.3.3",
+    "electron": "^45.0.0",
+    "electron-builder": "^26.18.0"
+  },
+  "build": {
+    "appId": "com.miflotard.desktop",
+    "productName": "MiFlota RD",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "main.js",
+      "index.html",
+      "app.bundle.js",
+      "styles.css",
+      "manifest.json",
+      "miflota-icon-192.png",
+      "miflota-icon-512.png",
+      "nuevologoCompleto512.jpg"
+    ],
+    "win": {
+      "target": "nsis",
+      "artifactName": "${productName}-Setup-${version}.${ext}"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true
+    }
   }
 }
