@@ -3,3 +3,13 @@ android/
 .DS_Store
 dist/
 electron-build/
+app.bundle.js
+
+# Variables de entorno y secretos (CRÍTICO)
+.env
+.env.*
+!.env.example
+*.pem
+
+# Logs de npm
+npm-debug.log*
